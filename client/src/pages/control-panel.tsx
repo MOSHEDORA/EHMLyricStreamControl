@@ -706,7 +706,7 @@ export default function ControlPanel() {
                                 updateSettings({ fullscreenFontSize: value })
                               }
                               min={16}
-                              max={72}
+                              max={500}
                               step={2}
                             />
                           </div>
