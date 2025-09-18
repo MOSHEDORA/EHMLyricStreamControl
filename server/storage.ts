@@ -58,7 +58,8 @@ export class MemStorage implements IStorage {
       fullscreenShowBackground: insertSession.fullscreenShowBackground || false,
       fullscreenBackgroundColor: insertSession.fullscreenBackgroundColor || "#000000",
       fullscreenBackgroundOpacity: insertSession.fullscreenBackgroundOpacity || 50,
-      bibleOutputEnabled: false,
+      bibleOutputEnabled: insertSession.bibleOutputEnabled !== undefined ? insertSession.bibleOutputEnabled : false,
+      lyricsOutputEnabled: insertSession.lyricsOutputEnabled !== undefined ? insertSession.lyricsOutputEnabled : true,
       lowerThirdOutputEnabled: insertSession.lowerThirdOutputEnabled !== undefined ? insertSession.lowerThirdOutputEnabled : true,
       fullscreenOutputEnabled: insertSession.fullscreenOutputEnabled !== undefined ? insertSession.fullscreenOutputEnabled : true,
     };
