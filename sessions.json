@@ -4,7 +4,7 @@
     {
       "id": 1,
       "sessionId": "default",
-      "lyrics": "యుద్ధము యెహోవాదే\nరాజులు మనకెవ్వరు లేరు\nశూరులు మనకెవ్వరు లేరు \nసైన్యములకు అధిపతి \nఅయినా యెహోవా మన అండ          \n\nవ్యాధులు మనలను పడద్రోసినా\nబాధలు మనలను కృంగదీసినా \nవిశ్వాసమునకు కర్త అయినా\nయేసయ్యే మన అండ         \n\nఎరికో గోడలు ముందున్నా\nఎర్ర సముద్రము ఎదురైనా \nఅద్బుత దేవుడు మనకుండా\nభయమేల మనకింకా           \n\nఅపవాది అయిన సాతాను\nగర్జించు సింహంవలె వచ్చినా \nయూదా గోత్రపు సింహమైనా\nయేసయ్య మన అండ",
+      "lyrics": "1\nఆదియందు దేవుడు భూమ్యాకాశములను సృజించెను.",
       "currentLine": 0,
       "displayLines": 2,
       "fontSize": 32,
@@ -16,7 +16,7 @@
       "backgroundOpacity": 50,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "Exodus 12:1",
+      "songTitle": "Book 1 1:1",
       "separateDisplaySettings": false,
       "lowerThirdDisplayLines": 2,
       "lowerThirdFontSize": 32,
