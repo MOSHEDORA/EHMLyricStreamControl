@@ -246,128 +246,9 @@ export default function ControlPanel() {
                   {isConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/display/lower-third`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "Lower Third URL copied",
-                      description: "Use this URL for OBS browser source",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Lower Third
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/display/fullscreen`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "Fullscreen URL copied",
-                      description: "Use this URL for TV/second monitor",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Fullscreen
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/obs-dock`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "OBS Dock URL copied",
-                      description: "Use this URL for OBS Custom Browser Docks",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Dock URL
-              </Button>
             </div>
           </div>
 
-          {/* Display URLs Info */}
-          <div className="mt-4 space-y-3">
-            <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FileText className="h-4 w-4 text-blue-600" />
-                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                  OBS Lower Third URL:
-                </p>
-              </div>
-              <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs">
-                {window.location.origin}/display/lower-third
-              </code>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  For OBS browser source - positions lyrics at the bottom of
-                  screen
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openLowerThird}
-                  className="h-6 text-xs"
-                >
-                  <Expand className="h-3 w-3 mr-1" />
-                  Open
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Expand className="h-4 w-4 text-purple-600" />
-                <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
-                  TV Fullscreen URL:
-                </p>
-              </div>
-              <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs">
-                {window.location.origin}/display/fullscreen
-              </code>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-purple-700 dark:text-purple-300">
-                  For second monitor/TV - full screen centered lyrics display
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openFullscreen}
-                  className="h-6 text-xs"
-                >
-                  <Expand className="h-3 w-3 mr-1" />
-                  Open
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Settings className="h-4 w-4 text-green-600" />
-                <p className="text-sm font-semibold text-green-900 dark:text-green-100">
-                  OBS Control Dock URL:
-                </p>
-              </div>
-              <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs">
-                {window.location.origin}/obs-dock
-              </code>
-              <p className="text-xs text-green-700 dark:text-green-300 mt-2">
-                Add as Custom Browser Dock in OBS: View → Docks → Custom Browser
-                Docks
-              </p>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -1165,7 +1046,7 @@ export default function ControlPanel() {
               setDisplayMode={setDisplayMode}
               onContentLoad={(content, title) => {
                 updateLyrics(content, title);
-                updateSettings({ bibleOutputEnabled: content.trim().length > 0 });
+// updateSettings({ bibleOutputEnabled: content.trim().length > 0 });
                 if (content.trim().length > 0) {
                   toast({
                     title: "Bible verse loaded",
@@ -1222,16 +1103,180 @@ export default function ControlPanel() {
                   <Separator />
                   
                   <div>
-                    <h4 className="font-semibold mb-2">Display URLs</h4>
-                    <div className="space-y-2">
+                    <h4 className="font-semibold mb-2">Display URLs & Actions</h4>
+                    <div className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Access these URLs for different display modes:
+                        Use these URLs for different display modes in OBS or other applications:
                       </p>
-                      <div className="space-y-1 text-sm">
-                        <div><strong>Lower Third:</strong> /display/lower-third</div>
-                        <div><strong>Fullscreen:</strong> /display/fullscreen</div>
-                        <div><strong>OBS Dock:</strong> /obs-dock</div>
-                        <div><strong>Standard Display:</strong> /display</div>
+                      
+                      {/* OBS Lower Third */}
+                      <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                            OBS Lower Third URL:
+                          </p>
+                        </div>
+                        <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs mb-2">
+                          {window.location.origin}/display/lower-third
+                        </code>
+                        <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                          For OBS browser source - positions lyrics at the bottom of screen
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const url = `${window.location.origin}/display/lower-third`;
+                              navigator.clipboard.writeText(url).then(() => {
+                                toast({
+                                  title: "Lower Third URL copied",
+                                  description: "Use this URL for OBS browser source",
+                                });
+                              });
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy URL
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={openLowerThird}
+                          >
+                            <Expand className="h-4 w-4 mr-2" />
+                            Open
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* TV Fullscreen */}
+                      <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Expand className="h-4 w-4 text-purple-600" />
+                          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                            TV Fullscreen URL:
+                          </p>
+                        </div>
+                        <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs mb-2">
+                          {window.location.origin}/display/fullscreen
+                        </code>
+                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-3">
+                          For second monitor/TV - full screen centered lyrics display
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const url = `${window.location.origin}/display/fullscreen`;
+                              navigator.clipboard.writeText(url).then(() => {
+                                toast({
+                                  title: "Fullscreen URL copied",
+                                  description: "Use this URL for TV/second monitor",
+                                });
+                              });
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy URL
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={openFullscreen}
+                          >
+                            <Expand className="h-4 w-4 mr-2" />
+                            Open
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* OBS Control Dock */}
+                      <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Settings className="h-4 w-4 text-green-600" />
+                          <p className="text-sm font-semibold text-green-900 dark:text-green-100">
+                            OBS Control Dock URL:
+                          </p>
+                        </div>
+                        <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs mb-2">
+                          {window.location.origin}/obs-dock
+                        </code>
+                        <p className="text-xs text-green-700 dark:text-green-300 mb-3">
+                          Add as Custom Browser Dock in OBS: View → Docks → Custom Browser Docks
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const url = `${window.location.origin}/obs-dock`;
+                              navigator.clipboard.writeText(url).then(() => {
+                                toast({
+                                  title: "OBS Dock URL copied",
+                                  description: "Use this URL for OBS Custom Browser Docks",
+                                });
+                              });
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy URL
+                          </Button>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="sm"
+                          >
+                            <Link to="/obs-dock">
+                              <Settings className="h-4 w-4 mr-2" />
+                              Open Dock
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Additional Display URLs */}
+                      <div className="p-4 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Monitor className="h-4 w-4 text-gray-600" />
+                          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                            Additional URLs:
+                          </p>
+                        </div>
+                        <div className="space-y-2 text-xs">
+                          <div className="flex justify-between items-center">
+                            <span><strong>Standard Display:</strong> {window.location.origin}/display</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/display`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Display URL copied",
+                                    description: "Standard display URL copied to clipboard",
+                                  });
+                                });
+                              }}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span><strong>Bible Navigator:</strong> {window.location.origin}/bible</span>
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="sm"
+                            >
+                              <Link to="/bible">
+                                <BookOpen className="h-3 w-3" />
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
