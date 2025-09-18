@@ -1528,15 +1528,37 @@ export default function ControlPanel() {
                 </CardContent>
               </Card>
               
-              {/* Display Settings */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Lyrics Display Settings</h3>
-                  <DisplaySettings type="lyrics" />
+              {/* Per-URL Display Settings */}
+              <div className="space-y-8">
+                <h3 className="text-xl font-semibold text-center">Per-URL Display Settings</h3>
+                <p className="text-center text-muted-foreground">
+                  Configure display settings separately for each URL type
+                </p>
+                
+                {/* Lyrics URLs Settings */}
+                <div className="space-y-6">
+                  <h4 className="text-lg font-semibold text-green-700 dark:text-green-300 flex items-center">
+                    <FileText className="h-5 w-5 mr-2" />
+                    Lyrics Display Settings
+                  </h4>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <DisplaySettings type="lyrics-lower-third" />
+                    <DisplaySettings type="lyrics-fullscreen" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Bible Display Settings</h3>
-                  <DisplaySettings type="bible" />
+
+                <Separator />
+
+                {/* Bible URLs Settings */}
+                <div className="space-y-6">
+                  <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 flex items-center">
+                    <BookOpen className="h-5 w-5 mr-2" />
+                    Bible Display Settings
+                  </h4>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <DisplaySettings type="bible-lower-third" />
+                    <DisplaySettings type="bible-fullscreen" />
+                  </div>
                 </div>
               </div>
             </div>

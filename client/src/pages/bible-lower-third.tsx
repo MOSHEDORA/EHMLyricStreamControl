@@ -1,10 +1,24 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function BibleLowerThird() {
   const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
+  const [displaySettings, setDisplaySettings] = useState(() => 
+    loadDisplaySettings('bible-lower-third')
+  );
+
+  // Load display settings on mount and when localStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setDisplaySettings(loadDisplaySettings('bible-lower-third'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Update display lines when session or lyrics change
   useEffect(() => {
@@ -32,17 +46,13 @@ export default function BibleLowerThird() {
     return null; // Completely hidden - no background
   }
 
-  const backgroundStyle = session.showBackground
-    ? {
-        backgroundColor: session.backgroundColor,
-        opacity: session.backgroundOpacity / 100,
-      }
-    : {};
+  const textStyle = getDisplayStyle(displaySettings);
+  const backgroundStyle = getBackgroundStyle(displaySettings);
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden">
       {/* Background overlay if enabled */}
-      {session.showBackground && (
+      {displaySettings.backgroundEnabled && (
         <div 
           className="absolute inset-0"
           style={backgroundStyle}
@@ -54,7 +64,7 @@ export default function BibleLowerThird() {
         <div 
           className="w-full max-w-6xl mx-auto"
           style={{ 
-            textAlign: session.textAlign as any,
+            textAlign: displaySettings.textAlign,
           }}
         >
           {currentDisplayLines.length > 0 ? (
@@ -67,14 +77,12 @@ export default function BibleLowerThird() {
                 return (
                   <div 
                     key={index}
-                    className="transition-all duration-500 leading-relaxed"
+                    className="transition-all duration-500"
                     style={{
-                      fontSize: `${session.fontSize}px`,
-                      fontFamily: session.fontFamily,
-                      color: session.textColor,
+                      ...textStyle,
+                      lineHeight: displaySettings.lineHeight,
                       opacity: index === 0 ? 1 : 0.8,
                       transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                      textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
                     }}
                     data-testid={`text-bible-verse-${index}`}
                   >

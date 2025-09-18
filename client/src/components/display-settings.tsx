@@ -53,7 +53,7 @@ interface DisplaySettings {
 }
 
 interface DisplaySettingsProps {
-  type: 'bible' | 'lyrics';
+  type: 'bible' | 'lyrics' | 'lyrics-lower-third' | 'lyrics-fullscreen' | 'bible-lower-third' | 'bible-fullscreen';
   onSettingsChange?: (settings: DisplaySettings) => void;
 }
 
@@ -125,6 +125,25 @@ const backgroundPositions = [
   { value: 'bottom left', label: 'Bottom Left' },
   { value: 'bottom right', label: 'Bottom Right' },
 ];
+
+function getDisplayTitle(type: string): string {
+  switch (type) {
+    case 'lyrics-lower-third':
+      return 'Lyrics Lower Third';
+    case 'lyrics-fullscreen':
+      return 'Lyrics Fullscreen';
+    case 'bible-lower-third':
+      return 'Bible Lower Third';
+    case 'bible-fullscreen':
+      return 'Bible Fullscreen';
+    case 'bible':
+      return 'Bible';
+    case 'lyrics':
+      return 'Lyrics';
+    default:
+      return 'Display';
+  }
+}
 
 export function DisplaySettings({ type, onSettingsChange }: DisplaySettingsProps) {
   const [settings, setSettings] = useState<DisplaySettings>(defaultSettings);
@@ -236,7 +255,7 @@ export function DisplaySettings({ type, onSettingsChange }: DisplaySettingsProps
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <Palette className="h-5 w-5 mr-2 text-primary" />
-              {type === 'bible' ? 'Bible' : 'Lyrics'} Display Settings
+              {getDisplayTitle(type)} Display Settings
             </div>
             <div className="flex items-center gap-2">
               <Button
