@@ -41,6 +41,12 @@ export const sessions = pgTable("sessions", {
   fullscreenShowBackground: boolean("fullscreen_show_background").notNull().default(false),
   fullscreenBackgroundColor: text("fullscreen_background_color").notNull().default("#000000"),
   fullscreenBackgroundOpacity: integer("fullscreen_background_opacity").notNull().default(50),
+  
+  // Output toggle controls
+  fullscreenOutputEnabled: boolean("fullscreen_output_enabled").notNull().default(true),
+  lowerThirdOutputEnabled: boolean("lower_third_output_enabled").notNull().default(true),
+  lyricsOutputEnabled: boolean("lyrics_output_enabled").notNull().default(true),
+  bibleOutputEnabled: boolean("bible_output_enabled").notNull().default(false),
 });
 
 export const insertSessionSchema = createInsertSchema(sessions).omit({
@@ -98,6 +104,12 @@ export const websocketMessageSchema = z.discriminatedUnion("type", [
       fullscreenShowBackground: z.boolean().optional(),
       fullscreenBackgroundColor: z.string().optional(),
       fullscreenBackgroundOpacity: z.number().optional(),
+      
+      // Output toggle controls
+      bibleOutputEnabled: z.boolean().optional(),
+      fullscreenOutputEnabled: z.boolean().optional(),
+      lowerThirdOutputEnabled: z.boolean().optional(),
+      lyricsOutputEnabled: z.boolean().optional(),
     }),
   }),
   z.object({
@@ -128,47 +140,3 @@ export const websocketMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 export type WebSocketMessage = z.infer<typeof websocketMessageSchema>;
-
-// Bible schema
-export const bibleBooks = pgTable("bible_books", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  abbrev: text("abbrev").notNull().unique(),
-  testament: text("testament").notNull(), // "OT" or "NT"
-  order: integer("order").notNull(),
-});
-
-export const bibleChapters = pgTable("bible_chapters", {
-  id: serial("id").primaryKey(),
-  bookId: integer("book_id").notNull().references(() => bibleBooks.id),
-  chapterNumber: integer("chapter_number").notNull(),
-  verseCount: integer("verse_count").notNull(),
-});
-
-export const bibleVerses = pgTable("bible_verses", {
-  id: serial("id").primaryKey(),
-  chapterId: integer("chapter_id").notNull().references(() => bibleChapters.id),
-  verseNumber: integer("verse_number").notNull(),
-  text: text("text").notNull(),
-  version: text("version").notNull().default("ESV"),
-});
-
-export const insertBibleBookSchema = createInsertSchema(bibleBooks).omit({
-  id: true,
-});
-
-export const insertBibleChapterSchema = createInsertSchema(bibleChapters).omit({
-  id: true,
-});
-
-export const insertBibleVerseSchema = createInsertSchema(bibleVerses).omit({
-  id: true,
-});
-
-export type InsertBibleBook = z.infer<typeof insertBibleBookSchema>;
-export type InsertBibleChapter = z.infer<typeof insertBibleChapterSchema>;
-export type InsertBibleVerse = z.infer<typeof insertBibleVerseSchema>;
-
-export type BibleBook = typeof bibleBooks.$inferSelect;
-export type BibleChapter = typeof bibleChapters.$inferSelect;
-export type BibleVerse = typeof bibleVerses.$inferSelect;

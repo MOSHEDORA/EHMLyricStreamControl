@@ -39,20 +39,35 @@ export default function DisplayFullscreen() {
       setCurrentDisplayLines([]);
       return;
     }
+
+    // For Bible content, display all content regardless of displayLines setting
+    // Check if this is Bible content by looking at the song title format
+    const isBibleContent = session.songTitle && session.songTitle.includes(':');
     
-    const settings = getFullscreenSettings(session);
-    const startLine = session.currentLine;
-    const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
-    const lines = lyricsArray.slice(startLine, endLine);
-    setCurrentDisplayLines(lines);
+    if (isBibleContent) {
+      // Show all content for Bible verses
+      setCurrentDisplayLines(lyricsArray);
+    } else {
+      // Use original logic for song lyrics
+      const settings = getFullscreenSettings(session);
+      const startLine = session.currentLine;
+      const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
+      const lines = lyricsArray.slice(startLine, endLine);
+      setCurrentDisplayLines(lines);
+    }
   }, [session, lyricsArray]);
 
   if (!session) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-4xl">Connecting...</div>
+        <div className="text-white text-xl opacity-50">Connecting...</div>
       </div>
     );
+  }
+
+  // Hide display when no content is loaded
+  if (currentDisplayLines.length === 0) {
+    return null;
   }
 
   const settings = getFullscreenSettings(session);
@@ -71,89 +86,60 @@ export default function DisplayFullscreen() {
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Background overlay if enabled */}
       {settings.showBackground && (
-        <div 
+        <div
           className="absolute inset-0"
           style={backgroundStyle}
         />
       )}
-      
-      {/* Main content centered for fullscreen - use almost full width */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
-        {/* Song title at top for fullscreen */}
-        {session.songTitle && (
-          <div 
-            className="mb-12 text-gray-300 text-center"
-            style={{ 
-              fontSize: `${titleFontSize}px`,
-              fontFamily: settings.fontFamily,
-              textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-            }}
-          >
-            {session.songTitle}
-          </div>
-        )}
 
-        <div 
+      {/* Main content centered for fullscreen */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
+        <div
           className="w-full max-w-full px-4"
-          style={{ 
+          style={{
             textAlign: settings.textAlign as any,
           }}
         >
           {currentDisplayLines.length > 0 ? (
             <div className="space-y-6">
-              {currentDisplayLines.map((line, index) => (
-                <div 
-                  key={index}
-                  className="transition-all duration-500 leading-relaxed"
-                  style={{
-                    fontSize: `${fullscreenFontSize}px`,
-                    fontFamily: settings.fontFamily,
-                    color: settings.textColor,
-                    opacity: index === 0 ? 1 : 0.85,
-                    transform: index === 0 ? 'scale(1.05)' : 'scale(1)',
-                    textShadow: "3px 3px 6px rgba(0,0,0,0.8)",
-                  }}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div 
-              className="text-gray-500 text-center"
-              style={{ 
-                fontSize: `${Math.max(fullscreenFontSize * 0.75, 36)}px`,
-                fontFamily: settings.fontFamily,
-                textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-              }}
-            >
-              No lyrics loaded
-            </div>
-          )}
-        </div>
+              {currentDisplayLines.map((line, index) => {
+                  // Check if this is a reference format "BookName Chapter:Verse (Language)"
+                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/s);
+                  const isReferenceFormat = !!referenceMatch;
 
-        {/* Progress indicator for fullscreen */}
-        <div className="mt-12 w-full max-w-md">
-          <div className="w-full bg-gray-800 rounded-full h-2">
-            <div 
-              className="bg-white h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((session.currentLine + 1) / lyricsArray.length) * 100}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-gray-400 text-sm mt-2">
-            <span>Line {session.currentLine + 1}</span>
-            <span>{lyricsArray.length} total</span>
-          </div>
+                  return (
+                    <div
+                      key={index}
+                      className="transition-all duration-500 leading-relaxed"
+                      style={{
+                        fontSize: `${fullscreenFontSize}px`,
+                        fontFamily: settings.fontFamily,
+                        color: settings.textColor,
+                        opacity: index === 0 ? 1 : 0.85,
+                        transform: index === 0 ? 'scale(1.05)' : 'scale(1)',
+                        textShadow: "3px 3px 6px rgba(0,0,0,0.8)",
+                      }}
+                    >
+                      {isReferenceFormat ? (
+                        // Reference format: "BookName Chapter:Verse (Language)" followed by text
+                        <div className="mb-4">
+                          <span className="text-blue-300 font-bold block mb-2 text-center">
+                            {referenceMatch![1]} ({referenceMatch![2]})
+                          </span>
+                          <div className="text-center">{referenceMatch![3]}</div>
+                        </div>
+                      ) : (
+                        // Display regular text lines (including single language verses)
+                        <div className="whitespace-pre-line text-center">
+                          {line}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          ) : null}
         </div>
-      </div>
-
-      {/* Corner indicators for fullscreen */}
-      <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-2 rounded text-sm font-mono">
-        FULLSCREEN TV
-      </div>
-      
-      <div className="absolute bottom-4 left-4 text-gray-500 text-sm font-mono">
-        {session.displayLines} Lines | {fullscreenFontSize}px | {session.fontFamily}
       </div>
     </div>
   );

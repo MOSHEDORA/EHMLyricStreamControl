@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useBible } from "@/hooks/use-bible";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -19,19 +21,25 @@ import {
   ChevronRight,
   Upload,
   Trash2,
-  Settings2
+  Settings2,
+  BookOpen
 } from "lucide-react";
 import { FontSelector } from "@/components/font-selector";
+import { BibleControls } from "@/components/bible-controls";
+import { DisplaySettings } from "@/components/display-settings";
 
 export default function OBSDock() {
   const sessionId = "default";
-  const { session, lyricsArray, totalLines, isConnected, updateLyrics, updateSettings, togglePlay, navigate } = useWebSocket(sessionId);
+  const { session, lyricsArray, totalLines, isConnected, updateLyrics, updatePosition, updateSettings, togglePlay, navigate } = useWebSocket(sessionId);
+  const { currentChapter, loading: bibleLoading, loadChapter } = useBible();
   const { toast } = useToast();
 
+  const [activeTab, setActiveTab] = useState("songs");
   const [lyricsText, setLyricsText] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [jumpToLine, setJumpToLine] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
+  const [bibleReference, setBibleReference] = useState("");
 
   // Update local state when session changes
   useEffect(() => {
@@ -55,13 +63,25 @@ export default function OBSDock() {
             togglePlay(!session.isPlaying);
           }
           break;
-        case 'ArrowRight':
+        case 'ArrowUp':
+          e.preventDefault();
+          navigate('previous');
+          break;
+        case 'ArrowDown':
           e.preventDefault();
           navigate('next');
           break;
         case 'ArrowLeft':
           e.preventDefault();
-          navigate('previous');
+          if (session) {
+            togglePlay(false); // Stop
+          }
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          if (session) {
+            togglePlay(true); // Play
+          }
           break;
         case 'Home':
           e.preventDefault();
@@ -99,9 +119,26 @@ export default function OBSDock() {
     navigate('jump', lineIndex);
   }, [jumpToLine, navigate]);
 
+  const handleBibleContentLoad = useCallback((content: string, title: string) => {
+    updateLyrics(content, title);
+    setActiveTab("lyrics");
+
+    toast({
+      title: "Bible content loaded",
+      description: `${title} loaded to lyrics`,
+    });
+  }, [updateLyrics, toast]);
+
+  const handleBibleVerseSelect = useCallback((verse: any, reference: string) => {
+    toast({
+      title: "Verse selected",
+      description: reference,
+    });
+  }, [toast]);
+
   const getCurrentDisplayLines = useCallback(() => {
     if (!session || !lyricsArray.length) return [];
-    
+
     const startLine = session.currentLine;
     const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
     return lyricsArray.slice(startLine, endLine);
@@ -126,7 +163,7 @@ export default function OBSDock() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Music className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-bold">Lyrics Control</h2>
+          <h2 className="text-lg font-bold">Content Control</h2>
         </div>
         <div className="flex items-center space-x-2">
           <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -139,6 +176,18 @@ export default function OBSDock() {
           </Button>
         </div>
       </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="lyrics" className="text-xs">
+            <Music className="h-3 w-3 mr-1" />
+            Lyrics
+          </TabsTrigger>
+          <TabsTrigger value="bible" className="text-xs">
+            <BookOpen className="h-3 w-3 mr-1" />
+            Bible
+          </TabsTrigger>
+        </TabsList>
 
       {/* Current Song Info */}
       {session.songTitle && (
@@ -169,7 +218,7 @@ export default function OBSDock() {
             >
               <ChevronLeft className="h-3 w-3" />
             </Button>
-            
+
             <Button 
               size="sm"
               onClick={() => togglePlay(!session.isPlaying)}
@@ -182,7 +231,7 @@ export default function OBSDock() {
               )}
               {session.isPlaying ? 'Pause' : 'Play'}
             </Button>
-            
+
             <Button 
               variant="outline" 
               size="sm"
@@ -260,35 +309,139 @@ export default function OBSDock() {
         </CardContent>
       </Card>
 
-      {/* Lyrics Management */}
-      <Card className="bg-card">
-        <CardHeader className="p-2">
-          <CardTitle className="text-sm">Load Lyrics</CardTitle>
-        </CardHeader>
-        <CardContent className="p-2 space-y-2">
-          <Input
-            placeholder="Song title"
-            value={songTitle}
-            onChange={(e) => setSongTitle(e.target.value)}
-            className="h-7 text-xs"
-          />
-          <Textarea
-            placeholder="Paste lyrics here..."
-            value={lyricsText}
-            onChange={(e) => setLyricsText(e.target.value)}
-            className="min-h-[80px] text-xs"
-          />
-          <div className="flex space-x-2">
-            <Button size="sm" onClick={handleLoadLyrics} className="flex-1">
-              <Upload className="h-3 w-3 mr-1" />
-              Load
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleClearLyrics}>
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* All Lyrics Lines */}
+      {lyricsArray.length > 0 && (
+        <Card className="bg-card">
+          <CardHeader className="p-2">
+            <CardTitle className="text-sm">
+              Lyrics Groups 
+              <span className="text-xs font-normal text-muted-foreground ml-1">
+                ({session.displayLines} line{session.displayLines > 1 ? 's' : ''} each)
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 max-h-48 overflow-y-auto">
+            <div className="space-y-1">
+              {/* Group lyrics into navigation chunks */}
+              {Array.from({ length: Math.ceil(lyricsArray.length / session.displayLines) }, (_, groupIndex) => {
+                const startIndex = groupIndex * session.displayLines;
+                const endIndex = Math.min(startIndex + session.displayLines, lyricsArray.length);
+                const groupLines = lyricsArray.slice(startIndex, endIndex);
+                const isCurrentGroup = session.currentLine >= startIndex && session.currentLine < endIndex;
+
+                return (
+                  <div
+                    key={groupIndex}
+                    className={`p-2 rounded cursor-pointer transition-colors border text-xs ${
+                      isCurrentGroup
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-muted hover:bg-muted/80 border-transparent hover:border-muted-foreground/20'
+                    }`}
+                    onClick={() => updatePosition(startIndex)}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium">
+                          {startIndex + 1}-{endIndex}
+                          {isCurrentGroup && (
+                            <span className="ml-1 px-1 rounded bg-primary-foreground/20 text-primary-foreground text-xs">
+                              •
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      {groupLines.map((line, lineIndex) => {
+                        const actualIndex = startIndex + lineIndex;
+                        const isActualCurrentLine = actualIndex === session.currentLine;
+
+                        return (
+                          <div 
+                            key={actualIndex}
+                            className={`text-xs px-1 truncate ${
+                              isActualCurrentLine 
+                                ? 'font-medium' 
+                                : 'opacity-70'
+                            }`}
+                          >
+                            {line || <em className="opacity-60">(empty)</em>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <TabsContent value="lyrics" className="space-y-4 mt-0">
+          <Tabs defaultValue="controls" className="space-y-2">
+            <TabsList className="grid w-full grid-cols-2 h-8">
+              <TabsTrigger value="controls" className="text-xs">Controls</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="controls" className="mt-2">
+              {/* Lyrics Management */}
+              <Card className="bg-card">
+                <CardHeader className="p-2">
+                  <CardTitle className="text-sm">Load Lyrics</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 space-y-2">
+                  <Input
+                    placeholder="Song title"
+                    value={songTitle}
+                    onChange={(e) => setSongTitle(e.target.value)}
+                    className="h-7 text-xs"
+                  />
+                  <Textarea
+                    placeholder="Paste lyrics here..."
+                    value={lyricsText}
+                    onChange={(e) => setLyricsText(e.target.value)}
+                    className="min-h-[80px] text-xs"
+                  />
+                  <div className="flex space-x-2">
+                    <Button size="sm" onClick={handleLoadLyrics} className="flex-1">
+                      <Upload className="h-3 w-3 mr-1" />
+                      Load
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={handleClearLyrics}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="settings" className="mt-2">
+              <DisplaySettings type="lyrics" />
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+
+        <TabsContent value="bible" className="space-y-4 mt-0">
+          <Tabs defaultValue="controls" className="space-y-2">
+            <TabsList className="grid w-full grid-cols-2 h-8">
+              <TabsTrigger value="controls" className="text-xs">Controls</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="controls" className="mt-2">
+              <BibleControls 
+                onContentLoad={handleBibleContentLoad}
+                onVerseSelect={handleBibleVerseSelect}
+                showLoadButton={true}
+              />
+            </TabsContent>
+            
+            <TabsContent value="settings" className="mt-2">
+              <DisplaySettings type="bible" />
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+      </Tabs>
 
       {/* Settings */}
       {showSettings && (
@@ -330,7 +483,7 @@ export default function OBSDock() {
                 value={[session.fontSize]}
                 onValueChange={([value]) => updateSettings({ fontSize: value })}
                 min={16}
-                max={72}
+                max={300}
                 step={2}
                 className="h-4"
               />
@@ -380,7 +533,8 @@ export default function OBSDock() {
         <CardContent className="p-2">
           <div className="text-xs text-muted-foreground space-y-1">
             <div><kbd className="bg-secondary px-1 rounded">Space</kbd> Play/Pause</div>
-            <div><kbd className="bg-secondary px-1 rounded">←→</kbd> Previous/Next</div>
+            <div><kbd className="bg-secondary px-1 rounded">↑↓</kbd> Previous/Next</div>
+            <div><kbd className="bg-secondary px-1 rounded">←→</kbd> Stop/Play</div>
             <div><kbd className="bg-secondary px-1 rounded">Home/End</kbd> First/Last</div>
           </div>
         </CardContent>

@@ -39,12 +39,22 @@ export default function DisplayLowerThird() {
       setCurrentDisplayLines([]);
       return;
     }
+
+    // For Bible content, display all content regardless of displayLines setting
+    // Check if this is Bible content by looking at the song title format
+    const isBibleContent = session.songTitle && session.songTitle.includes(':');
     
-    const settings = getLowerThirdSettings(session);
-    const startLine = session.currentLine;
-    const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
-    const lines = lyricsArray.slice(startLine, endLine);
-    setCurrentDisplayLines(lines);
+    if (isBibleContent) {
+      // Show all content for Bible verses
+      setCurrentDisplayLines(lyricsArray);
+    } else {
+      // Use original logic for song lyrics
+      const settings = getLowerThirdSettings(session);
+      const startLine = session.currentLine;
+      const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
+      const lines = lyricsArray.slice(startLine, endLine);
+      setCurrentDisplayLines(lines);
+    }
   }, [session, lyricsArray]);
 
   if (!session) {
@@ -55,6 +65,11 @@ export default function DisplayLowerThird() {
     );
   }
 
+  // Hide display when no content is loaded
+  if (currentDisplayLines.length === 0) {
+    return null;
+  }
+
   const settings = getLowerThirdSettings(session);
   const backgroundStyle = settings.showBackground
     ? {
@@ -62,6 +77,18 @@ export default function DisplayLowerThird() {
         opacity: settings.backgroundOpacity / 100,
       }
     : {};
+
+  // Function to get book name from reference
+  const getBookName = (reference: string): string => {
+    const match = reference.match(/^([^\d]+)\s+\d+/);
+    return match ? match[1] : reference; // Return the whole reference if no book name is found
+  };
+
+  // Function to get chapter and verse from reference
+  const getChapterVerse = (reference: string): string => {
+    const match = reference.match(/(\d+:\d+)/);
+    return match ? match[1] : '';
+  };
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden">
@@ -74,7 +101,7 @@ export default function DisplayLowerThird() {
             style={backgroundStyle}
           />
         )}
-        
+
         {/* Main content */}
         <div className="relative z-10">
           <div 
@@ -85,60 +112,45 @@ export default function DisplayLowerThird() {
           >
             {currentDisplayLines.length > 0 ? (
               <div className="space-y-2">
-                {currentDisplayLines.map((line, index) => (
-                  <div 
-                    key={index}
-                    className="transition-all duration-500 leading-tight drop-shadow-lg"
-                    style={{
-                      fontSize: `${settings.fontSize}px`,
-                      fontFamily: settings.fontFamily,
-                      color: settings.textColor,
-                      opacity: index === 0 ? 1 : 0.9,
-                      textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-                    }}
-                  >
-                    {line}
-                  </div>
-                ))}
+                {currentDisplayLines.map((line, index) => {
+                  // Check if this is a reference format "BookName Chapter:Verse (Language)"
+                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/s);
+                  const isReferenceFormat = !!referenceMatch;
+
+                  return (
+                    <div 
+                      key={index}
+                      className="transition-all duration-500 leading-relaxed"
+                      style={{
+                        fontSize: `${settings.fontSize}px`,
+                        fontFamily: settings.fontFamily,
+                        color: settings.textColor,
+                        opacity: index === 0 ? 1 : 0.85,
+                        transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                        textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                      }}
+                    >
+                      {isReferenceFormat ? (
+                        // Reference format: "BookName Chapter:Verse (Language)" followed by text
+                        <div className="mb-2">
+                          <span className="text-blue-300 font-bold block mb-1">
+                            {referenceMatch![1]} ({referenceMatch![2]})
+                          </span>
+                          <span>{referenceMatch![3]}</span>
+                        </div>
+                      ) : (
+                        // Display regular text lines (including single language verses)
+                        <div className="whitespace-pre-line">
+                          {line}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ) : (
-              <div 
-                className="text-gray-500 text-center opacity-50"
-                style={{ 
-                  fontSize: `${Math.max(settings.fontSize * 0.75, 24)}px`,
-                  fontFamily: settings.fontFamily,
-                  textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-                }}
-              >
-                No lyrics loaded
-              </div>
-            )}
-            
-            {/* Song title in lower third style */}
-            {session.songTitle && (
-              <div 
-                className="mt-3 text-gray-300 opacity-80"
-                style={{ 
-                  fontSize: `${Math.max(settings.fontSize * 0.4, 16)}px`,
-                  fontFamily: settings.fontFamily,
-                  textAlign: settings.textAlign as any,
-                  textShadow: "1px 1px 2px rgba(0,0,0,0.8)",
-                }}
-              >
-                {session.songTitle}
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
-      </div>
-
-      {/* Corner indicator for OBS */}
-      <div className="absolute top-4 right-4 bg-blue-600 text-white px-2 py-1 rounded text-xs font-mono opacity-75">
-        LOWER THIRD
-      </div>
-      
-      <div className="absolute bottom-4 left-4 text-gray-400 text-xs font-mono opacity-50">
-        {settings.displayLines} Lines | {settings.fontSize}px | Line {session.currentLine + 1}/{lyricsArray.length}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { initializeStorage } from "./storage";
+import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +39,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize file storage
+  await initializeStorage();
+  console.log("Storage initialized");
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -46,6 +52,15 @@ app.use((req, res, next) => {
     res.status(status).json({ message });
     throw err;
   });
+
+  // Serve static files from client dist
+  app.use(express.static(path.join(import.meta.dirname, "../client/dist")));
+
+  // Serve Bible files from tel_new directory
+  app.use('/tel_new', express.static(path.join(import.meta.dirname, "../tel_new")));
+
+  // API routes are registered in registerRoutes function
+
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route

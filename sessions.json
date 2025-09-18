@@ -1,0 +1,40 @@
+{
+  "currentId": 2,
+  "sessions": [
+    {
+      "id": 1,
+      "sessionId": "default",
+      "lyrics": "యుద్ధము యెహోవాదే\nరాజులు మనకెవ్వరు లేరు\nశూరులు మనకెవ్వరు లేరు \nసైన్యములకు అధిపతి \nఅయినా యెహోవా మన అండ          \n\nవ్యాధులు మనలను పడద్రోసినా\nబాధలు మనలను కృంగదీసినా \nవిశ్వాసమునకు కర్త అయినా\nయేసయ్యే మన అండ         \n\nఎరికో గోడలు ముందున్నా\nఎర్ర సముద్రము ఎదురైనా \nఅద్బుత దేవుడు మనకుండా\nభయమేల మనకింకా           \n\nఅపవాది అయిన సాతాను\nగర్జించు సింహంవలె వచ్చినా \nయూదా గోత్రపు సింహమైనా\nయేసయ్య మన అండ",
+      "currentLine": 0,
+      "displayLines": 2,
+      "fontSize": 32,
+      "fontFamily": "Arial",
+      "textColor": "#ffffff",
+      "textAlign": "center",
+      "showBackground": false,
+      "backgroundColor": "#000000",
+      "backgroundOpacity": 50,
+      "isPlaying": false,
+      "autoScroll": false,
+      "songTitle": "Exodus 12:1",
+      "separateDisplaySettings": false,
+      "lowerThirdDisplayLines": 2,
+      "lowerThirdFontSize": 32,
+      "lowerThirdFontFamily": "Arial",
+      "lowerThirdTextColor": "#ffffff",
+      "lowerThirdTextAlign": "center",
+      "lowerThirdShowBackground": false,
+      "lowerThirdBackgroundColor": "#000000",
+      "lowerThirdBackgroundOpacity": 50,
+      "fullscreenDisplayLines": 2,
+      "fullscreenFontSize": 32,
+      "fullscreenFontFamily": "Arial",
+      "fullscreenTextColor": "#ffffff",
+      "fullscreenTextAlign": "center",
+      "fullscreenShowBackground": false,
+      "fullscreenBackgroundColor": "#000000",
+      "fullscreenBackgroundOpacity": 50,
+      "bibleOutputEnabled": true
+    }
+  ]
+}
