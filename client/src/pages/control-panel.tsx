@@ -33,7 +33,9 @@ import {
   FileText,
   Book,
   HelpCircle,
+  ExternalLink,
 } from "lucide-react";
+import { Link } from "wouter";
 import { FontSelector } from "@/components/font-selector";
 import { FontPermissionBanner } from "@/components/font-permission-banner";
 

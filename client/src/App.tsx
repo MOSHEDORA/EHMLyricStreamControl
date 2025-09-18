@@ -8,6 +8,7 @@ import Display from "@/pages/display";
 import DisplayLowerThird from "@/pages/display-lower-third";
 import DisplayFullscreen from "@/pages/display-fullscreen";
 import OBSDock from "@/pages/obs-dock";
+import Bible from "@/pages/bible";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/display/lower-third" component={DisplayLowerThird} />
       <Route path="/display/fullscreen" component={DisplayFullscreen} />
       <Route path="/obs-dock" component={OBSDock} />
+      <Route path="/bible" component={Bible} />
       <Route component={NotFound} />
     </Switch>
   );
