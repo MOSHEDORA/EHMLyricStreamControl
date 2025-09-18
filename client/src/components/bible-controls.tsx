@@ -310,8 +310,10 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
 
               if (language === 'telugu' || bibleId === 'TeluguBible') {
                 // Always use Telugu book name from hardcoded BIBLE_BOOKS for Telugu
-                bookName = BIBLE_BOOKS.find(b => b.id === book)?.name;
-                console.log(`Telugu book name: ${bookName}`);
+                // Convert book number to match BIBLE_BOOKS id format
+                const bookId = book.toString().padStart(2, '0');
+                bookName = BIBLE_BOOKS.find(b => b.id === bookId)?.name;
+                console.log(`Telugu book name lookup - book: ${book}, bookId: ${bookId}, found: ${bookName}`);
                 if (!bookName) {
                   bookName = `Book ${book}`;
                 }
@@ -343,8 +345,10 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
 
             if (language === 'telugu' || bibleId === 'TeluguBible') {
               // Always use Telugu book name from hardcoded BIBLE_BOOKS for Telugu
-              bookName = BIBLE_BOOKS.find(b => b.id === book)?.name;
-              console.log(`Telugu book name for single verse: ${bookName}`);
+              // Convert book number to match BIBLE_BOOKS id format
+              const bookId = book.toString().padStart(2, '0');
+              bookName = BIBLE_BOOKS.find(b => b.id === bookId)?.name;
+              console.log(`Telugu book name for single verse - book: ${book}, bookId: ${bookId}, found: ${bookName}`);
               if (!bookName) {
                 bookName = `Book ${book}`;
               }
@@ -421,8 +425,10 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
 
         // Always add Telugu book name first if Telugu is selected
         if (languagesToFilter.includes('telugu')) {
-          const teluguBookName = BIBLE_BOOKS.find(b => b.id === book)?.name;
-          console.log('Telugu book name found:', teluguBookName);
+          // Convert book number to match BIBLE_BOOKS id format
+          const bookId = book.toString().padStart(2, '0');
+          const teluguBookName = BIBLE_BOOKS.find(b => b.id === bookId)?.name;
+          console.log('Telugu book name found - book:', book, 'bookId:', bookId, 'name:', teluguBookName);
           if (teluguBookName) {
             referenceNames.push(teluguBookName);
           }
@@ -447,8 +453,10 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
         console.log('Single language:', lang);
         if (lang === 'telugu') {
           // Always use Telugu book name from hardcoded BIBLE_BOOKS for Telugu
-          const teluguBookName = BIBLE_BOOKS.find(b => b.id === book)?.name;
-          console.log('Telugu book name for single language:', teluguBookName);
+          // Convert book number to match BIBLE_BOOKS id format
+          const bookId = book.toString().padStart(2, '0');
+          const teluguBookName = BIBLE_BOOKS.find(b => b.id === bookId)?.name;
+          console.log('Telugu book name for single language - book:', book, 'bookId:', bookId, 'name:', teluguBookName);
           reference = `${teluguBookName || `Book ${book}`} ${chapter}`;
         } else {
           // Use book name from API response for non-Telugu languages
@@ -635,7 +643,8 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
     // Reload chapter if we're viewing verses
     if (currentView === 'verses' && selectedBook && selectedChapter) {
       const newFilteredBibles = filteredBibles.map(bible => bible.id);
-      setTimeout(() => loadChapter(selectedBook, selectedChapter, newSelection, newFilteredBibles), 200);
+      console.log('About to reload chapter with:', newSelection, newFilteredBibles);
+      loadChapter(selectedBook, selectedChapter, newSelection, newFilteredBibles);
     }
   };
 
