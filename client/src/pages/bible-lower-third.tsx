@@ -41,8 +41,8 @@ export default function BibleLowerThird() {
     );
   }
 
-  // Hide display if lyrics output is disabled and no content is loaded
-  if (!session.lyricsOutputEnabled && currentDisplayLines.length === 0) {
+  // Hide display if bible output is disabled and no content is loaded
+  if (!session.bibleOutputEnabled && currentDisplayLines.length === 0) {
     return null; // Completely hidden - no background
   }
 

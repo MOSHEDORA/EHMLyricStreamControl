@@ -98,6 +98,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fullscreenBackgroundColor: "#000000",
           fullscreenBackgroundOpacity: 50,
           bibleOutputEnabled: false,
+          lyricsOutputEnabled: true,
+          fullscreenOutputEnabled: true,
+          lowerThirdOutputEnabled: true,
         });
       }
 
@@ -329,6 +332,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fullscreenBackgroundColor: "#000000",
           fullscreenBackgroundOpacity: 50,
           bibleOutputEnabled: false,
+          lyricsOutputEnabled: true,
+          fullscreenOutputEnabled: true,
+          lowerThirdOutputEnabled: true,
         });
       } else {
         // Update existing session
