@@ -213,20 +213,23 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
     }
   }, [searchQuery, availableBooks]);
 
-  const loadChapter = async (book: string, chapter: string) => {
+  const loadChapter = async (book: string, chapter: string, languagesToUse?: string[], biblesToUse?: string[]) => {
     if (loading) return;
 
     setLoading(true);
     try {
-      if (selectedBibles.length === 0) {
+      // Use provided bibles or filter from current state
+      const biblesToFilter = biblesToUse || selectedBibles;
+      if (biblesToFilter.length === 0) {
         throw new Error('No Bible selected');
       }
 
-      // Filter bibles based on selected languages
-      const filteredBibles = selectedBibles.filter(bibleId => {
+      // Filter bibles based on selected languages (use provided languages or current state)
+      const languagesToFilter = languagesToUse || selectedLanguages;
+      const filteredBibles = biblesToFilter.filter(bibleId => {
         const bible = availableBibles.find(b => b.id === bibleId);
-        if (selectedLanguages.length === 0) return true;
-        return bible && selectedLanguages.some(lang =>
+        if (languagesToFilter.length === 0) return true;
+        return bible && languagesToFilter.some(lang =>
           bible.language?.toLowerCase() === lang.toLowerCase()
         );
       });
@@ -236,7 +239,7 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
       const bookNames: string[] = [];
 
       console.log('Loading chapter with filtered bibles:', filteredBibles);
-      console.log('Selected languages:', selectedLanguages);
+      console.log('Selected languages:', languagesToFilter);
 
       // Load from multiple Bible versions if selected
       for (const bibleId of filteredBibles) {
@@ -295,7 +298,7 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
         sortedVerseNumbers.forEach(verseNumber => {
           const verseData = verseMap.get(verseNumber)!;
 
-          if (selectedLanguages.length > 1 && verseData.texts.length > 1) {
+          if (languagesToFilter.length > 1 && verseData.texts.length > 1) {
             // Multi-language display - combine all languages with reference format
             const combinedText = verseData.texts.map((text, index) => {
               // Get appropriate book name based on language
@@ -409,15 +412,15 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
       // Create reference with appropriate book names based on selected languages
       let reference = '';
       console.log('Creating reference with book names:', bookNames);
-      console.log('Selected languages count:', selectedLanguages.length);
+      console.log('Selected languages count:', languagesToFilter.length);
       console.log('Book ID:', book);
 
-      if (selectedLanguages.length > 1) {
+      if (languagesToFilter.length > 1) {
         // Multiple languages - use appropriate book names for each language
         const referenceNames = [];
 
         // Always add Telugu book name first if Telugu is selected
-        if (selectedLanguages.includes('telugu')) {
+        if (languagesToFilter.includes('telugu')) {
           const teluguBookName = BIBLE_BOOKS.find(b => b.id === book)?.name;
           console.log('Telugu book name found:', teluguBookName);
           if (teluguBookName) {
@@ -426,7 +429,7 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
         }
 
         // Then add English book name if English is selected and available
-        if (selectedLanguages.includes('english')) {
+        if (languagesToFilter.includes('english')) {
           const englishBookName = bookNames.find(name => {
             // Check if this is NOT a Telugu book name (i.e., it's an English name)
             return !BIBLE_BOOKS.find(b => b.name === name);
@@ -438,9 +441,9 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
         }
 
         reference = `${referenceNames.join(' / ')} ${chapter}`;
-      } else if (selectedLanguages.length === 1) {
+      } else if (languagesToFilter.length === 1) {
         // Single language
-        const lang = selectedLanguages[0];
+        const lang = languagesToFilter[0];
         console.log('Single language:', lang);
         if (lang === 'telugu') {
           // Always use Telugu book name from hardcoded BIBLE_BOOKS for Telugu
@@ -631,7 +634,8 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
 
     // Reload chapter if we're viewing verses
     if (currentView === 'verses' && selectedBook && selectedChapter) {
-      setTimeout(() => loadChapter(selectedBook, selectedChapter), 200);
+      const newFilteredBibles = filteredBibles.map(bible => bible.id);
+      setTimeout(() => loadChapter(selectedBook, selectedChapter, newSelection, newFilteredBibles), 200);
     }
   };
 
