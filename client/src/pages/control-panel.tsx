@@ -504,8 +504,8 @@ export default function ControlPanel() {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
             <TabsTrigger value="bible">Bible</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="display">Display</TabsTrigger>
+            <TabsTrigger value="help">Help</TabsTrigger>
           </TabsList>
 
           {/* Left Panel - Lyrics Input & Management */}
@@ -1285,27 +1285,106 @@ export default function ControlPanel() {
             />
           </TabsContent>
 
-          <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Display Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FontPermissionBanner />
-                {/* Add other settings here */}
-              </CardContent>
-            </Card>
+          <TabsContent value="help">
+            <div className="space-y-6">
+              {/* Documentation Links */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Documentation & Resources</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold mb-2">Bible Resources</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        For downloading additional Bible versions:
+                      </p>
+                      <a 
+                        href="https://github.com/Beblia/Holy-Bible-XML-Format" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-600 hover:text-blue-800 underline"
+                      >
+                        Holy Bible XML Format Repository
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h4 className="font-semibold mb-2">Display Setup Guides</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Available setup guides:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        <li>OBS_SETUP_GUIDE.md - General OBS integration setup</li>
+                        <li>DUAL_DISPLAY_SETUP.md - Setting up dual displays</li>
+                        <li>OBS_DOCK_SETUP.md - Configuring OBS dock interface</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h4 className="font-semibold mb-2">Display URLs</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Access these URLs for different display modes:
+                      </p>
+                      <div className="space-y-1 text-sm">
+                        <div><strong>Lower Third:</strong> /display/lower-third</div>
+                        <div><strong>Fullscreen:</strong> /display/fullscreen</div>
+                        <div><strong>OBS Dock:</strong> /obs-dock</div>
+                        <div><strong>Standard Display:</strong> /display</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h4 className="font-semibold mb-2">Features</h4>
+                    <div className="space-y-2 text-sm text-muted-foreground">
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Real-time WebSocket synchronization across all displays</li>
+                        <li>Multi-language Bible support (Telugu and English)</li>
+                        <li>Font detection and custom typography</li>
+                        <li>Background customization and text effects</li>
+                        <li>OBS integration with browser sources</li>
+                        <li>Dual display support for projector and streaming</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="display">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Lyrics Display Settings</h3>
-                <DisplaySettings type="lyrics" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Bible Display Settings</h3>
-                <DisplaySettings type="bible" />
+            <div className="space-y-6">
+              {/* Font Detection Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Font Detection Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FontPermissionBanner />
+                </CardContent>
+              </Card>
+              
+              {/* Display Settings */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Lyrics Display Settings</h3>
+                  <DisplaySettings type="lyrics" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Bible Display Settings</h3>
+                  <DisplaySettings type="bible" />
+                </div>
               </div>
             </div>
           </TabsContent>

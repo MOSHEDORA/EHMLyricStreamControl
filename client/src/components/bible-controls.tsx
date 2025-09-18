@@ -15,7 +15,7 @@ const BibleDownloadManager = ({ onDownloadComplete }: { onDownloadComplete: () =
       <p className="text-sm text-muted-foreground mb-4">
         Here you can download different Bible versions.
         By default, Telugu and English KJV are available.
-        Use https://github.com/Beblia/Holy-Bible-XML-Format for downloading multiple bible versions.
+        See the Help tab for additional Bible version resources.
       </p>
       <div className="flex flex-wrap gap-2 mb-4">
         {/* Example of available Bibles */}
