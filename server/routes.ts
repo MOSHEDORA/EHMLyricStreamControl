@@ -18,11 +18,30 @@ const bibleParamsSchema = z.object({
 // Bible data structure from thiagobodruk/bible (array format)
 interface BibleApiBook {
   abbrev: string;
-  book: string;
   chapters: string[][]; // Array of chapters, each chapter is array of verse strings
 }
 
 // Bible book ordering and testament mapping with correct GitHub filenames
+// Mapping from external Bible API abbreviations to our internal abbreviations
+const EXTERNAL_TO_INTERNAL_ABBREV: Record<string, string> = {
+  // Old Testament
+  "gn": "gen", "ex": "exo", "lv": "lev", "nm": "num", "dt": "deu",
+  "js": "jos", "jg": "jdg", "rt": "rut", "1sm": "1sa", "2sm": "2sa",
+  "1kgs": "1ki", "2kgs": "2ki", "1ch": "1ch", "2ch": "2ch", "ezr": "ezr",
+  "ne": "neh", "et": "est", "job": "job", "ps": "psa", "prv": "pro",
+  "ec": "ecc", "so": "sng", "is": "isa", "jr": "jer", "lm": "lam",
+  "ez": "eze", "dn": "dan", "ho": "hos", "jl": "joe", "am": "amo",
+  "ob": "oba", "jn": "jon", "mi": "mic", "na": "nah", "hk": "hab",
+  "zp": "zep", "hg": "hag", "zc": "zec", "ml": "mal",
+  // New Testament
+  "mt": "mat", "mk": "mar", "lk": "luk", "jo": "joh", "ac": "act",
+  "rm": "rom", "1co": "1co", "2co": "2co", "gl": "gal", "ep": "eph",
+  "ph": "phi", "cl": "col", "1ts": "1th", "2ts": "2th", "1tm": "1ti",
+  "2tm": "2ti", "tt": "tit", "phm": "phm", "hb": "heb", "jm": "jam",
+  "1pe": "1pe", "2pe": "2pe", "1jo": "1jo", "2jo": "2jo", "3jo": "3jo",
+  "jd": "jud", "re": "rev"
+};
+
 const BIBLE_BOOKS = [
   // Old Testament
   { abbrev: "gen", name: "Genesis", filename: "Genesis", testament: "OT", order: 1 },
@@ -142,9 +161,14 @@ async function downloadBibleData(version: string = 'kjv'): Promise<{ bookCount: 
       
       // Process all books from the downloaded JSON
       for (const bookData of bibleData) {
-        const bookInfo = BIBLE_BOOKS.find(b => b.abbrev === bookData.abbrev || b.name.toLowerCase() === bookData.book?.toLowerCase());
+        // Map external abbreviation to internal abbreviation
+        const internalAbbrev = EXTERNAL_TO_INTERNAL_ABBREV[bookData.abbrev] || bookData.abbrev;
+        
+        // Find book info using mapped abbreviation only
+        const bookInfo = BIBLE_BOOKS.find(b => b.abbrev === internalAbbrev);
+        
         if (!bookInfo) {
-          console.warn(`Unknown book: ${bookData.book} (${bookData.abbrev}), skipping...`);
+          console.warn(`Unknown book abbreviation: ${bookData.abbrev} -> ${internalAbbrev}, skipping...`);
           continue;
         }
         
