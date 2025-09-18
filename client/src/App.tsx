@@ -7,6 +7,10 @@ import ControlPanel from "@/pages/control-panel";
 import Display from "@/pages/display";
 import DisplayLowerThird from "@/pages/display-lower-third";
 import DisplayFullscreen from "@/pages/display-fullscreen";
+import LyricsLowerThird from "@/pages/lyrics-lower-third";
+import LyricsFullscreen from "@/pages/lyrics-fullscreen";
+import BibleLowerThird from "@/pages/bible-lower-third";
+import BibleFullscreen from "@/pages/bible-fullscreen";
 import OBSDock from "@/pages/obs-dock";
 import Bible from "@/pages/bible";
 import NotFound from "@/pages/not-found";
@@ -19,6 +23,10 @@ function Router() {
       <Route path="/display" component={Display} />
       <Route path="/display/lower-third" component={DisplayLowerThird} />
       <Route path="/display/fullscreen" component={DisplayFullscreen} />
+      <Route path="/lyrics-lower-third" component={LyricsLowerThird} />
+      <Route path="/lyrics-fullscreen" component={LyricsFullscreen} />
+      <Route path="/bible-lower-third" component={BibleLowerThird} />
+      <Route path="/bible-fullscreen" component={BibleFullscreen} />
       <Route path="/obs-dock" component={OBSDock} />
       <Route path="/bible" component={Bible} />
       <Route component={NotFound} />

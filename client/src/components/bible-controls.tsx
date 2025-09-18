@@ -185,19 +185,19 @@ export function BibleControls({
   const [selectedVerse, setSelectedVerse] = useState<string | null>(null);
 
   // Use props if available, otherwise use local state
-  const selectedBook = propSetSelectedBook ? propSelectedBook : localSelectedBook;
+  const selectedBook = propSetSelectedBook !== undefined ? propSelectedBook : localSelectedBook;
   const setSelectedBook = propSetSelectedBook || setLocalSelectedBook;
-  const selectedChapter = propSetSelectedChapter ? propSelectedChapter : localSelectedChapter;
+  const selectedChapter = propSetSelectedChapter !== undefined ? propSelectedChapter : localSelectedChapter;
   const setSelectedChapter = propSetSelectedChapter || setLocalSelectedChapter;
-  const searchQuery = propSetSearchQuery ? propSearchQuery : localSearchQuery;
+  const searchQuery = propSetSearchQuery !== undefined ? propSearchQuery : localSearchQuery;
   const setSearchQuery = propSetSearchQuery || setLocalSearchQuery;
-  const currentView = propSetCurrentView ? propCurrentView : localCurrentView;
+  const currentView = propSetCurrentView !== undefined ? propCurrentView : localCurrentView;
   const setCurrentView = propSetCurrentView || setLocalCurrentView;
-  const selectedBibles = propSetSelectedBibles ? propSelectedBibles : localSelectedBibles;
+  const selectedBibles = propSetSelectedBibles !== undefined ? propSelectedBibles : localSelectedBibles;
   const setSelectedBibles = propSetSelectedBibles || setLocalSelectedBibles;
-  const selectedLanguages = propSetSelectedLanguages ? propSelectedLanguages : localSelectedLanguages;
+  const selectedLanguages = propSetSelectedLanguages !== undefined ? propSelectedLanguages : localSelectedLanguages;
   const setSelectedLanguages = propSetSelectedLanguages || setLocalSelectedLanguages;
-  const showDownloadManager = propSetShowDownloadManager ? propShowDownloadManager : localShowDownloadManager;
+  const showDownloadManager = propSetShowDownloadManager !== undefined ? propShowDownloadManager : localShowDownloadManager;
   const setShowDownloadManager = propSetShowDownloadManager || setLocalShowDownloadManager;
 
   const loadAvailableBibles = async () => {

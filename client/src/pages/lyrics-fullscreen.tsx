@@ -1,0 +1,85 @@
+import { useEffect, useState } from "react";
+import { useWebSocket } from "@/hooks/use-websocket";
+
+export default function LyricsFullscreen() {
+  const sessionId = "lyrics-fullscreen";
+  const { session, lyricsArray } = useWebSocket(sessionId);
+  const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
+
+  // Update display lines when session or lyrics change
+  useEffect(() => {
+    if (!session || !lyricsArray.length) {
+      setCurrentDisplayLines([]);
+      return;
+    }
+
+    const startLine = session.currentLine;
+    const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
+    const lines = lyricsArray.slice(startLine, endLine);
+    setCurrentDisplayLines(lines);
+  }, [session, lyricsArray]);
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Connecting...</div>
+      </div>
+    );
+  }
+
+  // Hide display if lyrics output is disabled and no content is loaded
+  if (!session.lyricsOutputEnabled && currentDisplayLines.length === 0) {
+    return null; // Completely hidden - no background
+  }
+
+  const backgroundStyle = session.showBackground
+    ? {
+        backgroundColor: session.backgroundColor,
+        opacity: session.backgroundOpacity / 100,
+      }
+    : {};
+
+  return (
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Background overlay if enabled */}
+      {session.showBackground && (
+        <div 
+          className="absolute inset-0"
+          style={backgroundStyle}
+        />
+      )}
+
+      {/* Main content */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
+        <div 
+          className="w-full max-w-6xl"
+          style={{ 
+            textAlign: session.textAlign as any,
+          }}
+        >
+          {currentDisplayLines.length > 0 ? (
+            <div className="space-y-4">
+              {currentDisplayLines.map((line, index) => (
+                <div 
+                  key={index}
+                  className="transition-all duration-500 leading-relaxed"
+                  style={{
+                    fontSize: `${session.fontSize}px`,
+                    fontFamily: session.fontFamily,
+                    color: session.textColor,
+                    opacity: index === 0 ? 1 : 0.8,
+                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                    textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                  }}
+                  data-testid={`text-lyrics-line-${index}`}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
