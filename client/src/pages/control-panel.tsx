@@ -165,9 +165,29 @@ export default function ControlPanel() {
   const handleLoadLyrics = useCallback(() => {
     if (lyricsText.trim()) {
       updateLyrics(lyricsText.trim(), songTitle.trim());
+      
+      // Also send to lyrics-specific sessions
+      fetch('/api/sessions/lyrics-lower-third/lyrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          lyrics: lyricsText.trim(), 
+          title: songTitle.trim() 
+        })
+      });
+      
+      fetch('/api/sessions/lyrics-fullscreen/lyrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          lyrics: lyricsText.trim(), 
+          title: songTitle.trim() 
+        })
+      });
+      
       toast({
         title: "Lyrics loaded",
-        description: `${lyricsArray.length} lines ready for display`,
+        description: `${lyricsArray.length} lines ready for display in all lyrics sessions`,
       });
     }
   }, [lyricsText, songTitle, updateLyrics, toast, lyricsArray.length]);
@@ -1054,12 +1074,29 @@ export default function ControlPanel() {
               displayMode={displayMode}
               setDisplayMode={setDisplayMode}
               onContentLoad={(content, title) => {
-                updateLyrics(content, title);
-// updateSettings({ bibleOutputEnabled: content.trim().length > 0 });
+                // Send ONLY to Bible-specific sessions (do not contaminate default session)
                 if (content.trim().length > 0) {
+                  fetch('/api/sessions/bible-lower-third/lyrics', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                      lyrics: content, 
+                      title: title 
+                    })
+                  });
+                  
+                  fetch('/api/sessions/bible-fullscreen/lyrics', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                      lyrics: content, 
+                      title: title 
+                    })
+                  });
+                  
                   toast({
                     title: "Bible verse loaded",
-                    description: `${title} loaded to display`,
+                    description: `${title} loaded to Bible displays only`,
                   });
                 }
               }}
@@ -1132,87 +1169,242 @@ export default function ControlPanel() {
                         Use these URLs for different display modes in OBS or other applications:
                       </p>
                       
-                      {/* OBS Lower Third */}
-                      <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <FileText className="h-4 w-4 text-blue-600" />
-                          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                            OBS Lower Third URL:
+                      {/* Lyrics URLs */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-green-700 dark:text-green-300">Lyrics Display URLs</h5>
+                        
+                        {/* Lyrics Lower Third */}
+                        <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <FileText className="h-4 w-4 text-green-600" />
+                            <p className="text-sm font-semibold text-green-900 dark:text-green-100">
+                              Lyrics Lower Third URL:
+                            </p>
+                          </div>
+                          <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs mb-2">
+                            {window.location.origin}/lyrics-lower-third
+                          </code>
+                          <p className="text-xs text-green-700 dark:text-green-300 mb-3">
+                            For OBS browser source - shows lyrics at the bottom of screen
                           </p>
-                        </div>
-                        <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs mb-2">
-                          {window.location.origin}/display/lower-third
-                        </code>
-                        <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
-                          For OBS browser source - positions lyrics at the bottom of screen
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const url = `${window.location.origin}/display/lower-third`;
-                              navigator.clipboard.writeText(url).then(() => {
-                                toast({
-                                  title: "Lower Third URL copied",
-                                  description: "Use this URL for OBS browser source",
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/lyrics-lower-third`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Lyrics Lower Third URL copied",
+                                    description: "Use this URL for OBS browser source",
+                                  });
                                 });
-                              });
-                            }}
-                          >
-                            <Copy className="h-4 w-4 mr-2" />
-                            Copy URL
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={openLowerThird}
-                          >
-                            <Expand className="h-4 w-4 mr-2" />
-                            Open
-                          </Button>
+                              }}
+                              data-testid="button-copy-lyrics-lower-third"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy URL
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`${window.location.origin}/lyrics-lower-third`, '_blank')}
+                              data-testid="button-open-lyrics-lower-third"
+                            >
+                              <Expand className="h-4 w-4 mr-2" />
+                              Open
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Lyrics Fullscreen */}
+                        <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Expand className="h-4 w-4 text-green-600" />
+                            <p className="text-sm font-semibold text-green-900 dark:text-green-100">
+                              Lyrics Fullscreen URL:
+                            </p>
+                          </div>
+                          <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs mb-2">
+                            {window.location.origin}/lyrics-fullscreen
+                          </code>
+                          <p className="text-xs text-green-700 dark:text-green-300 mb-3">
+                            For TV/projector displays - full screen lyrics display
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/lyrics-fullscreen`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Lyrics Fullscreen URL copied",
+                                    description: "Use this URL for TV/projector displays",
+                                  });
+                                });
+                              }}
+                              data-testid="button-copy-lyrics-fullscreen"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy URL
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`${window.location.origin}/lyrics-fullscreen`, '_blank')}
+                              data-testid="button-open-lyrics-fullscreen"
+                            >
+                              <Expand className="h-4 w-4 mr-2" />
+                              Open
+                            </Button>
+                          </div>
                         </div>
                       </div>
 
-                      {/* TV Fullscreen */}
-                      <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <Expand className="h-4 w-4 text-purple-600" />
-                          <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
-                            TV Fullscreen URL:
+                      <Separator />
+
+                      {/* Bible URLs */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-blue-700 dark:text-blue-300">Bible Display URLs</h5>
+                        
+                        {/* Bible Lower Third */}
+                        <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <FileText className="h-4 w-4 text-blue-600" />
+                            <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                              Bible Lower Third URL:
+                            </p>
+                          </div>
+                          <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs mb-2">
+                            {window.location.origin}/bible-lower-third
+                          </code>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                            For OBS browser source - shows Bible verses at the bottom of screen
                           </p>
-                        </div>
-                        <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs mb-2">
-                          {window.location.origin}/display/fullscreen
-                        </code>
-                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-3">
-                          For second monitor/TV - full screen centered lyrics display
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const url = `${window.location.origin}/display/fullscreen`;
-                              navigator.clipboard.writeText(url).then(() => {
-                                toast({
-                                  title: "Fullscreen URL copied",
-                                  description: "Use this URL for TV/second monitor",
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/bible-lower-third`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Bible Lower Third URL copied",
+                                    description: "Use this URL for OBS browser source",
+                                  });
                                 });
-                              });
-                            }}
-                          >
-                            <Copy className="h-4 w-4 mr-2" />
-                            Copy URL
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={openFullscreen}
-                          >
-                            <Expand className="h-4 w-4 mr-2" />
-                            Open
-                          </Button>
+                              }}
+                              data-testid="button-copy-bible-lower-third"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy URL
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`${window.location.origin}/bible-lower-third`, '_blank')}
+                              data-testid="button-open-bible-lower-third"
+                            >
+                              <Expand className="h-4 w-4 mr-2" />
+                              Open
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Bible Fullscreen */}
+                        <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Expand className="h-4 w-4 text-blue-600" />
+                            <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                              Bible Fullscreen URL:
+                            </p>
+                          </div>
+                          <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs mb-2">
+                            {window.location.origin}/bible-fullscreen
+                          </code>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                            For TV/projector displays - full screen Bible verse display
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/bible-fullscreen`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Bible Fullscreen URL copied",
+                                    description: "Use this URL for TV/projector displays",
+                                  });
+                                });
+                              }}
+                              data-testid="button-copy-bible-fullscreen"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy URL
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`${window.location.origin}/bible-fullscreen`, '_blank')}
+                              data-testid="button-open-bible-fullscreen"
+                            >
+                              <Expand className="h-4 w-4 mr-2" />
+                              Open
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      {/* Legacy URLs */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-purple-700 dark:text-purple-300">Legacy Display URLs</h5>
+                        
+                        {/* General Display */}
+                        <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Monitor className="h-4 w-4 text-purple-600" />
+                            <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                              General Display URL:
+                            </p>
+                          </div>
+                          <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs mb-2">
+                            {window.location.origin}/display
+                          </code>
+                          <p className="text-xs text-purple-700 dark:text-purple-300 mb-3">
+                            Legacy unified display (shows both lyrics and Bible content)
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const url = `${window.location.origin}/display`;
+                                navigator.clipboard.writeText(url).then(() => {
+                                  toast({
+                                    title: "Display URL copied",
+                                    description: "Legacy unified display URL",
+                                  });
+                                });
+                              }}
+                              data-testid="button-copy-display"
+                            >
+                              <Copy className="h-4 w-4 mr-2" />
+                              Copy URL
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`${window.location.origin}/display`, '_blank')}
+                              data-testid="button-open-display"
+                            >
+                              <Expand className="h-4 w-4 mr-2" />
+                              Open
+                            </Button>
+                          </div>
                         </div>
                       </div>
 
