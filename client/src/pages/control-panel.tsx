@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
   Music,
@@ -30,6 +31,8 @@ import {
   Upload,
   Trash2,
   FileText,
+  Book,
+  HelpCircle,
 } from "lucide-react";
 import { FontSelector } from "@/components/font-selector";
 import { FontPermissionBanner } from "@/components/font-permission-banner";
@@ -51,6 +54,14 @@ export default function ControlPanel() {
   const [lyricsText, setLyricsText] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [jumpToLine, setJumpToLine] = useState(1);
+
+  // Bible state
+  const [bibleLanguage, setBibleLanguage] = useState("english");
+  const [bibleBook, setBibleBook] = useState("");
+  const [bibleChapter, setBibleChapter] = useState("");
+  const [bibleVerse, setBibleVerse] = useState("");
+  const [bibleVerseText, setBibleVerseText] = useState("");
+  const [bibleReference, setBibleReference] = useState("");
 
   // Update local state when session changes
   useEffect(() => {
@@ -193,134 +204,37 @@ export default function ControlPanel() {
                   {isConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/display/lower-third`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "Lower Third URL copied",
-                      description: "Use this URL for OBS browser source",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Lower Third
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/display/fullscreen`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "Fullscreen URL copied",
-                      description: "Use this URL for TV/second monitor",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Fullscreen
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const url = `${window.location.origin}/obs-dock`;
-                  navigator.clipboard.writeText(url).then(() => {
-                    toast({
-                      title: "OBS Dock URL copied",
-                      description: "Use this URL for OBS Custom Browser Docks",
-                    });
-                  });
-                }}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Dock URL
-              </Button>
             </div>
           </div>
 
-          {/* Display URLs Info */}
-          <div className="mt-4 space-y-3">
-            <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <FileText className="h-4 w-4 text-blue-600" />
-                <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                  OBS Lower Third URL:
-                </p>
-              </div>
-              <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs">
-                {window.location.origin}/display/lower-third
-              </code>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  For OBS browser source - positions lyrics at the bottom of
-                  screen
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openLowerThird}
-                  className="h-6 text-xs"
-                >
-                  <Expand className="h-3 w-3 mr-1" />
-                  Open
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Expand className="h-4 w-4 text-purple-600" />
-                <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
-                  TV Fullscreen URL:
-                </p>
-              </div>
-              <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs">
-                {window.location.origin}/display/fullscreen
-              </code>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-purple-700 dark:text-purple-300">
-                  For second monitor/TV - full screen centered lyrics display
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openFullscreen}
-                  className="h-6 text-xs"
-                >
-                  <Expand className="h-3 w-3 mr-1" />
-                  Open
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Settings className="h-4 w-4 text-green-600" />
-                <p className="text-sm font-semibold text-green-900 dark:text-green-100">
-                  OBS Control Dock URL:
-                </p>
-              </div>
-              <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs">
-                {window.location.origin}/obs-dock
-              </code>
-              <p className="text-xs text-green-700 dark:text-green-300 mt-2">
-                Add as Custom Browser Dock in OBS: View → Docks → Custom Browser
-                Docks
-              </p>
-            </div>
-          </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8">
         <FontPermissionBanner />
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        
+        <Tabs defaultValue="lyrics" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsTrigger value="lyrics" className="flex items-center gap-2" data-testid="tab-lyrics">
+              <Music className="h-4 w-4" />
+              Lyrics
+            </TabsTrigger>
+            <TabsTrigger value="bible" className="flex items-center gap-2" data-testid="tab-bible">
+              <Book className="h-4 w-4" />
+              Bible
+            </TabsTrigger>
+            <TabsTrigger value="help" className="flex items-center gap-2" data-testid="tab-help">
+              <HelpCircle className="h-4 w-4" />
+              Help
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2" data-testid="tab-settings">
+              <Settings className="h-4 w-4" />
+              Settings
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="lyrics">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Left Panel - Lyrics Input & Management */}
           <div className="xl:col-span-2 space-y-6">
             {/* Lyrics Input */}
@@ -884,44 +798,608 @@ export default function ControlPanel() {
               </CardContent>
             </Card>
 
-            {/* Hotkeys */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Hotkeys</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span>Next Line</span>
-                    <kbd className="bg-muted px-2 py-1 rounded text-xs">→</kbd>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Previous Line</span>
-                    <kbd className="bg-muted px-2 py-1 rounded text-xs">←</kbd>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Play/Pause</span>
-                    <kbd className="bg-muted px-2 py-1 rounded text-xs">
-                      Space
-                    </kbd>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>First Line</span>
-                    <kbd className="bg-muted px-2 py-1 rounded text-xs">
-                      Home
-                    </kbd>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Last Line</span>
-                    <kbd className="bg-muted px-2 py-1 rounded text-xs">
-                      End
-                    </kbd>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
+          </TabsContent>
+
+          <TabsContent value="bible">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              <div className="xl:col-span-2 space-y-6">
+                {/* Bible Selection */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Bible Verse Selection</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      {/* Language Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="bibleLanguage">Language</Label>
+                        <Select value={bibleLanguage} onValueChange={setBibleLanguage} data-testid="select-bible-language">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="english">English</SelectItem>
+                            <SelectItem value="telugu">Telugu</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Book Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="bibleBook">Book</Label>
+                        <Select value={bibleBook} onValueChange={(value) => { setBibleBook(value); setBibleChapter(""); setBibleVerse(""); setBibleVerseText(""); setBibleReference(""); }} data-testid="select-bible-book">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select book" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 overflow-y-auto">
+                            {/* Old Testament */}
+                            <SelectItem value="genesis">Genesis</SelectItem>
+                            <SelectItem value="exodus">Exodus</SelectItem>
+                            <SelectItem value="leviticus">Leviticus</SelectItem>
+                            <SelectItem value="numbers">Numbers</SelectItem>
+                            <SelectItem value="deuteronomy">Deuteronomy</SelectItem>
+                            <SelectItem value="joshua">Joshua</SelectItem>
+                            <SelectItem value="judges">Judges</SelectItem>
+                            <SelectItem value="ruth">Ruth</SelectItem>
+                            <SelectItem value="1-samuel">1 Samuel</SelectItem>
+                            <SelectItem value="2-samuel">2 Samuel</SelectItem>
+                            <SelectItem value="1-kings">1 Kings</SelectItem>
+                            <SelectItem value="2-kings">2 Kings</SelectItem>
+                            <SelectItem value="1-chronicles">1 Chronicles</SelectItem>
+                            <SelectItem value="2-chronicles">2 Chronicles</SelectItem>
+                            <SelectItem value="ezra">Ezra</SelectItem>
+                            <SelectItem value="nehemiah">Nehemiah</SelectItem>
+                            <SelectItem value="esther">Esther</SelectItem>
+                            <SelectItem value="job">Job</SelectItem>
+                            <SelectItem value="psalms">Psalms</SelectItem>
+                            <SelectItem value="proverbs">Proverbs</SelectItem>
+                            <SelectItem value="ecclesiastes">Ecclesiastes</SelectItem>
+                            <SelectItem value="song-of-songs">Song of Songs</SelectItem>
+                            <SelectItem value="isaiah">Isaiah</SelectItem>
+                            <SelectItem value="jeremiah">Jeremiah</SelectItem>
+                            <SelectItem value="lamentations">Lamentations</SelectItem>
+                            <SelectItem value="ezekiel">Ezekiel</SelectItem>
+                            <SelectItem value="daniel">Daniel</SelectItem>
+                            <SelectItem value="hosea">Hosea</SelectItem>
+                            <SelectItem value="joel">Joel</SelectItem>
+                            <SelectItem value="amos">Amos</SelectItem>
+                            <SelectItem value="obadiah">Obadiah</SelectItem>
+                            <SelectItem value="jonah">Jonah</SelectItem>
+                            <SelectItem value="micah">Micah</SelectItem>
+                            <SelectItem value="nahum">Nahum</SelectItem>
+                            <SelectItem value="habakkuk">Habakkuk</SelectItem>
+                            <SelectItem value="zephaniah">Zephaniah</SelectItem>
+                            <SelectItem value="haggai">Haggai</SelectItem>
+                            <SelectItem value="zechariah">Zechariah</SelectItem>
+                            <SelectItem value="malachi">Malachi</SelectItem>
+                            {/* New Testament */}
+                            <SelectItem value="matthew">Matthew</SelectItem>
+                            <SelectItem value="mark">Mark</SelectItem>
+                            <SelectItem value="luke">Luke</SelectItem>
+                            <SelectItem value="john">John</SelectItem>
+                            <SelectItem value="acts">Acts</SelectItem>
+                            <SelectItem value="romans">Romans</SelectItem>
+                            <SelectItem value="1-corinthians">1 Corinthians</SelectItem>
+                            <SelectItem value="2-corinthians">2 Corinthians</SelectItem>
+                            <SelectItem value="galatians">Galatians</SelectItem>
+                            <SelectItem value="ephesians">Ephesians</SelectItem>
+                            <SelectItem value="philippians">Philippians</SelectItem>
+                            <SelectItem value="colossians">Colossians</SelectItem>
+                            <SelectItem value="1-thessalonians">1 Thessalonians</SelectItem>
+                            <SelectItem value="2-thessalonians">2 Thessalonians</SelectItem>
+                            <SelectItem value="1-timothy">1 Timothy</SelectItem>
+                            <SelectItem value="2-timothy">2 Timothy</SelectItem>
+                            <SelectItem value="titus">Titus</SelectItem>
+                            <SelectItem value="philemon">Philemon</SelectItem>
+                            <SelectItem value="hebrews">Hebrews</SelectItem>
+                            <SelectItem value="james">James</SelectItem>
+                            <SelectItem value="1-peter">1 Peter</SelectItem>
+                            <SelectItem value="2-peter">2 Peter</SelectItem>
+                            <SelectItem value="1-john">1 John</SelectItem>
+                            <SelectItem value="2-john">2 John</SelectItem>
+                            <SelectItem value="3-john">3 John</SelectItem>
+                            <SelectItem value="jude">Jude</SelectItem>
+                            <SelectItem value="revelation">Revelation</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Chapter Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="bibleChapter">Chapter</Label>
+                        <Select value={bibleChapter} onValueChange={(value) => { setBibleChapter(value); setBibleVerse(""); setBibleVerseText(""); setBibleReference(""); }} disabled={!bibleBook} data-testid="select-bible-chapter">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select chapter" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 overflow-y-auto">
+                            {/* Will be populated based on selected book */}
+                            <SelectItem value="1">Chapter 1</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Verse Selection */}
+                      <div className="space-y-2">
+                        <Label htmlFor="bibleVerse">Verse</Label>
+                        <Select value={bibleVerse} onValueChange={setBibleVerse} disabled={!bibleChapter} data-testid="select-bible-verse">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select verse" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60 overflow-y-auto">
+                            {/* Will be populated based on selected chapter */}
+                            <SelectItem value="1">Verse 1</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2 mb-4">
+                      <Button className="flex-1" data-testid="button-load-verse">
+                        Load Bible Verse
+                      </Button>
+                      <Button variant="outline" className="flex-1" data-testid="button-clear-verse">
+                        Clear
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Bible Verse Display */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Bible Verse</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="bibleVerseText">Verse Text</Label>
+                        <Textarea
+                          id="bibleVerseText"
+                          data-testid="textarea-bible-verse"
+                          placeholder="Selected Bible verse will appear here..."
+                          className="min-h-[200px] mt-2"
+                          value={bibleVerseText}
+                          readOnly
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="bibleReference">Reference</Label>
+                        <Input
+                          id="bibleReference"
+                          data-testid="input-bible-reference"
+                          placeholder="Bible reference will appear here..."
+                          className="mt-2"
+                          value={bibleReference}
+                          readOnly
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          className="flex-1" 
+                          data-testid="button-load-to-display"
+                          disabled={!bibleVerseText}
+                        >
+                          Load to Display
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          data-testid="button-copy-verse"
+                          disabled={!bibleVerseText}
+                        >
+                          Copy Verse
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Bible Navigator/Quick Access */}
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Access</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        data-testid="button-popular-verse-john3-16"
+                      >
+                        <Book className="h-4 w-4 mr-2" />
+                        John 3:16
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        data-testid="button-popular-verse-romans8-28"
+                      >
+                        <Book className="h-4 w-4 mr-2" />
+                        Romans 8:28
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        data-testid="button-popular-verse-psalm23-1"
+                      >
+                        <Book className="h-4 w-4 mr-2" />
+                        Psalm 23:1
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start"
+                        data-testid="button-popular-verse-isaiah40-31"
+                      >
+                        <Book className="h-4 w-4 mr-2" />
+                        Isaiah 40:31
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Bible Info</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm space-y-2">
+                      <p><strong>Languages:</strong> English, Telugu</p>
+                      <p><strong>Books:</strong> 66 (39 OT, 27 NT)</p>
+                      <p><strong>Source:</strong> Public Domain</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="help">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Keyboard Shortcuts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span>Next Line</span>
+                      <kbd className="bg-muted px-2 py-1 rounded text-xs">→</kbd>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Previous Line</span>
+                      <kbd className="bg-muted px-2 py-1 rounded text-xs">←</kbd>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Play/Pause</span>
+                      <kbd className="bg-muted px-2 py-1 rounded text-xs">Space</kbd>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>First Line</span>
+                      <kbd className="bg-muted px-2 py-1 rounded text-xs">Home</kbd>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Last Line</span>
+                      <kbd className="bg-muted px-2 py-1 rounded text-xs">End</kbd>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>How to Use</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 text-sm">
+                    <div>
+                      <h4 className="font-semibold mb-2">Getting Started:</h4>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Enter your lyrics in the Lyrics tab</li>
+                        <li>Click "Load Lyrics" to prepare them for display</li>
+                        <li>Use the playback controls to navigate through lines</li>
+                        <li>Copy display URLs for OBS or external monitors</li>
+                      </ol>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Display Options:</h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Lower Third: For OBS overlay at bottom of screen</li>
+                        <li>Fullscreen: For secondary monitors or TV displays</li>
+                        <li>OBS Dock: Control panel embedded in OBS</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Display URLs Info */}
+              <div className="lg:col-span-2 space-y-3">
+                <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <FileText className="h-4 w-4 text-blue-600" />
+                    <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                      OBS Lower Third URL:
+                    </p>
+                  </div>
+                  <code className="block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200 text-xs">
+                    {window.location.origin}/display/lower-third
+                  </code>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      For OBS browser source - positions lyrics at the bottom of
+                      screen
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const url = `${window.location.origin}/display/lower-third`;
+                          navigator.clipboard.writeText(url).then(() => {
+                            toast({
+                              title: "Lower Third URL copied",
+                              description: "Use this URL for OBS browser source",
+                            });
+                          });
+                        }}
+                        className="h-6 text-xs"
+                        data-testid="button-copy-lower-third"
+                      >
+                        <Copy className="h-3 w-3 mr-1" />
+                        Copy
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={openLowerThird}
+                        className="h-6 text-xs"
+                        data-testid="button-open-lower-third"
+                      >
+                        <Expand className="h-3 w-3 mr-1" />
+                        Open
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Expand className="h-4 w-4 text-purple-600" />
+                    <p className="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                      TV Fullscreen URL:
+                    </p>
+                  </div>
+                  <code className="block bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200 text-xs">
+                    {window.location.origin}/display/fullscreen
+                  </code>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-purple-700 dark:text-purple-300">
+                      For second monitor/TV - full screen centered lyrics display
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const url = `${window.location.origin}/display/fullscreen`;
+                          navigator.clipboard.writeText(url).then(() => {
+                            toast({
+                              title: "Fullscreen URL copied",
+                              description: "Use this URL for TV/second monitor",
+                            });
+                          });
+                        }}
+                        className="h-6 text-xs"
+                        data-testid="button-copy-fullscreen"
+                      >
+                        <Copy className="h-3 w-3 mr-1" />
+                        Copy
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={openFullscreen}
+                        className="h-6 text-xs"
+                        data-testid="button-open-fullscreen"
+                      >
+                        <Expand className="h-3 w-3 mr-1" />
+                        Open
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Settings className="h-4 w-4 text-green-600" />
+                    <p className="text-sm font-semibold text-green-900 dark:text-green-100">
+                      OBS Control Dock URL:
+                    </p>
+                  </div>
+                  <code className="block bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200 text-xs">
+                    {window.location.origin}/obs-dock
+                  </code>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-green-700 dark:text-green-300">
+                      Add as Custom Browser Dock in OBS: View → Docks → Custom Browser
+                      Docks
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const url = `${window.location.origin}/obs-dock`;
+                        navigator.clipboard.writeText(url).then(() => {
+                          toast({
+                            title: "OBS Dock URL copied",
+                            description: "Use this URL for OBS Custom Browser Docks",
+                          });
+                        });
+                      }}
+                      className="h-6 text-xs"
+                      data-testid="button-copy-dock"
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              {/* Font Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Display Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {session && (
+                    <div className="space-y-6">
+                      {/* Font Family */}
+                      <div className="space-y-2">
+                        <Label>Font Family</Label>
+                        <FontSelector
+                          value={session.fontFamily}
+                          onValueChange={(font) => updateSettings({ fontFamily: font })}
+                        />
+                      </div>
+
+                      {/* Font Size */}
+                      <div className="space-y-2">
+                        <Label>Font Size: {session.fontSize}px</Label>
+                        <Slider
+                          value={[session.fontSize]}
+                          onValueChange={([value]) =>
+                            updateSettings({ fontSize: value })
+                          }
+                          min={16}
+                          max={500}
+                          step={2}
+                        />
+                      </div>
+
+                      {/* Text Color */}
+                      <div className="space-y-2">
+                        <Label>Text Color</Label>
+                        <div className="flex space-x-2">
+                          <input
+                            type="color"
+                            value={session.textColor}
+                            onChange={(e) =>
+                              updateSettings({ textColor: e.target.value })
+                            }
+                            className="w-12 h-8 rounded border border-border"
+                          />
+                          <Input
+                            value={session.textColor}
+                            onChange={(e) =>
+                              updateSettings({ textColor: e.target.value })
+                            }
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Text Alignment */}
+                      <div className="space-y-2">
+                        <Label>Text Alignment</Label>
+                        <Select
+                          value={session.textAlign}
+                          onValueChange={(value) =>
+                            updateSettings({ textAlign: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="left">Left</SelectItem>
+                            <SelectItem value="center">Center</SelectItem>
+                            <SelectItem value="right">Right</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Background Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Background Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {session && (
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="showBackground"
+                          checked={session.showBackground}
+                          onCheckedChange={(checked) =>
+                            updateSettings({ showBackground: !!checked })
+                          }
+                        />
+                        <Label htmlFor="showBackground">Show Background</Label>
+                      </div>
+
+                      {session.showBackground && (
+                        <>
+                          <div className="space-y-2">
+                            <Label>Background Color</Label>
+                            <div className="flex space-x-2">
+                              <input
+                                type="color"
+                                value={session.backgroundColor}
+                                onChange={(e) =>
+                                  updateSettings({
+                                    backgroundColor: e.target.value,
+                                  })
+                                }
+                                className="w-12 h-8 rounded border border-border"
+                              />
+                              <Input
+                                value={session.backgroundColor}
+                                onChange={(e) =>
+                                  updateSettings({
+                                    backgroundColor: e.target.value,
+                                  })
+                                }
+                                className="flex-1"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>
+                              Background Opacity: {session.backgroundOpacity}%
+                            </Label>
+                            <Slider
+                              value={[session.backgroundOpacity]}
+                              onValueChange={([value]) =>
+                                updateSettings({ backgroundOpacity: value })
+                              }
+                              min={0}
+                              max={100}
+                              step={5}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
