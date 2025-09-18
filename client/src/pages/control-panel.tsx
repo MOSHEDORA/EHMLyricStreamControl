@@ -1076,21 +1076,23 @@ export default function ControlPanel() {
               onContentLoad={(content, title) => {
                 // Send ONLY to Bible-specific sessions (do not contaminate default session)
                 if (content.trim().length > 0) {
-                  fetch('/api/sessions/bible-lower-third/lyrics', {
+                  fetch('/api/sessions/bible-lower-third', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                      lyrics: content, 
-                      title: title 
+                      lyricsText: content, 
+                      currentLine: 0,
+                      songTitle: title 
                     })
                   });
                   
-                  fetch('/api/sessions/bible-fullscreen/lyrics', {
+                  fetch('/api/sessions/bible-fullscreen', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                      lyrics: content, 
-                      title: title 
+                      lyricsText: content, 
+                      currentLine: 0,
+                      songTitle: title 
                     })
                   });
                   

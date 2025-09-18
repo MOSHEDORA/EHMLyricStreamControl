@@ -595,15 +595,27 @@ export function BibleControls({
         onContentLoad(content, reference);
       }
       try {
-        await fetch('/api/sessions/default', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            lyricsText: content,
-            currentLine: 0,
-            songTitle: reference
+        // Send to both Bible display sessions
+        await Promise.all([
+          fetch('/api/sessions/bible-lower-third', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lyricsText: content,
+              currentLine: 0,
+              songTitle: reference
+            })
+          }),
+          fetch('/api/sessions/bible-fullscreen', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lyricsText: content,
+              currentLine: 0,
+              songTitle: reference
+            })
           })
-        });
+        ]);
       } catch (error) {
         console.error('Failed to update session:', error);
       }
@@ -623,15 +635,27 @@ export function BibleControls({
       onContentLoad(content, title);
     }
     try {
-      await fetch('/api/sessions/default', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lyricsText: content,
-          currentLine: 0,
-          songTitle: title
+      // Send to both Bible display sessions
+      await Promise.all([
+        fetch('/api/sessions/bible-lower-third', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lyricsText: content,
+            currentLine: 0,
+            songTitle: title
+          })
+        }),
+        fetch('/api/sessions/bible-fullscreen', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            lyricsText: content,
+            currentLine: 0,
+            songTitle: title
+          })
         })
-      });
+      ]);
     } catch (error) {
       console.error('Failed to update session:', error);
     }
