@@ -62,6 +62,15 @@ export default function ControlPanel() {
   const [displayMode, setDisplayMode] = useState<'lyrics' | 'bible'>('lyrics');
   const [activeTab, setActiveTab] = useState<'lyrics' | 'bible' | 'settings' | 'display'>('lyrics');
 
+  // Bible state - lifted up to preserve across tab switches
+  const [bibleSelectedBook, setBibleSelectedBook] = useState<string>("");
+  const [bibleSelectedChapter, setBibleSelectedChapter] = useState<string>("");
+  const [bibleSearchQuery, setBibleSearchQuery] = useState<string>("");
+  const [bibleCurrentView, setBibleCurrentView] = useState<'books' | 'chapters' | 'verses'>('books');
+  const [bibleSelectedBibles, setBibleSelectedBibles] = useState<string[]>([]);
+  const [bibleSelectedLanguages, setBibleSelectedLanguages] = useState<string[]>(['telugu']);
+  const [bibleShowDownloadManager, setBibleShowDownloadManager] = useState(false);
+
   // Update local state when session changes
   useEffect(() => {
     if (session) {
@@ -1056,6 +1065,20 @@ export default function ControlPanel() {
               }}
               onVerseSelect={(verse, reference) => {}}
               showLoadButton={true}
+              selectedBook={bibleSelectedBook}
+              setSelectedBook={setBibleSelectedBook}
+              selectedChapter={bibleSelectedChapter}
+              setSelectedChapter={setBibleSelectedChapter}
+              searchQuery={bibleSearchQuery}
+              setSearchQuery={setBibleSearchQuery}
+              currentView={bibleCurrentView}
+              setCurrentView={setBibleCurrentView}
+              selectedBibles={bibleSelectedBibles}
+              setSelectedBibles={setBibleSelectedBibles}
+              selectedLanguages={bibleSelectedLanguages}
+              setSelectedLanguages={setBibleSelectedLanguages}
+              showDownloadManager={bibleShowDownloadManager}
+              setShowDownloadManager={setBibleShowDownloadManager}
             />
           </TabsContent>
 

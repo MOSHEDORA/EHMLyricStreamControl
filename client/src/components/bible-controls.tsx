@@ -124,12 +124,55 @@ interface BibleControlsProps {
   showLoadButton?: boolean;
   displayMode: 'lyrics' | 'bible';
   setDisplayMode: (mode: 'lyrics' | 'bible') => void;
+  // Persistent state props
+  selectedBook?: string;
+  setSelectedBook?: (book: string) => void;
+  selectedChapter?: string;
+  setSelectedChapter?: (chapter: string) => void;
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
+  currentView?: 'books' | 'chapters' | 'verses';
+  setCurrentView?: (view: 'books' | 'chapters' | 'verses') => void;
+  selectedBibles?: string[];
+  setSelectedBibles?: (bibles: string[]) => void;
+  selectedLanguages?: string[];
+  setSelectedLanguages?: (languages: string[]) => void;
+  showDownloadManager?: boolean;
+  setShowDownloadManager?: (show: boolean) => void;
 }
 
-export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVerseSelect, showLoadButton = false }: BibleControlsProps & { displayMode: 'lyrics' | 'bible', setDisplayMode: (mode: 'lyrics' | 'bible') => void }) {
-  const [selectedBook, setSelectedBook] = useState<string>("");
-  const [selectedChapter, setSelectedChapter] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+export function BibleControls({ 
+  displayMode, 
+  setDisplayMode, 
+  onContentLoad, 
+  onVerseSelect, 
+  showLoadButton = false,
+  // Persistent state props with defaults
+  selectedBook: propSelectedBook = "",
+  setSelectedBook: propSetSelectedBook,
+  selectedChapter: propSelectedChapter = "",
+  setSelectedChapter: propSetSelectedChapter,
+  searchQuery: propSearchQuery = "",
+  setSearchQuery: propSetSearchQuery,
+  currentView: propCurrentView = 'books',
+  setCurrentView: propSetCurrentView,
+  selectedBibles: propSelectedBibles = [],
+  setSelectedBibles: propSetSelectedBibles,
+  selectedLanguages: propSelectedLanguages = ['telugu'],
+  setSelectedLanguages: propSetSelectedLanguages,
+  showDownloadManager: propShowDownloadManager = false,
+  setShowDownloadManager: propSetShowDownloadManager
+}: BibleControlsProps) {
+  // Use props if provided, otherwise use local state (for backwards compatibility)
+  const [localSelectedBook, setLocalSelectedBook] = useState<string>("");
+  const [localSelectedChapter, setLocalSelectedChapter] = useState<string>("");
+  const [localSearchQuery, setLocalSearchQuery] = useState<string>("");
+  const [localCurrentView, setLocalCurrentView] = useState<'books' | 'chapters' | 'verses'>('books');
+  const [localSelectedBibles, setLocalSelectedBibles] = useState<string[]>([]);
+  const [localSelectedLanguages, setLocalSelectedLanguages] = useState<string[]>(['telugu']);
+  const [localShowDownloadManager, setLocalShowDownloadManager] = useState(false);
+
+  // Always use local state for these (they can reset on tab switch)
   const [filteredBooks, setFilteredBooks] = useState<BibleBook[]>(BIBLE_BOOKS);
   const [currentChapter, setCurrentChapter] = useState<BibleChapter | null>(null);
   const [loading, setLoading] = useState(false);
@@ -137,13 +180,25 @@ export function BibleControls({ displayMode, setDisplayMode, onContentLoad, onVe
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [isAutoSending, setIsAutoSending] = useState(false);
   const [availableBibles, setAvailableBibles] = useState<any[]>([]);
-  const [selectedBibles, setSelectedBibles] = useState<string[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['telugu']);
-  const [showDownloadManager, setShowDownloadManager] = useState(false);
   const [availableBooks, setAvailableBooks] = useState<BibleBook[]>([]);
   const [playingVerse, setPlayingVerse] = useState<string | null>(null);
-  const [currentView, setCurrentView] = useState<'books' | 'chapters' | 'verses'>('books');
   const [selectedVerse, setSelectedVerse] = useState<string | null>(null);
+
+  // Use props if available, otherwise use local state
+  const selectedBook = propSetSelectedBook ? propSelectedBook : localSelectedBook;
+  const setSelectedBook = propSetSelectedBook || setLocalSelectedBook;
+  const selectedChapter = propSetSelectedChapter ? propSelectedChapter : localSelectedChapter;
+  const setSelectedChapter = propSetSelectedChapter || setLocalSelectedChapter;
+  const searchQuery = propSetSearchQuery ? propSearchQuery : localSearchQuery;
+  const setSearchQuery = propSetSearchQuery || setLocalSearchQuery;
+  const currentView = propSetCurrentView ? propCurrentView : localCurrentView;
+  const setCurrentView = propSetCurrentView || setLocalCurrentView;
+  const selectedBibles = propSetSelectedBibles ? propSelectedBibles : localSelectedBibles;
+  const setSelectedBibles = propSetSelectedBibles || setLocalSelectedBibles;
+  const selectedLanguages = propSetSelectedLanguages ? propSelectedLanguages : localSelectedLanguages;
+  const setSelectedLanguages = propSetSelectedLanguages || setLocalSelectedLanguages;
+  const showDownloadManager = propSetShowDownloadManager ? propShowDownloadManager : localShowDownloadManager;
+  const setShowDownloadManager = propSetShowDownloadManager || setLocalShowDownloadManager;
 
   const loadAvailableBibles = async () => {
     try {
