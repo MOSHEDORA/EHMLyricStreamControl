@@ -101,7 +101,6 @@ export default function LyricsFullscreen() {
           ref={containerRef}
           className="w-full h-full"
           style={{ 
-            textAlign: displaySettings.textAlign,
             padding: `${screenSettings.margins || 40}px`,
           }}
         >
@@ -113,7 +112,6 @@ export default function LyricsFullscreen() {
                   className="transition-all duration-500"
                   style={{
                     ...textStyle,
-                    lineHeight: displaySettings.lineHeight,
                     opacity: index === 0 ? 1 : 0.8,
                     transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
                   }}
