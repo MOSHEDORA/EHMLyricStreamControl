@@ -827,7 +827,7 @@ function OBSDockSettings() {
   );
 }
 
-export default function Settings() {
+export default function DisplaySettings() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}

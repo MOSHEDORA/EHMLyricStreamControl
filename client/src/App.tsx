@@ -10,6 +10,7 @@ import BibleLowerThird from "@/pages/bible-lower-third";
 import BibleFullscreen from "@/pages/bible-fullscreen";
 import OBSDock from "@/pages/obs-dock";
 import Bible from "@/pages/bible";
+import DisplaySettings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/bible-fullscreen" component={BibleFullscreen} />
       <Route path="/obs-dock" component={OBSDock} />
       <Route path="/bible" component={Bible} />
+      <Route path="/settings" component={DisplaySettings} />
       <Route component={NotFound} />
     </Switch>
   );
