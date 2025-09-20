@@ -27,10 +27,19 @@ export default function BibleLowerThird() {
       return;
     }
 
-    const startLine = session.currentLine;
-    const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
-    const lines = lyricsArray.slice(startLine, endLine);
-    setCurrentDisplayLines(lines);
+    // Check if content looks like Bible verses (starts with number followed by period)
+    const isBibleContent = lyricsArray.some(line => /^\d+\.\s/.test(line));
+    
+    if (isBibleContent) {
+      // For Bible content, show all lines to display the complete verse
+      setCurrentDisplayLines(lyricsArray);
+    } else {
+      // For lyrics content, use the displayLines setting
+      const startLine = session.currentLine;
+      const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
+      const lines = lyricsArray.slice(startLine, endLine);
+      setCurrentDisplayLines(lines);
+    }
   }, [session, lyricsArray]);
 
   if (!session) {
