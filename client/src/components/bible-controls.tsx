@@ -599,7 +599,7 @@ export function BibleControls({
       const bibleDisplayContent = `${verse.number}. ${verse.text}`;
       
       try {
-        // Send to both Bible display sessions
+        // Send to both Bible display sessions and lyrics display sessions
         await Promise.all([
           fetch('/api/sessions/bible-lower-third', {
             method: 'POST',
@@ -611,6 +611,24 @@ export function BibleControls({
             })
           }),
           fetch('/api/sessions/bible-fullscreen', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lyricsText: bibleDisplayContent,
+              currentLine: 0,
+              songTitle: reference
+            })
+          }),
+          fetch('/api/sessions/lyrics-lower-third', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              lyricsText: bibleDisplayContent,
+              currentLine: 0,
+              songTitle: reference
+            })
+          }),
+          fetch('/api/sessions/lyrics-fullscreen', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
