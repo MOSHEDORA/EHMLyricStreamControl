@@ -57,7 +57,7 @@ export const defaultBibleLowerThirdSettings: BibleLowerThirdSettings = {
   maxHeight: '30%',
   showBackground: true,
   backgroundColor: '#001122',
-  backgroundOpacity: 75,
+  backgroundOpacity: 75, // 0-100 scale
   borderRadius: 8,
   border: '2px solid rgba(255,204,0,0.3)',
   primaryLanguage: 'english',

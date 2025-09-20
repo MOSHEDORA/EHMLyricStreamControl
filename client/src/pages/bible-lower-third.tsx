@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { defaultBibleLowerThirdSettings } from "@/settings/bible-lower-third-settings";
 
 export default function BibleLowerThird() {
   const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Default display settings
-  const displaySettings = {
-    fontSize: 28,
-    fontFamily: 'Arial',
-    textColor: '#ffffff',
-    textAlign: 'center' as const,
-    backgroundEnabled: false
-  };
-
-  // Default screen settings
-  const screenSettings = {
-    margins: 40,
-    lowerThirdHeightPercent: 25
-  };
+  // URL-specific settings
+  const settings = defaultBibleLowerThirdSettings;
 
 
 
@@ -36,9 +25,9 @@ export default function BibleLowerThird() {
       // For Bible content, show all lines to display the complete verse
       setCurrentDisplayLines(lyricsArray);
     } else {
-      // For lyrics content, use the displayLines setting
+      // For lyrics content, use the settings displayLines
       const startLine = session.currentLine;
-      const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
+      const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
       const lines = lyricsArray.slice(startLine, endLine);
       setCurrentDisplayLines(lines);
     }
@@ -52,16 +41,18 @@ export default function BibleLowerThird() {
     );
   }
 
-  // Hide display if bible output is disabled and no content is loaded
-  if (!session.bibleOutputEnabled && currentDisplayLines.length === 0) {
+  // Hide display if no content is loaded
+  if (currentDisplayLines.length === 0) {
     return null; // Completely hidden - no background
   }
 
   const textStyle = {
-    fontSize: `${displaySettings.fontSize}px`,
-    fontFamily: displaySettings.fontFamily,
-    color: displaySettings.textColor,
-    textAlign: displaySettings.textAlign,
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+    color: settings.textColor,
+    textAlign: settings.textAlign,
+    lineHeight: settings.lineHeight,
+    fontWeight: settings.fontWeight,
   };
 
   return (
@@ -72,13 +63,14 @@ export default function BibleLowerThird() {
       <div 
         className="absolute bottom-0 left-0 right-0 z-10"
         style={{
-          height: `${screenSettings.lowerThirdHeightPercent}%`,
+          height: settings.maxHeight,
+          padding: `${settings.padding}px`,
         }}
       >
         <div 
           className="w-full h-full"
           style={{ 
-            padding: `${screenSettings.margins}px`,
+            padding: `${settings.padding}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (

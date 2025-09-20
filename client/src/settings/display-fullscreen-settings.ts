@@ -45,7 +45,7 @@ export const defaultDisplayFullscreenSettings: DisplayFullscreenSettings = {
   verticalAlign: 'center',
   showBackground: false,
   backgroundColor: '#000000',
-  backgroundOpacity: 70,
+  backgroundOpacity: 70, // 0-100 scale
   backgroundImage: '',
   backgroundSize: 'cover',
   textOutline: true,

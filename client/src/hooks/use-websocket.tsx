@@ -31,11 +31,7 @@ export function useWebSocket(sessionId: string = 'default') {
         
         setState(prev => ({ ...prev, client, isConnected: true }));
 
-        // Request current state
-        client.send({
-          type: "request_state",
-          payload: {},
-        });
+        // Note: request_state removed from schema - state will be sent automatically
 
       } catch (error) {
         console.error('Failed to connect WebSocket:', error);
@@ -90,43 +86,12 @@ export function useWebSocket(sessionId: string = 'default') {
     });
   }, [sendMessage]);
 
-  const updateSettings = useCallback((settings: {
-    displayLines?: number;
-    fontSize?: number;
-    fontFamily?: string;
-    textColor?: string;
-    textAlign?: string;
-    showBackground?: boolean;
-    backgroundColor?: string;
-    backgroundOpacity?: number;
-    separateDisplaySettings?: boolean;
-    displayType?: "unified" | "lower-third" | "fullscreen";
-    
-    // Lower third specific
-    lowerThirdDisplayLines?: number;
-    lowerThirdFontSize?: number;
-    lowerThirdFontFamily?: string;
-    lowerThirdTextColor?: string;
-    lowerThirdTextAlign?: string;
-    lowerThirdShowBackground?: boolean;
-    lowerThirdBackgroundColor?: string;
-    lowerThirdBackgroundOpacity?: number;
-    
-    // Fullscreen specific
-    fullscreenDisplayLines?: number;
-    fullscreenFontSize?: number;
-    fullscreenFontFamily?: string;
-    fullscreenTextColor?: string;
-    fullscreenTextAlign?: string;
-    fullscreenShowBackground?: boolean;
-    fullscreenBackgroundColor?: string;
-    fullscreenBackgroundOpacity?: number;
-  }) => {
-    return sendMessage({
-      type: "update_settings",
-      payload: settings,
-    });
-  }, [sendMessage]);
+  // Settings are now handled via URL-specific settings files
+  // This function is kept for backward compatibility but does nothing
+  const updateSettings = useCallback((_settings: any) => {
+    console.log('Settings are now managed via URL-specific settings files');
+    return true;
+  }, []);
 
   const togglePlay = useCallback((isPlaying: boolean) => {
     return sendMessage({

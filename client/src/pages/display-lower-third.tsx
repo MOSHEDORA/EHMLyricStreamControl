@@ -1,32 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { Session } from "@shared/schema";
-
-// Helper function to get lower-third-specific settings
-function getLowerThirdSettings(session: Session) {
-  if (session.separateDisplaySettings) {
-    return {
-      displayLines: session.lowerThirdDisplayLines,
-      fontSize: session.lowerThirdFontSize,
-      fontFamily: session.lowerThirdFontFamily,
-      textColor: session.lowerThirdTextColor,
-      textAlign: session.lowerThirdTextAlign,
-      showBackground: session.lowerThirdShowBackground,
-      backgroundColor: session.lowerThirdBackgroundColor,
-      backgroundOpacity: session.lowerThirdBackgroundOpacity,
-    };
-  }
-  return {
-    displayLines: session.displayLines,
-    fontSize: session.fontSize,
-    fontFamily: session.fontFamily,
-    textColor: session.textColor,
-    textAlign: session.textAlign,
-    showBackground: session.showBackground,
-    backgroundColor: session.backgroundColor,
-    backgroundOpacity: session.backgroundOpacity,
-  };
-}
+import { defaultDisplayLowerThirdSettings } from "@/settings/display-lower-third-settings";
 
 export default function DisplayLowerThird() {
   const sessionId = "default";
@@ -49,7 +23,7 @@ export default function DisplayLowerThird() {
       setCurrentDisplayLines(lyricsArray);
     } else {
       // Use original logic for song lyrics
-      const settings = getLowerThirdSettings(session);
+      const settings = defaultDisplayLowerThirdSettings;
       const startLine = session.currentLine;
       const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
       const lines = lyricsArray.slice(startLine, endLine);
@@ -70,7 +44,7 @@ export default function DisplayLowerThird() {
     return null;
   }
 
-  const settings = getLowerThirdSettings(session);
+  const settings = defaultDisplayLowerThirdSettings;
   const backgroundStyle = settings.showBackground
     ? {
         backgroundColor: settings.backgroundColor,

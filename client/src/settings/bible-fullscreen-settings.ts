@@ -73,7 +73,7 @@ export const defaultBibleFullscreenSettings: BibleFullscreenSettings = {
   columnGap: 40,
   showBackground: true,
   backgroundColor: '#001133',
-  backgroundOpacity: 80,
+  backgroundOpacity: 80, // 0-100 scale
   backgroundImage: '',
   textOutline: false,
   outlineColor: '#000000',

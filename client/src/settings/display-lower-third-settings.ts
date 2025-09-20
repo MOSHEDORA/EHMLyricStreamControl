@@ -41,7 +41,7 @@ export const defaultDisplayLowerThirdSettings: DisplayLowerThirdSettings = {
   width: '100%',
   showBackground: false,
   backgroundColor: '#000000',
-  backgroundOpacity: 50,
+  backgroundOpacity: 50, // 0-100 scale
   borderRadius: 8,
   animationDuration: 300,
   fadeInDelay: 0,

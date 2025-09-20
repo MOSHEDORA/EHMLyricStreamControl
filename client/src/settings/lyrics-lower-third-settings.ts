@@ -52,7 +52,7 @@ export const defaultLyricsLowerThirdSettings: LyricsLowerThirdSettings = {
   maxHeight: '25%',
   showBackground: true,
   backgroundColor: '#000000',
-  backgroundOpacity: 60,
+  backgroundOpacity: 60, // 0-100 scale
   borderRadius: 6,
   border: '1px solid rgba(255,255,255,0.2)',
   autoScroll: true,

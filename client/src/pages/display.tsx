@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { defaultDisplaySettings } from "@/settings/display-settings";
 
 export default function Display() {
   const sessionId = "default";
@@ -14,7 +15,8 @@ export default function Display() {
     }
 
     const startLine = session.currentLine;
-    const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
+    const settings = defaultDisplaySettings;
+    const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
     const lines = lyricsArray.slice(startLine, endLine);
     setCurrentDisplayLines(lines);
   }, [session, lyricsArray]);
@@ -27,22 +29,23 @@ export default function Display() {
     );
   }
 
-  // Hide display if lyrics output is disabled and no content is loaded
-  if (!session.lyricsOutputEnabled && currentDisplayLines.length === 0) {
+  // Hide display if no content is loaded
+  if (currentDisplayLines.length === 0) {
     return null; // Completely hidden - no background
   }
 
-  const backgroundStyle = session.showBackground
+  const settings = defaultDisplaySettings;
+  const backgroundStyle = settings.showBackground
     ? {
-        backgroundColor: session.backgroundColor,
-        opacity: session.backgroundOpacity / 100,
+        backgroundColor: settings.backgroundColor,
+        opacity: settings.backgroundOpacity / 100,
       }
     : {};
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Background overlay if enabled */}
-      {session.showBackground && (
+      {settings.showBackground && (
         <div 
           className="absolute inset-0"
           style={backgroundStyle}
@@ -54,7 +57,11 @@ export default function Display() {
         <div 
           className="w-full max-w-6xl"
           style={{ 
-            textAlign: session.textAlign as any,
+            textAlign: settings.textAlign,
+            fontSize: `${settings.fontSize}px`,
+            fontFamily: settings.fontFamily,
+            color: settings.textColor,
+            lineHeight: settings.lineHeight,
           }}
         >
           {currentDisplayLines.length > 0 ? (
@@ -69,9 +76,9 @@ export default function Display() {
                     key={index}
                     className="transition-all duration-500 leading-relaxed"
                     style={{
-                      fontSize: `${session.fontSize}px`,
-                      fontFamily: session.fontFamily,
-                      color: session.textColor,
+                      fontSize: `${settings.fontSize}px`,
+                      fontFamily: settings.fontFamily,
+                      color: settings.textColor,
                       opacity: index === 0 ? 1 : 0.8,
                       transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
                       textShadow: "2px 2px 4px rgba(0,0,0,0.8)",

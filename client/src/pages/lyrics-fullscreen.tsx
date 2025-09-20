@@ -1,23 +1,13 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { defaultLyricsFullscreenSettings } from "@/settings/lyrics-fullscreen-settings";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Default display settings
-  const displaySettings = {
-    fontSize: 32,
-    fontFamily: 'Arial',
-    textColor: '#ffffff',
-    textAlign: 'center' as const,
-    backgroundEnabled: false
-  };
-
-  // Default screen settings
-  const screenSettings = {
-    margins: 40
-  };
+  // URL-specific settings
+  const settings = defaultLyricsFullscreenSettings;
 
 
 
@@ -29,12 +19,12 @@ export default function LyricsFullscreen() {
     }
 
     // Implement proper Lyrics to Display rule with control group logic
-    const controlGroup = session.displayLines;
+    const controlGroup = settings.displayLines;
     const groupIndex = Math.floor(session.currentLine / controlGroup);
     const start = groupIndex * controlGroup;
     
-    // Use fullscreen-specific count if separate display settings are enabled
-    const variantCount = session.separateDisplaySettings ? session.fullscreenDisplayLines : controlGroup;
+    // Use fullscreen-specific count
+    const variantCount = settings.displayLines;
     const end = Math.min(start + variantCount, lyricsArray.length);
     
     const lines = lyricsArray.slice(start, end);
@@ -49,16 +39,20 @@ export default function LyricsFullscreen() {
     );
   }
 
-  // Hide display if lyrics output is disabled and no content is loaded
-  if (!session.lyricsOutputEnabled && currentDisplayLines.length === 0) {
+  // Hide display if no content is loaded
+  if (currentDisplayLines.length === 0) {
     return null; // Completely hidden - no background
   }
 
   const textStyle = {
-    fontSize: `${displaySettings.fontSize}px`,
-    fontFamily: displaySettings.fontFamily,
-    color: displaySettings.textColor,
-    textAlign: displaySettings.textAlign,
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+    color: settings.textColor,
+    textAlign: settings.textAlign,
+    lineHeight: settings.lineHeight,
+    fontWeight: settings.fontWeight,
+    textTransform: settings.textTransform,
+    textShadow: settings.textShadow,
   };
 
   return (
@@ -70,7 +64,8 @@ export default function LyricsFullscreen() {
         <div 
           className="w-full h-full"
           style={{ 
-            padding: `${screenSettings.margins}px`,
+            padding: `${settings.padding}px`,
+            margin: `${settings.margin}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (

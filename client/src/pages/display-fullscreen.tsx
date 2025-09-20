@@ -1,32 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { Session } from "@shared/schema";
-
-// Helper function to get fullscreen-specific settings
-function getFullscreenSettings(session: Session) {
-  if (session.separateDisplaySettings) {
-    return {
-      displayLines: session.fullscreenDisplayLines,
-      fontSize: session.fullscreenFontSize,
-      fontFamily: session.fullscreenFontFamily,
-      textColor: session.fullscreenTextColor,
-      textAlign: session.fullscreenTextAlign,
-      showBackground: session.fullscreenShowBackground,
-      backgroundColor: session.fullscreenBackgroundColor,
-      backgroundOpacity: session.fullscreenBackgroundOpacity,
-    };
-  }
-  return {
-    displayLines: session.displayLines,
-    fontSize: session.fontSize,
-    fontFamily: session.fontFamily,
-    textColor: session.textColor,
-    textAlign: session.textAlign,
-    showBackground: session.showBackground,
-    backgroundColor: session.backgroundColor,
-    backgroundOpacity: session.backgroundOpacity,
-  };
-}
+import { defaultDisplayFullscreenSettings } from "@/settings/display-fullscreen-settings";
 
 export default function DisplayFullscreen() {
   const sessionId = "default";
@@ -49,7 +23,7 @@ export default function DisplayFullscreen() {
       setCurrentDisplayLines(lyricsArray);
     } else {
       // Use original logic for song lyrics
-      const settings = getFullscreenSettings(session);
+      const settings = defaultDisplayFullscreenSettings;
       const startLine = session.currentLine;
       const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
       const lines = lyricsArray.slice(startLine, endLine);
@@ -70,7 +44,7 @@ export default function DisplayFullscreen() {
     return null;
   }
 
-  const settings = getFullscreenSettings(session);
+  const settings = defaultDisplayFullscreenSettings;
   const backgroundStyle = settings.showBackground
     ? {
         backgroundColor: settings.backgroundColor,

@@ -37,8 +37,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
+import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
 
 export default function ControlPanel() {
+  // URL-specific settings
+  const settings = defaultControlPanelSettings;
   const sessionId = "default";
   const {
     session,
@@ -52,34 +55,22 @@ export default function ControlPanel() {
     navigate,
   } = useWebSocket(sessionId);
 
-  // Custom updateSettings that broadcasts to all relevant sessions
-  const updateSettings = useCallback(async (settings: Parameters<typeof originalUpdateSettings>[0]) => {
-    // Update the default session first
-    originalUpdateSettings(settings);
-    
-    // Also send updates to all specific display sessions via API
-    const sessionIds = ['bible-fullscreen', 'bible-lower-third', 'lyrics-fullscreen', 'lyrics-lower-third'];
-    
-    try {
-      await Promise.all(sessionIds.map(async (sessionId) => {
-        const response = await fetch(`/api/sessions/${sessionId}/settings`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(settings)
-        });
-        if (!response.ok) {
-          console.warn(`Failed to update settings for session ${sessionId}`);
-        }
-      }));
-    } catch (error) {
-      console.error('Failed to broadcast settings to all sessions:', error);
-    }
-  }, [originalUpdateSettings]);
+  // Settings are now handled via URL-specific settings files
+  const updateSettings = useCallback((_settingsParams: any) => {
+    console.log('Settings are now managed via URL-specific settings files');
+    return true;
+  }, []);
   const { toast } = useToast();
 
   const [lyricsText, setLyricsText] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [jumpToLine, setJumpToLine] = useState(1);
+  
+  // Apply control panel settings
+  const panelStyle = {
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+  };
   const [displayMode, setDisplayMode] = useState<'lyrics' | 'bible'>('lyrics');
   const [activeTab, setActiveTab] = useState<'lyrics' | 'bible' | 'settings' | 'display'>('lyrics');
 
@@ -276,7 +267,7 @@ export default function ControlPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={panelStyle}>
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-6 py-4">

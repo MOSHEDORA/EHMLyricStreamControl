@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useBible } from "@/hooks/use-bible";
+import { defaultObsDockSettings } from "@/settings/obs-dock-settings";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,8 @@ import {
 import { BibleControls } from "@/components/bible-controls";
 
 export default function OBSDock() {
+  // URL-specific settings
+  const settings = defaultObsDockSettings;
   const sessionId = "default";
   const { session, lyricsArray, totalLines, isConnected, updateLyrics, updatePosition, updateSettings, togglePlay, navigate } = useWebSocket(sessionId);
   const { currentChapter, loading: bibleLoading, loadChapter } = useBible();
@@ -38,6 +41,13 @@ export default function OBSDock() {
   const [jumpToLine, setJumpToLine] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
   const [bibleReference, setBibleReference] = useState("");
+  
+  // Apply OBS Dock settings
+  const dockStyle = {
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+  };
+  const isCompact = settings.compactMode;
 
   // Update local state when session changes
   useEffect(() => {
@@ -156,7 +166,7 @@ export default function OBSDock() {
   }
 
   return (
-    <div className="h-full bg-background text-foreground p-3 space-y-4 overflow-y-auto">
+    <div className="h-full bg-background text-foreground p-3 space-y-4 overflow-y-auto" style={dockStyle}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">

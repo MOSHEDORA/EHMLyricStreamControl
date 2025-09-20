@@ -1,23 +1,13 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { defaultBibleFullscreenSettings } from "@/settings/bible-fullscreen-settings";
 
 export default function BibleFullscreen() {
   const sessionId = "bible-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Default display settings
-  const displaySettings = {
-    fontSize: 32,
-    fontFamily: 'Arial',
-    textColor: '#ffffff',
-    textAlign: 'center' as const,
-    backgroundEnabled: false
-  };
-
-  // Default screen settings
-  const screenSettings = {
-    margins: 40
-  };
+  // URL-specific settings
+  const settings = defaultBibleFullscreenSettings;
 
 
 
@@ -35,9 +25,9 @@ export default function BibleFullscreen() {
       // For Bible content, show all lines to display the complete verse
       setCurrentDisplayLines(lyricsArray);
     } else {
-      // For lyrics content, use the displayLines setting
+      // For lyrics content, use the settings displayLines
       const startLine = session.currentLine;
-      const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
+      const endLine = Math.min(startLine + settings.versesPerScreen, lyricsArray.length);
       const lines = lyricsArray.slice(startLine, endLine);
       setCurrentDisplayLines(lines);
     }
@@ -51,16 +41,19 @@ export default function BibleFullscreen() {
     );
   }
 
-  // Hide display if bible output is disabled and no content is loaded
-  if (!session.bibleOutputEnabled && currentDisplayLines.length === 0) {
+  // Hide display if no content is loaded
+  if (currentDisplayLines.length === 0) {
     return null; // Completely hidden - no background
   }
 
   const textStyle = {
-    fontSize: `${displaySettings.fontSize}px`,
-    fontFamily: displaySettings.fontFamily,
-    color: displaySettings.textColor,
-    textAlign: displaySettings.textAlign,
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+    color: settings.textColor,
+    textAlign: settings.textAlign,
+    lineHeight: settings.lineHeight,
+    fontWeight: settings.fontWeight,
+    textShadow: settings.textShadow,
   };
 
   return (
@@ -72,7 +65,8 @@ export default function BibleFullscreen() {
         <div 
           className="w-full h-full"
           style={{ 
-            padding: `${screenSettings.margins}px`,
+            padding: `${settings.padding}px`,
+            margin: `${settings.margin}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (

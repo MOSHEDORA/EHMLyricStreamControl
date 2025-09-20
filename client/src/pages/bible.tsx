@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { defaultBibleNavigatorSettings } from "@/settings/bible-navigator-settings";
 import { BibleControls } from "@/components/bible-controls";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,8 @@ import { BookOpen, Send, ArrowLeft, Settings } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Bible() {
+  // URL-specific settings
+  const settings = defaultBibleNavigatorSettings;
   const sessionId = "default";
   const { updateLyrics } = useWebSocket(sessionId);
   const { toast } = useToast();
@@ -31,8 +34,16 @@ export default function Bible() {
     // Removed toast to prevent continuous popups
   };
 
+  // Apply Bible Navigator settings
+  const navigationStyle = {
+    fontSize: `${settings.fontSize}px`,
+    fontFamily: settings.fontFamily,
+    color: settings.textColor,
+    backgroundColor: settings.backgroundColor,
+  };
+
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4" style={navigationStyle}>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
