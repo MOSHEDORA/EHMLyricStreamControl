@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DisplayType, DEFAULT_RESOLUTION, type Resolution } from '@/settings/resolution';
+import { defaultLyricsLowerThirdSettings } from '@/settings/lyrics-lower-third-settings';
+import { defaultLyricsFullscreenSettings } from '@/settings/lyrics-fullscreen-settings';
+import { defaultBibleLowerThirdSettings } from '@/settings/bible-lower-third-settings';
+import { defaultBibleFullscreenSettings } from '@/settings/bible-fullscreen-settings';
 
 // Generic hook for managing display-type-specific settings with localStorage persistence
 export function useDisplaySettings<T extends Record<string, any>>(
@@ -76,21 +80,17 @@ export function useDisplaySettings<T extends Record<string, any>>(
 
 // Convenience hooks for each display type
 export function useLyricsLowerThirdSettings() {
-  const { defaultLyricsLowerThirdSettings } = require('@/settings/lyrics-lower-third-settings');
   return useDisplaySettings('lyrics:lower-third', defaultLyricsLowerThirdSettings);
 }
 
 export function useLyricsFullscreenSettings() {
-  const { defaultLyricsFullscreenSettings } = require('@/settings/lyrics-fullscreen-settings');
   return useDisplaySettings('lyrics:fullscreen', defaultLyricsFullscreenSettings);
 }
 
 export function useBibleLowerThirdSettings() {
-  const { defaultBibleLowerThirdSettings } = require('@/settings/bible-lower-third-settings');
   return useDisplaySettings('bible:lower-third', defaultBibleLowerThirdSettings);
 }
 
 export function useBibleFullscreenSettings() {
-  const { defaultBibleFullscreenSettings } = require('@/settings/bible-fullscreen-settings');
   return useDisplaySettings('bible:fullscreen', defaultBibleFullscreenSettings);
 }
