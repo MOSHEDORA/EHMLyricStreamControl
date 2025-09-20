@@ -3,7 +3,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function LyricsLowerThird() {
-  const sessionId = "lyrics-lower-third";
+  const sessionId = "default";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
   const [displaySettings, setDisplaySettings] = useState(() => 
@@ -20,16 +20,23 @@ export default function LyricsLowerThird() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Update display lines when session or lyrics change
+  // Update display lines when session or lyrics change - following Lyrics to Display rule
   useEffect(() => {
     if (!session || !lyricsArray.length) {
       setCurrentDisplayLines([]);
       return;
     }
 
-    const startLine = session.currentLine;
-    const endLine = Math.min(startLine + session.displayLines, lyricsArray.length);
-    const lines = lyricsArray.slice(startLine, endLine);
+    // Implement proper Lyrics to Display rule with control group logic
+    const controlGroup = session.displayLines;
+    const groupIndex = Math.floor(session.currentLine / controlGroup);
+    const start = groupIndex * controlGroup;
+    
+    // Use lower-third-specific count if separate display settings are enabled
+    const variantCount = session.separateDisplaySettings ? session.lowerThirdDisplayLines : controlGroup;
+    const end = Math.min(start + variantCount, lyricsArray.length);
+    
+    const lines = lyricsArray.slice(start, end);
     setCurrentDisplayLines(lines);
   }, [session, lyricsArray]);
 
