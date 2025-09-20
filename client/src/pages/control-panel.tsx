@@ -80,6 +80,20 @@ export default function ControlPanel() {
   // Display settings are now managed via URL-specific settings
   const [lyricsLowerThirdSettings, setLyricsLowerThirdSettings] = useState(defaultLyricsLowerThirdSettings);
   const [lyricsFullscreenSettings, setLyricsFullscreenSettings] = useState(defaultLyricsFullscreenSettings);
+  const [separateDisplaySettings, setSeparateDisplaySettings] = useState(false);
+  const [displaySettings, setDisplaySettings] = useState({
+    backgroundColor: '#000000',
+    backgroundOpacity: 0,
+    height: 200,
+    padding: 20,
+    borderRadius: 8,
+    verticalPosition: 'bottom' as 'top' | 'center' | 'bottom',
+    horizontalPosition: 'center' as 'left' | 'center' | 'right',
+    margin: 20,
+    position: 'bottom' as 'top' | 'bottom',
+    dropShadow: true,
+    backgroundImage: ''
+  });
 
   // Bible state - lifted up to preserve across tab switches
   const [bibleSelectedBook, setBibleSelectedBook] = useState<string>("");
@@ -108,6 +122,11 @@ export default function ControlPanel() {
   const updateLyricsFullscreenSettings = useCallback((newSettings: Partial<typeof lyricsFullscreenSettings>) => {
     setLyricsFullscreenSettings(prev => ({ ...prev, ...newSettings }));
     console.log('Lyrics fullscreen settings updated:', newSettings);
+  }, []);
+
+  const updateDisplaySettings = useCallback((newSettings: Partial<typeof displaySettings>) => {
+    setDisplaySettings(prev => ({ ...prev, ...newSettings }));
+    console.log('Display settings updated:', newSettings);
   }, []);
 
   // Auto-scroll to current lyrics group (using default display lines)
@@ -772,6 +791,7 @@ export default function ControlPanel() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* URL-specific display settings */}
+                    {!separateDisplaySettings && (
                       <div className="space-y-8">
                         {/* Lower Third Settings */}
                         <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950/30">
@@ -835,7 +855,7 @@ export default function ControlPanel() {
                                 <Label>Text Alignment</Label>
                                 <Select
                                   value={lyricsLowerThirdSettings.textAlign}
-                                  onValueChange={(value) =>
+                                  onValueChange={(value: 'left' | 'center' | 'right') =>
                                     updateLyricsLowerThirdSettings({ textAlign: value })
                                   }
                                 >
@@ -915,7 +935,7 @@ export default function ControlPanel() {
                                 <Label>Text Alignment</Label>
                                 <Select
                                   value={lyricsFullscreenSettings.textAlign}
-                                  onValueChange={(value) =>
+                                  onValueChange={(value: 'left' | 'center' | 'right') =>
                                     updateLyricsFullscreenSettings({ textAlign: value })
                                   }
                                 >
@@ -1384,513 +1404,6 @@ export default function ControlPanel() {
                       </ul>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
-}
-                              <Select
-                                value={lyricsLowerThirdSettings.displayLines.toString()}
-                                onValueChange={(value) =>
-                                  updateLyricsLowerThirdSettings({
-                                    displayLines: parseInt(value),
-                                  })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">1 line</SelectItem>
-                                  <SelectItem value="2">2 lines</SelectItem>
-                                  <SelectItem value="3">3 lines</SelectItem>
-                                  <SelectItem value="4">4 lines</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label>
-                                Font Size: {lyricsLowerThirdSettings.fontSize}px
-                              </Label>
-                              <Slider
-                                value={[lyricsLowerThirdSettings.fontSize]}
-                                onValueChange={([value]) =>
-                                  updateLyricsLowerThirdSettings({ fontSize: value })
-                                }
-                                min={16}
-                                max={300}
-                                step={2}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Text Color</Label>
-                              <input
-                                type="color"
-                                value={lyricsLowerThirdSettings.textColor}
-                                onChange={(e) =>
-                                  updateLyricsLowerThirdSettings({
-                                    textColor: e.target.value,
-                                  })
-                                }
-                                className="w-full h-8 rounded border border-border"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Text Alignment</Label>
-                              <Select
-                                value={lyricsLowerThirdSettings.textAlign}
-                                onValueChange={(value: 'left' | 'center' | 'right') =>
-                                  updateLyricsLowerThirdSettings({ textAlign: value })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="left">Left</SelectItem>
-                                  <SelectItem value="center">Center</SelectItem>
-                                  <SelectItem value="right">Right</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Fullscreen Settings */}
-                      <div className="border rounded-lg p-4 bg-purple-50 dark:bg-purple-950/30">
-                        <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-4 flex items-center">
-                          <Expand className="h-4 w-4 mr-2" />
-                          Fullscreen (TV) Settings
-                        </h4>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Lines to display:</Label>
-                              <Select
-                                value={lyricsFullscreenSettings.displayLines.toString()}
-                                onValueChange={(value) =>
-                                  updateLyricsFullscreenSettings({
-                                    displayLines: parseInt(value),
-                                  })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">1 line</SelectItem>
-                                  <SelectItem value="2">2 lines</SelectItem>
-                                  <SelectItem value="3">3 lines</SelectItem>
-                                  <SelectItem value="4">4 lines</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label>
-                                Font Size: {lyricsFullscreenSettings.fontSize}px
-                              </Label>
-                              <Slider
-                                value={[lyricsFullscreenSettings.fontSize]}
-                                onValueChange={([value]) =>
-                                  updateLyricsFullscreenSettings({ fontSize: value })
-                                }
-                                min={16}
-                                max={300}
-                                step={2}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Text Color</Label>
-                              <input
-                                type="color"
-                                value={lyricsFullscreenSettings.textColor}
-                                onChange={(e) =>
-                                  updateLyricsFullscreenSettings({
-                                    textColor: e.target.value,
-                                  })
-                                }
-                                className="w-full h-8 rounded border border-border"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Text Alignment</Label>
-                              <Select
-                                value={lyricsFullscreenSettings.textAlign}
-                                onValueChange={(value: 'left' | 'center' | 'right') =>
-                                  updateLyricsFullscreenSettings({ textAlign: value })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="left">Left</SelectItem>
-                                  <SelectItem value="center">Center</SelectItem>
-                                  <SelectItem value="right">Right</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Unified display settings */
-                    <div className="space-y-6">
-                      {/* Font Family */}
-                      <div className="space-y-2">
-                        <Label>Font Family</Label>
-                        <Select
-                          value={displaySettings.fontFamily}
-                          onValueChange={(value) =>
-                            updateDisplaySettings({ fontFamily: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Arial">Arial</SelectItem>
-                            <SelectItem value="Helvetica">Helvetica</SelectItem>
-                            <SelectItem value="Times New Roman">Times New Roman</SelectItem>
-                            <SelectItem value="Georgia">Georgia</SelectItem>
-                            <SelectItem value="Verdana">Verdana</SelectItem>
-                            <SelectItem value="Tahoma">Tahoma</SelectItem>
-                            <SelectItem value="Trebuchet MS">Trebuchet MS</SelectItem>
-                            <SelectItem value="Impact">Impact</SelectItem>
-                            <SelectItem value="Comic Sans MS">Comic Sans MS</SelectItem>
-                            <SelectItem value="Courier New">Courier New</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Font Size */}
-                      <div className="space-y-2">
-                        <Label>Font Size: {displaySettings.fontSize}px</Label>
-                        <Slider
-                          value={[displaySettings.fontSize]}
-                          onValueChange={([value]) =>
-                            updateDisplaySettings({ fontSize: value })
-                          }
-                          min={16}
-                          max={300}
-                          step={2}
-                        />
-                      </div>
-
-                      {/* Text Color */}
-                      <div className="space-y-2">
-                        <Label>Text Color</Label>
-                        <div className="flex space-x-2">
-                          <input
-                            type="color"
-                            value={displaySettings.textColor}
-                            onChange={(e) =>
-                              updateDisplaySettings({ textColor: e.target.value })
-                            }
-                            className="w-12 h-8 rounded border border-border"
-                          />
-                          <Input
-                            value={displaySettings.textColor}
-                            onChange={(e) =>
-                              updateDisplaySettings({ textColor: e.target.value })
-                            }
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Text Alignment */}
-                      <div className="space-y-2">
-                        <Label>Text Alignment</Label>
-                        <Select
-                          value={displaySettings.textAlign}
-                          onValueChange={(value: 'left' | 'center' | 'right') =>
-                            updateDisplaySettings({ textAlign: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="left">Left</SelectItem>
-                            <SelectItem value="center">Center</SelectItem>
-                            <SelectItem value="right">Right</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Line Height */}
-                      <div className="space-y-2">
-                        <Label>Line Height: {displaySettings.lineHeight}</Label>
-                        <Slider
-                          value={[displaySettings.lineHeight]}
-                          onValueChange={([value]) =>
-                            updateDisplaySettings({ lineHeight: value })
-                          }
-                          min={1.0}
-                          max={3.0}
-                          step={0.1}
-                        />
-                      </div>
-
-                      {/* Display Lines */}
-                      <div className="space-y-2">
-                        <Label>Display Lines</Label>
-                        <Select
-                          value={displaySettings.displayLines.toString()}
-                          onValueChange={(value) =>
-                            updateDisplaySettings({ displayLines: parseInt(value) })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">1 line</SelectItem>
-                            <SelectItem value="2">2 lines</SelectItem>
-                            <SelectItem value="3">3 lines</SelectItem>
-                            <SelectItem value="4">4 lines</SelectItem>
-                            <SelectItem value="5">5 lines</SelectItem>
-                            <SelectItem value="6">6 lines</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Layout Settings */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Padding: {displaySettings.padding}px</Label>
-                          <Slider
-                            value={[displaySettings.padding]}
-                            onValueChange={([value]) =>
-                              updateDisplaySettings({ padding: value })
-                            }
-                            min={0}
-                            max={100}
-                            step={5}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Margin: {displaySettings.margin}px</Label>
-                          <Slider
-                            value={[displaySettings.margin]}
-                            onValueChange={([value]) =>
-                              updateDisplaySettings({ margin: value })
-                            }
-                            min={0}
-                            max={100}
-                            step={5}
-                          />
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      {/* Text Effects */}
-                      <div className="space-y-4">
-                        <h4 className="font-semibold">Text Effects</h4>
-                        <div className="space-y-2">
-                          <Label>Text Shadow</Label>
-                          <Input
-                            value={displaySettings.textShadow}
-                            onChange={(e) =>
-                              updateDisplaySettings({ textShadow: e.target.value })
-                            }
-                            placeholder="2px 2px 4px rgba(0,0,0,0.8)"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Border Radius: {displaySettings.borderRadius}px</Label>
-                            <Slider
-                              value={[displaySettings.borderRadius]}
-                              onValueChange={([value]) =>
-                                updateDisplaySettings({ borderRadius: value })
-                              }
-                              min={0}
-                              max={50}
-                              step={1}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Border</Label>
-                            <Input
-                              value={displaySettings.border}
-                              onChange={(e) =>
-                                updateDisplaySettings({ border: e.target.value })
-                              }
-                              placeholder="1px solid #ffffff"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      {/* Responsive Settings */}
-                      <div className="space-y-4">
-                        <h4 className="font-semibold">Responsive Settings</h4>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="autoScale"
-                            checked={displaySettings.autoScale}
-                            onCheckedChange={(checked) =>
-                              updateDisplaySettings({ autoScale: !!checked })
-                            }
-                          />
-                          <Label htmlFor="autoScale">Auto Scale Font Size</Label>
-                        </div>
-                        {displaySettings.autoScale && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Min Font Size: {displaySettings.minFontSize}px</Label>
-                              <Slider
-                                value={[displaySettings.minFontSize]}
-                                onValueChange={([value]) =>
-                                  updateDisplaySettings({ minFontSize: value })
-                                }
-                                min={8}
-                                max={100}
-                                step={2}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Max Font Size: {displaySettings.maxFontSize}px</Label>
-                              <Slider
-                                value={[displaySettings.maxFontSize]}
-                                onValueChange={([value]) =>
-                                  updateDisplaySettings({ maxFontSize: value })
-                                }
-                                min={50}
-                                max={500}
-                                step={10}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <Separator />
-
-                      {/* Display Mode and Performance */}
-                      <div className="space-y-4">
-                        <h4 className="font-semibold">Display Mode & Performance</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Display Mode</Label>
-                            <Select
-                              value={displaySettings.mode}
-                              onValueChange={(value: 'lyrics' | 'bible' | 'custom') =>
-                                updateDisplaySettings({ mode: value })
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="lyrics">Lyrics</SelectItem>
-                                <SelectItem value="bible">Bible</SelectItem>
-                                <SelectItem value="custom">Custom</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Refresh Rate: {displaySettings.refreshRate}ms</Label>
-                            <Slider
-                              value={[displaySettings.refreshRate]}
-                              onValueChange={([value]) =>
-                                updateDisplaySettings({ refreshRate: value })
-                              }
-                              min={100}
-                              max={5000}
-                              step={100}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      {/* Background Settings */}
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="showBackground"
-                            checked={displaySettings.showBackground}
-                            onCheckedChange={(checked) =>
-                              updateDisplaySettings({ showBackground: !!checked })
-                            }
-                          />
-                          <Label htmlFor="showBackground">Show Background</Label>
-                        </div>
-
-                        {displaySettings.showBackground && (
-                          <>
-                            <div className="space-y-2">
-                              <Label>Background Color</Label>
-                              <div className="flex space-x-2">
-                                <input
-                                  type="color"
-                                  value={displaySettings.backgroundColor}
-                                  onChange={(e) =>
-                                    updateDisplaySettings({
-                                      backgroundColor: e.target.value,
-                                    })
-                                  }
-                                  className="w-12 h-8 rounded border border-border"
-                                />
-                                <Input
-                                  value={displaySettings.backgroundColor}
-                                  onChange={(e) =>
-                                    updateDisplaySettings({
-                                      backgroundColor: e.target.value,
-                                    })
-                                  }
-                                  className="flex-1"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label>
-                                Background Opacity: {displaySettings.backgroundOpacity}%
-                              </Label>
-                              <Slider
-                                value={[displaySettings.backgroundOpacity]}
-                                onValueChange={([value]) =>
-                                  updateDisplaySettings({ backgroundOpacity: value })
-                                }
-                                min={0}
-                                max={100}
-                                step={5}
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label>Background Image URL</Label>
-                              <Input
-                                value={displaySettings.backgroundImage}
-                                onChange={(e) =>
-                                  updateDisplaySettings({ backgroundImage: e.target.value })
-                                }
-                                placeholder="https://example.com/image.jpg"
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
