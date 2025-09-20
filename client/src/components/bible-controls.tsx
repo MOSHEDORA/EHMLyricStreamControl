@@ -594,6 +594,10 @@ export function BibleControls({
       if (onContentLoad) {
         onContentLoad(content, reference);
       }
+      
+      // For Bible displays, always send the full verse text regardless of display mode
+      const bibleDisplayContent = `${verse.number}. ${verse.text}`;
+      
       try {
         // Send to both Bible display sessions
         await Promise.all([
@@ -601,7 +605,7 @@ export function BibleControls({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              lyricsText: content,
+              lyricsText: bibleDisplayContent,
               currentLine: 0,
               songTitle: reference
             })
@@ -610,7 +614,7 @@ export function BibleControls({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              lyricsText: content,
+              lyricsText: bibleDisplayContent,
               currentLine: 0,
               songTitle: reference
             })
