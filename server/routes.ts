@@ -551,13 +551,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Broadcast to all sessions since settings are global
+      console.log(`Broadcasting settings update to ${clients.size} sessions`);
+      let broadcastCount = 0;
       clients.forEach((sessionClients, sessionId) => {
         sessionClients.forEach((client) => {
           if (client.readyState === 1) { // WebSocket.OPEN
             client.send(JSON.stringify(settingsMessage));
+            broadcastCount++;
           }
         });
       });
+      console.log(`Settings update broadcasted to ${broadcastCount} clients`);
       
       res.json({ success: true, settings: result.settings });
     } catch (error) {
