@@ -1,38 +1,26 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useAutoFontSize } from "@/hooks/use-auto-font-size";
-import { useScreenSettings } from "@/hooks/use-screen-settings";
-import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function BibleLowerThird() {
   const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  const [displaySettings, setDisplaySettings] = useState(() => 
-    loadDisplaySettings('bible-lower-third')
-  );
+  // Default display settings
+  const displaySettings = {
+    fontSize: 28,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center' as const,
+    backgroundEnabled: false
+  };
 
-  // Screen settings for auto-sizing
-  const { settings: screenSettings } = useScreenSettings();
+  // Default screen settings
+  const screenSettings = {
+    margins: 40,
+    lowerThirdHeightPercent: 25
+  };
 
-  // Auto font sizing for lower third
-  const baseStyle = getDisplayStyle(displaySettings);
-  const { containerRef, measureRef, fontSize, autoSizeEnabled } = useAutoFontSize({
-    lines: currentDisplayLines,
-    baseStyles: baseStyle,
-    isLowerThird: true,
-    enabled: true,
-  });
 
-  // Load display settings on mount and when localStorage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setDisplaySettings(loadDisplaySettings('bible-lower-third'));
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
 
   // Update display lines when session or lyrics change
   useEffect(() => {
@@ -70,45 +58,27 @@ export default function BibleLowerThird() {
   }
 
   const textStyle = {
-    ...getDisplayStyle(displaySettings),
-    fontSize: autoSizeEnabled ? fontSize : getDisplayStyle(displaySettings).fontSize,
+    fontSize: `${displaySettings.fontSize}px`,
+    fontFamily: displaySettings.fontFamily,
+    color: displaySettings.textColor,
+    textAlign: displaySettings.textAlign,
   };
-  const backgroundStyle = getBackgroundStyle(displaySettings);
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden">
-      {/* Background overlay if enabled */}
-      {displaySettings.backgroundEnabled && (
-        <div 
-          className="absolute inset-0"
-          style={backgroundStyle}
-        />
-      )}
 
-      {/* Hidden measurer for auto-sizing */}
-      <div
-        ref={measureRef}
-        className="absolute -top-full left-0 opacity-0 pointer-events-none whitespace-pre-wrap"
-        style={{
-          visibility: 'hidden',
-          position: 'absolute',
-          top: '-9999px',
-          left: '-9999px',
-        }}
-      />
 
       {/* Lower third positioned content */}
       <div 
         className="absolute bottom-0 left-0 right-0 z-10"
         style={{
-          height: `${screenSettings.lowerThirdHeightPercent || 25}%`,
+          height: `${screenSettings.lowerThirdHeightPercent}%`,
         }}
       >
         <div 
-          ref={containerRef}
           className="w-full h-full"
           style={{ 
-            padding: `${screenSettings.margins || 40}px`,
+            padding: `${screenSettings.margins}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (

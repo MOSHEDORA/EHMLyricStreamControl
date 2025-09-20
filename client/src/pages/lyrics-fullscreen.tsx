@@ -1,38 +1,25 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useAutoFontSize } from "@/hooks/use-auto-font-size";
-import { useScreenSettings } from "@/hooks/use-screen-settings";
-import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  const [displaySettings, setDisplaySettings] = useState(() => 
-    loadDisplaySettings('lyrics-fullscreen')
-  );
+  // Default display settings
+  const displaySettings = {
+    fontSize: 32,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center' as const,
+    backgroundEnabled: false
+  };
 
-  // Screen settings for auto-sizing
-  const { settings: screenSettings } = useScreenSettings();
+  // Default screen settings
+  const screenSettings = {
+    margins: 40
+  };
 
-  // Auto font sizing
-  const baseStyle = getDisplayStyle(displaySettings);
-  const { containerRef, measureRef, fontSize, autoSizeEnabled } = useAutoFontSize({
-    lines: currentDisplayLines,
-    baseStyles: baseStyle,
-    isLowerThird: false,
-    enabled: true,
-  });
 
-  // Load display settings on mount and when localStorage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setDisplaySettings(loadDisplaySettings('lyrics-fullscreen'));
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
 
   // Update display lines when session or lyrics change - following Lyrics to Display rule
   useEffect(() => {
@@ -68,40 +55,22 @@ export default function LyricsFullscreen() {
   }
 
   const textStyle = {
-    ...getDisplayStyle(displaySettings),
-    fontSize: autoSizeEnabled ? fontSize : getDisplayStyle(displaySettings).fontSize,
+    fontSize: `${displaySettings.fontSize}px`,
+    fontFamily: displaySettings.fontFamily,
+    color: displaySettings.textColor,
+    textAlign: displaySettings.textAlign,
   };
-  const backgroundStyle = getBackgroundStyle(displaySettings);
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Background overlay if enabled */}
-      {displaySettings.backgroundEnabled && (
-        <div 
-          className="absolute inset-0"
-          style={backgroundStyle}
-        />
-      )}
 
-      {/* Hidden measurer for auto-sizing */}
-      <div
-        ref={measureRef}
-        className="absolute -top-full left-0 opacity-0 pointer-events-none whitespace-pre-wrap"
-        style={{
-          visibility: 'hidden',
-          position: 'absolute',
-          top: '-9999px',
-          left: '-9999px',
-        }}
-      />
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div 
-          ref={containerRef}
           className="w-full h-full"
           style={{ 
-            padding: `${screenSettings.margins || 40}px`,
+            padding: `${screenSettings.margins}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (

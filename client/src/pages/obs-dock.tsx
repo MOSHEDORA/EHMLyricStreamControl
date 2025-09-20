@@ -24,9 +24,7 @@ import {
   Settings2,
   BookOpen
 } from "lucide-react";
-import { FontSelector } from "@/components/font-selector";
 import { BibleControls } from "@/components/bible-controls";
-import { DisplaySettings } from "@/components/display-settings";
 
 export default function OBSDock() {
   const sessionId = "default";
@@ -416,7 +414,7 @@ export default function OBSDock() {
             </TabsContent>
             
             <TabsContent value="settings" className="mt-2">
-              <DisplaySettings type="lyrics" />
+              <p className="text-sm text-muted-foreground p-2">Settings are now managed per URL. Configure display settings directly on each display page.</p>
             </TabsContent>
           </Tabs>
         </TabsContent>
@@ -433,11 +431,13 @@ export default function OBSDock() {
                 onContentLoad={handleBibleContentLoad}
                 onVerseSelect={handleBibleVerseSelect}
                 showLoadButton={true}
+                displayMode="bible"
+                setDisplayMode={() => {}}
               />
             </TabsContent>
             
             <TabsContent value="settings" className="mt-2">
-              <DisplaySettings type="bible" />
+              <p className="text-sm text-muted-foreground p-2">Settings are now managed per URL. Configure display settings directly on each display page.</p>
             </TabsContent>
           </Tabs>
         </TabsContent>
@@ -469,12 +469,16 @@ export default function OBSDock() {
               </Select>
             </div>
 
-            {/* Font Family */}
-            <FontSelector
-              value={session.fontFamily}
-              onValueChange={(value) => updateSettings({ fontFamily: value })}
-              size="sm"
-            />
+            {/* Font Family - Simple Input */}
+            <div className="space-y-1">
+              <Label className="text-xs">Font Family</Label>
+              <Input
+                value={session.fontFamily}
+                onChange={(e) => updateSettings({ fontFamily: e.target.value })}
+                placeholder="Arial"
+                className="h-7 text-xs"
+              />
+            </div>
 
             {/* Font Size */}
             <div className="space-y-1">

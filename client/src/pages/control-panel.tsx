@@ -33,15 +33,10 @@ import {
   BookOpen,
   Monitor,
 } from "lucide-react";
-import { FontSelector } from "@/components/font-selector";
-import { FontPermissionBanner } from "@/components/font-permission-banner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
-import { DisplaySettings } from "@/components/display-settings";
-import { useScreenSettings } from "@/hooks/use-screen-settings";
-import { SCREEN_PRESETS } from "@/utils/screen-settings";
 
 export default function ControlPanel() {
   const sessionId = "default";
@@ -81,7 +76,6 @@ export default function ControlPanel() {
     }
   }, [originalUpdateSettings]);
   const { toast } = useToast();
-  const { settings: screenSettings, updateSettings: updateScreenSettings } = useScreenSettings();
 
   const [lyricsText, setLyricsText] = useState("");
   const [songTitle, setSongTitle] = useState("");
@@ -834,12 +828,6 @@ export default function ControlPanel() {
                                 />
                               </div>
                             </div>
-                            <FontSelector
-                              value={session.lowerThirdFontFamily}
-                              onValueChange={(value) =>
-                                updateSettings({ lowerThirdFontFamily: value })
-                              }
-                            />
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <Label>Text Color</Label>
@@ -920,12 +908,6 @@ export default function ControlPanel() {
                                 />
                               </div>
                             </div>
-                            <FontSelector
-                              value={session.fullscreenFontFamily}
-                              onValueChange={(value) =>
-                                updateSettings({ fullscreenFontFamily: value })
-                              }
-                            />
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <Label>Text Color</Label>
@@ -966,12 +948,6 @@ export default function ControlPanel() {
                       /* Unified display settings */
                       <div className="space-y-6">
                         {/* Font Family */}
-                        <FontSelector
-                          value={session.fontFamily}
-                          onValueChange={(value) =>
-                            updateSettings({ fontFamily: value })
-                          }
-                        />
 
                         {/* Font Size */}
                         <div className="space-y-2">
@@ -1553,192 +1529,62 @@ export default function ControlPanel() {
                   <CardTitle>Font Detection Settings</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FontPermissionBanner />
+                  <p className="text-muted-foreground">Settings management has been simplified for URL-specific configuration.</p>
                 </CardContent>
               </Card>
 
-              {/* Screen & Auto Size Settings */}
+              {/* Screen Settings Placeholder */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Monitor className="h-5 w-5 mr-2" />
-                    Screen & Auto Size Settings
+                    Screen & Display Settings
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Screen Preset Selection */}
-                    <div className="space-y-2">
-                      <Label htmlFor="screen-preset">Screen Preset</Label>
-                      <Select
-                        value={screenSettings.preset}
-                        onValueChange={(value) => updateScreenSettings({ preset: value })}
-                      >
-                        <SelectTrigger data-testid="select-screen-preset">
-                          <SelectValue placeholder="Select preset" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {SCREEN_PRESETS.map((preset) => (
-                            <SelectItem key={preset.name} value={preset.name}>
-                              {preset.name} ({preset.width}×{preset.height})
-                            </SelectItem>
-                          ))}
-                          <SelectItem value="custom">Custom</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Auto Size Toggle */}
-                    <div className="space-y-2">
-                      <Label htmlFor="auto-size-enabled">Auto Size Text</Label>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="auto-size-enabled"
-                          checked={screenSettings.autoSizeEnabled}
-                          onCheckedChange={(checked) => updateScreenSettings({ autoSizeEnabled: checked })}
-                          data-testid="switch-auto-size"
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {screenSettings.autoSizeEnabled ? 'Enabled' : 'Disabled'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Custom Dimensions */}
-                  {screenSettings.preset === 'custom' && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="custom-width">Width (px)</Label>
-                        <Input
-                          id="custom-width"
-                          type="number"
-                          value={screenSettings.width}
-                          onChange={(e) => updateScreenSettings({ width: parseInt(e.target.value) || 1920 })}
-                          data-testid="input-custom-width"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="custom-height">Height (px)</Label>
-                        <Input
-                          id="custom-height"
-                          type="number"
-                          value={screenSettings.height}
-                          onChange={(e) => updateScreenSettings({ height: parseInt(e.target.value) || 1080 })}
-                          data-testid="input-custom-height"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Auto Size Configuration */}
-                  {screenSettings.autoSizeEnabled && (
-                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                      <h4 className="text-sm font-medium">Auto Size Configuration</h4>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Font Size Range */}
-                        <div className="space-y-2">
-                          <Label>Font Size Range</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <Label htmlFor="min-font-size" className="text-xs">Min</Label>
-                              <Input
-                                id="min-font-size"
-                                type="number"
-                                value={screenSettings.minFontSize}
-                                onChange={(e) => updateScreenSettings({ minFontSize: parseInt(e.target.value) || 16 })}
-                                data-testid="input-min-font-size"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="max-font-size" className="text-xs">Max</Label>
-                              <Input
-                                id="max-font-size"
-                                type="number"
-                                value={screenSettings.maxFontSize}
-                                onChange={(e) => updateScreenSettings({ maxFontSize: parseInt(e.target.value) || 200 })}
-                                data-testid="input-max-font-size"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Margins */}
-                        <div className="space-y-2">
-                          <Label htmlFor="margins">Margins (px)</Label>
-                          <Input
-                            id="margins"
-                            type="number"
-                            value={screenSettings.margins}
-                            onChange={(e) => updateScreenSettings({ margins: parseInt(e.target.value) || 40 })}
-                            data-testid="input-margins"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Lower Third Height */}
-                      <div className="space-y-2">
-                        <Label htmlFor="lower-third-height">Lower Third Height (%)</Label>
-                        <div className="flex items-center space-x-4">
-                          <Slider
-                            value={[screenSettings.lowerThirdHeightPercent]}
-                            onValueChange={([value]) => updateScreenSettings({ lowerThirdHeightPercent: value })}
-                            max={50}
-                            min={10}
-                            step={5}
-                            className="flex-1"
-                            data-testid="slider-lower-third-height"
-                          />
-                          <span className="text-sm font-medium w-12">
-                            {screenSettings.lowerThirdHeightPercent}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Current Settings Display */}
-                  <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
-                    <strong>Current Settings:</strong> {screenSettings.width}×{screenSettings.height} | 
-                    Auto Size: {screenSettings.autoSizeEnabled ? 'ON' : 'OFF'} |
-                    Font Range: {screenSettings.minFontSize}-{screenSettings.maxFontSize}px |
-                    Margins: {screenSettings.margins}px
-                  </div>
+                <CardContent>
+                  <p className="text-muted-foreground">Screen and display settings are now managed individually per URL. Visit each specific display page to configure its settings.</p>
                 </CardContent>
               </Card>
               
-              {/* Per-URL Display Settings */}
-              <div className="space-y-8">
-                <h3 className="text-xl font-semibold text-center">Per-URL Display Settings</h3>
+              {/* Per-URL Display Settings Info */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-semibold text-center">URL-Specific Settings</h3>
                 <p className="text-center text-muted-foreground">
-                  Configure display settings separately for each URL type
+                  Each URL now has its own dedicated settings configuration. Visit each display page directly to configure its appearance.
                 </p>
                 
-                {/* Lyrics URLs Settings */}
-                <div className="space-y-6">
-                  <h4 className="text-lg font-semibold text-green-700 dark:text-green-300 flex items-center">
-                    <FileText className="h-5 w-5 mr-2" />
-                    Lyrics Display Settings
-                  </h4>
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <DisplaySettings type="lyrics-lower-third" />
-                    <DisplaySettings type="lyrics-fullscreen" />
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Bible URLs Settings */}
-                <div className="space-y-6">
-                  <h4 className="text-lg font-semibold text-blue-700 dark:text-blue-300 flex items-center">
-                    <BookOpen className="h-5 w-5 mr-2" />
-                    Bible Display Settings
-                  </h4>
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                    <DisplaySettings type="bible-lower-third" />
-                    <DisplaySettings type="bible-fullscreen" />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-green-700 dark:text-green-300 flex items-center">
+                        <FileText className="h-5 w-5 mr-2" />
+                        Lyrics URLs
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-2">Configure lyrics display settings individually:</p>
+                      <ul className="text-sm space-y-1">
+                        <li>• /lyrics-lower-third</li>
+                        <li>• /lyrics-fullscreen</li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-blue-700 dark:text-blue-300 flex items-center">
+                        <BookOpen className="h-5 w-5 mr-2" />
+                        Bible URLs
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-2">Configure Bible display settings individually:</p>
+                      <ul className="text-sm space-y-1">
+                        <li>• /bible-lower-third</li>
+                        <li>• /bible-fullscreen</li>
+                      </ul>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>

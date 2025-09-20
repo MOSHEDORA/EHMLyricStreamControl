@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useScreenSettings } from './use-screen-settings';
-import { getContentArea } from '@/utils/screen-settings';
 
 interface UseAutoFontSizeProps {
   lines: string[];
@@ -15,7 +13,13 @@ export function useAutoFontSize({
   isLowerThird = false,
   enabled = true,
 }: UseAutoFontSizeProps) {
-  const { settings } = useScreenSettings();
+  // Default screen settings (removed dependency)
+  const settings = {
+    autoSizeEnabled: true,
+    margins: 40,
+    minFontSize: 16,
+    maxFontSize: 200
+  };
   const [fontSize, setFontSize] = useState(baseStyles.fontSize || 32);
   const [isCalculating, setIsCalculating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

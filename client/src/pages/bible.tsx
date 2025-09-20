@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { BibleControls } from "@/components/bible-controls";
-import { DisplaySettings } from "@/components/display-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -81,11 +80,15 @@ export default function Bible() {
                   onContentLoad={handleContentLoad}
                   onVerseSelect={handleVerseSelect}
                   showLoadButton={false}
+                  displayMode="bible"
+                  setDisplayMode={() => {}}
                 />
               </TabsContent>
               
               <TabsContent value="settings">
-                <DisplaySettings type="bible" />
+                <div className="p-4">
+                  <p className="text-muted-foreground">Display settings are now managed individually per URL. Visit the specific Bible display pages (/bible-lower-third or /bible-fullscreen) to configure their appearance settings.</p>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
