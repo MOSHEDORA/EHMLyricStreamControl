@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { defaultBibleFullscreenSettings } from "@/settings/bible-fullscreen-settings";
+import { useBibleFullscreenSettings } from "@/hooks/use-display-settings";
+import { useResolutionScaler } from "@/hooks/use-resolution-scaler";
 
 export default function BibleFullscreen() {
   const sessionId = "bible-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // URL-specific settings
-  const settings = defaultBibleFullscreenSettings;
+  // Display-specific settings with resolution scaling
+  const { settings } = useBibleFullscreenSettings();
+  const { canvasStyle, wrapperStyle } = useResolutionScaler(settings.displayResolution);
 
 
 
@@ -57,7 +59,8 @@ export default function BibleFullscreen() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div style={wrapperStyle}>
+      <div style={canvasStyle}>
 
 
       {/* Main content */}
@@ -101,6 +104,7 @@ export default function BibleFullscreen() {
             </div>
           ) : null}
         </div>
+      </div>
       </div>
     </div>
   );

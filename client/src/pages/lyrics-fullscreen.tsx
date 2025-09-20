@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { defaultLyricsFullscreenSettings } from "@/settings/lyrics-fullscreen-settings";
+import { useLyricsFullscreenSettings } from "@/hooks/use-display-settings";
+import { useResolutionScaler } from "@/hooks/use-resolution-scaler";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // URL-specific settings
-  const settings = defaultLyricsFullscreenSettings;
+  // Display-specific settings with resolution scaling
+  const { settings } = useLyricsFullscreenSettings();
+  const { canvasStyle, wrapperStyle } = useResolutionScaler(settings.displayResolution);
 
 
 
@@ -56,7 +58,8 @@ export default function LyricsFullscreen() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div style={wrapperStyle}>
+      <div style={canvasStyle}>
 
 
       {/* Main content */}
@@ -87,6 +90,7 @@ export default function LyricsFullscreen() {
             </div>
           ) : null}
         </div>
+      </div>
       </div>
     </div>
   );

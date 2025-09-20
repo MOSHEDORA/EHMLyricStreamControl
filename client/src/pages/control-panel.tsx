@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
+import { DisplaySettingsPanel } from "@/components/display-settings-panel";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
 import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
@@ -1764,13 +1765,16 @@ export default function ControlPanel() {
 
           <TabsContent value="display">
             <div className="space-y-6">
-              {/* Display Settings */}
+              {/* New Display Settings Panel with Resolution Options */}
+              <DisplaySettingsPanel />
+              
+              {/* Legacy Display Settings */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center">
                       <Settings className="h-5 w-5 mr-2 text-primary" />
-                      Display Settings
+                      Legacy Display Settings
                     </span>
                     <div className="flex items-center space-x-2">
                       <Checkbox

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { defaultLyricsLowerThirdSettings } from "@/settings/lyrics-lower-third-settings";
+import { useLyricsLowerThirdSettings } from "@/hooks/use-display-settings";
+import { useLowerThirdScaler } from "@/hooks/use-resolution-scaler";
 
 export default function LyricsLowerThird() {
   const sessionId = "lyrics-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // URL-specific settings
-  const settings = defaultLyricsLowerThirdSettings;
+  // Display-specific settings with resolution scaling
+  const { settings } = useLyricsLowerThirdSettings();
+  const { canvasStyle, wrapperStyle } = useLowerThirdScaler(settings.displayResolution);
 
 
 
@@ -54,41 +56,41 @@ export default function LyricsLowerThird() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent relative overflow-hidden">
-
-
-      {/* Lower third positioned content */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 z-10"
-        style={{
-          height: settings.maxHeight,
-          padding: `${settings.padding}px`,
-        }}
-      >
+    <div style={wrapperStyle}>
+      <div style={canvasStyle}>
+        {/* Lower third positioned content */}
         <div 
-          className="w-full h-full"
-          style={{ 
+          className="absolute bottom-0 left-0 right-0 z-10"
+          style={{
+            height: settings.maxHeight,
             padding: `${settings.padding}px`,
           }}
         >
-          {currentDisplayLines.length > 0 ? (
-            <div className="space-y-2">
-              {currentDisplayLines.map((line, index) => (
-                <div 
-                  key={index}
-                  className="transition-all duration-500"
-                  style={{
-                    ...textStyle,
-                    opacity: index === 0 ? 1 : 0.8,
-                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                  }}
-                  data-testid={`text-lyrics-line-${index}`}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          ) : null}
+          <div 
+            className="w-full h-full"
+            style={{ 
+              padding: `${settings.padding}px`,
+            }}
+          >
+            {currentDisplayLines.length > 0 ? (
+              <div className="space-y-2">
+                {currentDisplayLines.map((line, index) => (
+                  <div 
+                    key={index}
+                    className="transition-all duration-500"
+                    style={{
+                      ...textStyle,
+                      opacity: index === 0 ? 1 : 0.8,
+                      transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                    }}
+                    data-testid={`text-lyrics-line-${index}`}
+                  >
+                    {line}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </div>
