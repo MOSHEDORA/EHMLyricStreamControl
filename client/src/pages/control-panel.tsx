@@ -503,10 +503,10 @@ export default function ControlPanel() {
                     <div
                       className="h-full flex items-center justify-center"
                       style={{
-                        fontSize: `${session.fontSize}px`,
-                        fontFamily: session.fontFamily,
-                        color: session.textColor,
-                        textAlign: session.textAlign as any,
+                        fontSize: `${settings.fontSize}px`,
+                        fontFamily: settings.fontFamily,
+                        color: '#ffffff',
+                        textAlign: 'center' as any,
                       }}
                     >
                       {currentDisplayLines.length > 0 ? (
@@ -540,8 +540,8 @@ export default function ControlPanel() {
                       <CardTitle>
                         Lyrics Lines
                         <span className="text-sm font-normal text-muted-foreground ml-2">
-                          (Navigate by {session.displayLines} line
-                          {session.displayLines > 1 ? "s" : ""})
+                          (Navigate by {3} line
+                          {3 > 1 ? "s" : ""})
                         </span>
                       </CardTitle>
                     </CardHeader>
@@ -554,13 +554,13 @@ export default function ControlPanel() {
                         {Array.from(
                           {
                             length: Math.ceil(
-                              lyricsArray.length / session.displayLines,
+                              lyricsArray.length / 3,
                             ),
                           },
                           (_, groupIndex) => {
-                            const startIndex = groupIndex * session.displayLines;
+                            const startIndex = groupIndex * 3;
                             const endIndex = Math.min(
-                              startIndex + session.displayLines,
+                              startIndex + 3,
                               lyricsArray.length,
                             );
                             const groupLines = lyricsArray.slice(
@@ -634,13 +634,13 @@ export default function ControlPanel() {
                           <span>
                             Group{" "}
                             {Math.floor(
-                              session.currentLine / session.displayLines,
+                              session.currentLine / 3,
                             ) + 1}{" "}
                             of{" "}
-                            {Math.ceil(lyricsArray.length / session.displayLines)}
-                            {session.displayLines > 1 && (
+                            {Math.ceil(lyricsArray.length / 3)}
+                            {3 > 1 && (
                               <span className="ml-1">
-                                (showing {session.displayLines} lines each)
+                                (showing {3} lines each)
                               </span>
                             )}
                           </span>
@@ -659,7 +659,7 @@ export default function ControlPanel() {
                               size="sm"
                               onClick={() => navigate("next")}
                               disabled={
-                                session.currentLine + session.displayLines >=
+                                session.currentLine + 3 >=
                                 lyricsArray.length
                               }
                               className="h-6 px-2 text-xs"
