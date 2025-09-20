@@ -598,8 +598,12 @@ export function BibleControls({
       // For Bible displays, always send the full verse text regardless of display mode
       const bibleDisplayContent = `${verse.number}. ${verse.text}`;
       
+      // For lyrics displays, respect the displayLines setting in lyrics mode
+      const lyricsDisplayContent = displayMode === 'lyrics' ? content : bibleDisplayContent;
+      
       try {
-        // Send to both Bible display sessions and lyrics display sessions
+        // Send to sessions sequentially to avoid race conditions
+        // First update Bible-specific displays with full content
         await Promise.all([
           fetch('/api/sessions/bible-lower-third', {
             method: 'POST',
@@ -618,12 +622,16 @@ export function BibleControls({
               currentLine: 0,
               songTitle: reference
             })
-          }),
+          })
+        ]);
+        
+        // Then update lyrics displays with appropriate content
+        await Promise.all([
           fetch('/api/sessions/lyrics-lower-third', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              lyricsText: bibleDisplayContent,
+              lyricsText: lyricsDisplayContent,
               currentLine: 0,
               songTitle: reference
             })
@@ -632,7 +640,7 @@ export function BibleControls({
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              lyricsText: bibleDisplayContent,
+              lyricsText: lyricsDisplayContent,
               currentLine: 0,
               songTitle: reference
             })
