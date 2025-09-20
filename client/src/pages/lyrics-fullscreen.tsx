@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useLyricsFullscreenSettings } from "@/hooks/use-display-settings";
-import { useResolutionScaler } from "@/hooks/use-resolution-scaler";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Display-specific settings with resolution scaling
-  const { settings } = useLyricsFullscreenSettings();
-  const { canvasStyle, wrapperStyle } = useResolutionScaler(settings.displayResolution);
-
-
+  // Hardcoded settings
+  const settings = {
+    displayLines: 4,
+    fontSize: 48,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center' as const,
+    lineHeight: 1.3,
+    fontWeight: 'normal' as const,
+    textTransform: 'none' as const,
+    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+    padding: 40,
+    margin: 40
+  };
 
   // Update display lines when session or lyrics change - following Lyrics to Display rule
   useEffect(() => {
@@ -58,10 +65,7 @@ export default function LyricsFullscreen() {
   };
 
   return (
-    <div style={wrapperStyle}>
-      <div style={canvasStyle}>
-
-
+    <div className="min-h-screen bg-black">
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div 
@@ -90,7 +94,6 @@ export default function LyricsFullscreen() {
             </div>
           ) : null}
         </div>
-      </div>
       </div>
     </div>
   );

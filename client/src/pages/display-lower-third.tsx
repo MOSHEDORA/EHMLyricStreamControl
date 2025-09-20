@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { defaultDisplayLowerThirdSettings } from "@/settings/display-lower-third-settings";
 
 export default function DisplayLowerThird() {
   const sessionId = "lyrics-lower-third";
@@ -23,9 +22,9 @@ export default function DisplayLowerThird() {
       setCurrentDisplayLines(lyricsArray);
     } else {
       // Use original logic for song lyrics
-      const settings = defaultDisplayLowerThirdSettings;
+      const displayLines = 2; // Hardcoded display lines
       const startLine = session.currentLine;
-      const endLine = Math.min(startLine + settings.displayLines, lyricsArray.length);
+      const endLine = Math.min(startLine + displayLines, lyricsArray.length);
       const lines = lyricsArray.slice(startLine, endLine);
       setCurrentDisplayLines(lines);
     }
@@ -44,7 +43,17 @@ export default function DisplayLowerThird() {
     return null;
   }
 
-  const settings = defaultDisplayLowerThirdSettings;
+  // Hardcoded settings
+  const settings = {
+    fontSize: 32,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center',
+    showBackground: false,
+    backgroundColor: '#000000',
+    backgroundOpacity: 50
+  };
+  
   const backgroundStyle = settings.showBackground
     ? {
         backgroundColor: settings.backgroundColor,

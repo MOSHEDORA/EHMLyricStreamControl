@@ -35,12 +35,8 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
-import { DisplaySettingsPanel } from "@/components/display-settings-panel";
 import { Link } from "wouter";
-import { Switch } from "@/components/ui/switch";
 import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
-import { defaultLyricsLowerThirdSettings } from "@/settings/lyrics-lower-third-settings";
-import { defaultLyricsFullscreenSettings } from "@/settings/lyrics-fullscreen-settings";
 
 export default function ControlPanel() {
   // URL-specific settings
@@ -77,23 +73,6 @@ export default function ControlPanel() {
   const [displayMode, setDisplayMode] = useState<'lyrics' | 'bible'>('lyrics');
   const [activeTab, setActiveTab] = useState<'lyrics' | 'bible' | 'settings' | 'display'>('lyrics');
 
-  // Display settings are now managed via URL-specific settings
-  const [lyricsLowerThirdSettings, setLyricsLowerThirdSettings] = useState(defaultLyricsLowerThirdSettings);
-  const [lyricsFullscreenSettings, setLyricsFullscreenSettings] = useState(defaultLyricsFullscreenSettings);
-  const [separateDisplaySettings, setSeparateDisplaySettings] = useState(false);
-  const [displaySettings, setDisplaySettings] = useState({
-    backgroundColor: '#000000',
-    backgroundOpacity: 0,
-    height: 200,
-    padding: 20,
-    borderRadius: 8,
-    verticalPosition: 'bottom' as 'top' | 'center' | 'bottom',
-    horizontalPosition: 'center' as 'left' | 'center' | 'right',
-    margin: 20,
-    position: 'bottom' as 'top' | 'bottom',
-    dropShadow: true,
-    backgroundImage: ''
-  });
 
   // Bible state - lifted up to preserve across tab switches
   const [bibleSelectedBook, setBibleSelectedBook] = useState<string>("");
@@ -114,20 +93,6 @@ export default function ControlPanel() {
 
   // Legacy display settings removed - now use URL-specific settings
 
-  const updateLyricsLowerThirdSettings = useCallback((newSettings: Partial<typeof lyricsLowerThirdSettings>) => {
-    setLyricsLowerThirdSettings(prev => ({ ...prev, ...newSettings }));
-    console.log('Lyrics lower third settings updated:', newSettings);
-  }, []);
-
-  const updateLyricsFullscreenSettings = useCallback((newSettings: Partial<typeof lyricsFullscreenSettings>) => {
-    setLyricsFullscreenSettings(prev => ({ ...prev, ...newSettings }));
-    console.log('Lyrics fullscreen settings updated:', newSettings);
-  }, []);
-
-  const updateDisplaySettings = useCallback((newSettings: Partial<typeof displaySettings>) => {
-    setDisplaySettings(prev => ({ ...prev, ...newSettings }));
-    console.log('Display settings updated:', newSettings);
-  }, []);
 
   // Auto-scroll to current lyrics group (using default display lines)
   useEffect(() => {
@@ -767,195 +732,6 @@ export default function ControlPanel() {
                   </CardContent>
                 </Card>
 
-                {/* Display Settings */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span className="flex items-center">
-                        <Settings className="h-5 w-5 mr-2 text-primary" />
-                        Display Settings
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="separateSettings"
-                          checked={separateDisplaySettings}
-                          onCheckedChange={(checked) =>
-                            setSeparateDisplaySettings(checked as boolean)
-                          }
-                        />
-                        <Label htmlFor="separateSettings" className="text-sm">
-                          Separate Settings for Each Display
-                        </Label>
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* URL-specific display settings */}
-                    {!separateDisplaySettings && (
-                      <div className="space-y-8">
-                        {/* Lower Third Settings */}
-                        <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950/30">
-                          <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
-                            <FileText className="h-4 w-4 mr-2" />
-                            Lower Third (OBS) Settings
-                          </h4>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Lines to display:</Label>
-                                <Select
-                                  value={lyricsLowerThirdSettings.displayLines.toString()}
-                                  onValueChange={(value) =>
-                                    updateLyricsLowerThirdSettings({
-                                      displayLines: parseInt(value),
-                                    })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">1 line</SelectItem>
-                                    <SelectItem value="2">2 lines</SelectItem>
-                                    <SelectItem value="3">3 lines</SelectItem>
-                                    <SelectItem value="4">4 lines</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label>
-                                  Font Size: {lyricsLowerThirdSettings.fontSize}px
-                                </Label>
-                                <Slider
-                                  value={[lyricsLowerThirdSettings.fontSize]}
-                                  onValueChange={([value]) =>
-                                    updateLyricsLowerThirdSettings({ fontSize: value })
-                                  }
-                                  min={16}
-                                  max={300}
-                                  step={2}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Text Color</Label>
-                                <input
-                                  type="color"
-                                  value={lyricsLowerThirdSettings.textColor}
-                                  onChange={(e) =>
-                                    updateLyricsLowerThirdSettings({
-                                      textColor: e.target.value,
-                                    })
-                                  }
-                                  className="w-full h-8 rounded border border-border"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Text Alignment</Label>
-                                <Select
-                                  value={lyricsLowerThirdSettings.textAlign}
-                                  onValueChange={(value: 'left' | 'center' | 'right') =>
-                                    updateLyricsLowerThirdSettings({ textAlign: value })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="left">Left</SelectItem>
-                                    <SelectItem value="center">Center</SelectItem>
-                                    <SelectItem value="right">Right</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Fullscreen Settings */}
-                        <div className="border rounded-lg p-4 bg-purple-50 dark:bg-purple-950/30">
-                          <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-4 flex items-center">
-                            <Expand className="h-4 w-4 mr-2" />
-                            Fullscreen (TV) Settings
-                          </h4>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Lines to display:</Label>
-                                <Select
-                                  value={lyricsFullscreenSettings.displayLines.toString()}
-                                  onValueChange={(value) =>
-                                    updateLyricsFullscreenSettings({
-                                      displayLines: parseInt(value),
-                                    })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1">1 line</SelectItem>
-                                    <SelectItem value="2">2 lines</SelectItem>
-                                    <SelectItem value="3">3 lines</SelectItem>
-                                    <SelectItem value="4">4 lines</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label>
-                                  Font Size: {lyricsFullscreenSettings.fontSize}px
-                                </Label>
-                                <Slider
-                                  value={[lyricsFullscreenSettings.fontSize]}
-                                  onValueChange={([value]) =>
-                                    updateLyricsFullscreenSettings({ fontSize: value })
-                                  }
-                                  min={16}
-                                  max={300}
-                                  step={2}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Text Color</Label>
-                                <input
-                                  type="color"
-                                  value={lyricsFullscreenSettings.textColor}
-                                  onChange={(e) =>
-                                    updateLyricsFullscreenSettings({
-                                      textColor: e.target.value,
-                                    })
-                                  }
-                                  className="w-full h-8 rounded border border-border"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Text Alignment</Label>
-                                <Select
-                                  value={lyricsFullscreenSettings.textAlign}
-                                  onValueChange={(value: 'left' | 'center' | 'right') =>
-                                    updateLyricsFullscreenSettings({ textAlign: value })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="left">Left</SelectItem>
-                                    <SelectItem value="center">Center</SelectItem>
-                                    <SelectItem value="right">Right</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </div>
             </div>
           </TabsContent>

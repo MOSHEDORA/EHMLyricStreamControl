@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useBibleLowerThirdSettings } from "@/hooks/use-display-settings";
-import { useLowerThirdScaler } from "@/hooks/use-resolution-scaler";
 
 export default function BibleLowerThird() {
   const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Display-specific settings with resolution scaling
-  const { settings } = useBibleLowerThirdSettings();
-  const { canvasStyle, wrapperStyle } = useLowerThirdScaler(settings.displayResolution);
+  // Hardcoded settings
+  const settings = {
+    displayLines: 2,
+    fontSize: 32,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center' as const,
+    lineHeight: 1.2,
+    fontWeight: 'normal' as const,
+    maxHeight: '200px',
+    padding: 20
+  };
 
 
 
@@ -58,8 +65,7 @@ export default function BibleLowerThird() {
   };
 
   return (
-    <div style={wrapperStyle}>
-      <div style={canvasStyle}>
+    <div className="min-h-screen bg-transparent">
 
 
       {/* Lower third positioned content */}
@@ -109,7 +115,6 @@ export default function BibleLowerThird() {
           ) : null}
         </div>
         </div>
-      </div>
     </div>
   );
 }

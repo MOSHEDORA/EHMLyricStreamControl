@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useLyricsLowerThirdSettings } from "@/hooks/use-display-settings";
-import { useLowerThirdScaler } from "@/hooks/use-resolution-scaler";
 
 export default function LyricsLowerThird() {
   const sessionId = "lyrics-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Display-specific settings with resolution scaling
-  const { settings } = useLyricsLowerThirdSettings();
-  const { canvasStyle, wrapperStyle } = useLowerThirdScaler(settings.displayResolution);
-
-
+  // Hardcoded settings
+  const settings = {
+    displayLines: 2,
+    fontSize: 32,
+    fontFamily: 'Arial',
+    textColor: '#ffffff',
+    textAlign: 'center' as const,
+    lineHeight: 1.2,
+    fontWeight: 'normal' as const,
+    maxHeight: '200px',
+    padding: 20
+  };
 
   // Update display lines when session or lyrics change - following Lyrics to Display rule
   useEffect(() => {
@@ -56,22 +61,21 @@ export default function LyricsLowerThird() {
   };
 
   return (
-    <div style={wrapperStyle}>
-      <div style={canvasStyle}>
-        {/* Lower third positioned content */}
+    <div className="min-h-screen bg-transparent">
+      {/* Lower third positioned content */}
+      <div 
+        className="absolute bottom-0 left-0 right-0 z-10"
+        style={{
+          height: settings.maxHeight,
+          padding: `${settings.padding}px`,
+        }}
+      >
         <div 
-          className="absolute bottom-0 left-0 right-0 z-10"
-          style={{
-            height: settings.maxHeight,
+          className="w-full h-full"
+          style={{ 
             padding: `${settings.padding}px`,
           }}
         >
-          <div 
-            className="w-full h-full"
-            style={{ 
-              padding: `${settings.padding}px`,
-            }}
-          >
             {currentDisplayLines.length > 0 ? (
               <div className="space-y-2">
                 {currentDisplayLines.map((line, index) => (
@@ -90,7 +94,6 @@ export default function LyricsLowerThird() {
                 ))}
               </div>
             ) : null}
-          </div>
         </div>
       </div>
     </div>
