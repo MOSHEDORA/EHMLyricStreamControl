@@ -1,5 +1,7 @@
 import { sessions, type Session, type InsertSession } from "@shared/schema";
 import { FileStorage } from "./file-storage";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getSession(sessionId: string): Promise<Session | undefined>;
@@ -88,7 +90,39 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Use file-based storage for persistence
+// Reference: blueprint:javascript_database - Database storage implementation
+export class DatabaseStorage implements IStorage {
+  async getSession(sessionId: string): Promise<Session | undefined> {
+    const [session] = await db.select().from(sessions).where(eq(sessions.sessionId, sessionId));
+    return session || undefined;
+  }
+
+  async createSession(insertSession: InsertSession): Promise<Session> {
+    const [session] = await db
+      .insert(sessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async updateSession(sessionId: string, updates: Partial<Session>): Promise<Session | undefined> {
+    const [updatedSession] = await db
+      .update(sessions)
+      .set(updates)
+      .where(eq(sessions.sessionId, sessionId))
+      .returning();
+    return updatedSession || undefined;
+  }
+
+  async deleteSession(sessionId: string): Promise<boolean> {
+    const result = await db
+      .delete(sessions)
+      .where(eq(sessions.sessionId, sessionId));
+    return (result.rowCount ?? 0) > 0;
+  }
+}
+
+// Use file storage for persistence (database storage has WebSocket connectivity issues in current environment)
 export const storage = new FileStorage();
 
 // Initialize storage on startup
