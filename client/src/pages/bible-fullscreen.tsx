@@ -5,7 +5,7 @@ import { useScreenSettings } from "@/hooks/use-screen-settings";
 import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function BibleFullscreen() {
-  const sessionId = "default";
+  const sessionId = "bible-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
   const [displaySettings, setDisplaySettings] = useState(() => 

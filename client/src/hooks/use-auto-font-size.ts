@@ -53,8 +53,15 @@ export function useAutoFontSize({
     const container = containerRef.current;
     const measurer = measureRef.current;
     
-    // Use actual container dimensions instead of preset dimensions
+    // Wait for container to have proper dimensions
     const containerRect = container.getBoundingClientRect();
+    if (containerRect.width === 0 || containerRect.height === 0) {
+      // Try again after a short delay if container isn't sized yet
+      setTimeout(() => calculateOptimalFontSize(), 100);
+      setIsCalculating(false);
+      return;
+    }
+    
     const margins = settings.margins;
     
     // Calculate available area based on actual container size

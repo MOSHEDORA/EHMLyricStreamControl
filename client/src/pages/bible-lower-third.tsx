@@ -5,7 +5,7 @@ import { useScreenSettings } from "@/hooks/use-screen-settings";
 import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function BibleLowerThird() {
-  const sessionId = "default";
+  const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
   const [displaySettings, setDisplaySettings] = useState(() => 
