@@ -69,38 +69,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sessionId,
           lyrics: "",
           currentLine: 0,
-          displayLines: 2,
-          fontSize: 32,
-          fontFamily: "Arial",
-          textColor: "#ffffff",
-          textAlign: "center",
-          showBackground: false,
-          backgroundColor: "#000000",
-          backgroundOpacity: 50,
           isPlaying: false,
           autoScroll: false,
           songTitle: "",
-          separateDisplaySettings: false,
-          lowerThirdDisplayLines: 2,
-          lowerThirdFontSize: 32,
-          lowerThirdFontFamily: "Arial",
-          lowerThirdTextColor: "#ffffff",
-          lowerThirdTextAlign: "center",
-          lowerThirdShowBackground: false,
-          lowerThirdBackgroundColor: "#000000",
-          lowerThirdBackgroundOpacity: 50,
-          fullscreenDisplayLines: 2,
-          fullscreenFontSize: 32,
-          fullscreenFontFamily: "Arial",
-          fullscreenTextColor: "#ffffff",
-          fullscreenTextAlign: "center",
-          fullscreenShowBackground: false,
-          fullscreenBackgroundColor: "#000000",
-          fullscreenBackgroundOpacity: 50,
-          bibleOutputEnabled: false,
-          lyricsOutputEnabled: true,
-          fullscreenOutputEnabled: true,
-          lowerThirdOutputEnabled: true,
         });
       }
 
@@ -146,11 +117,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
             break;
 
-          case "update_settings":
-            updatedSession = await storage.updateSession(sessionId, {
-              ...message.payload,
-            });
-            break;
 
           case "toggle_play":
             updatedSession = await storage.updateSession(sessionId, {
@@ -162,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const lyricsArray = parseLyrics(session.lyrics);
             const totalLines = lyricsArray.length;
             let newLine = session.currentLine;
-            const displayLines = session.displayLines;
+            const displayLines = 2; // Default display lines for navigation
 
             switch (message.payload.action) {
               case "next":
@@ -291,92 +257,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/sessions/:sessionId/settings', async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      
-      // Validate settings using the update_settings schema
-      const validationResult = websocketMessageSchema.safeParse({
-        type: "update_settings",
-        payload: req.body
-      });
-      
-      if (!validationResult.success) {
-        return res.status(400).json({ 
-          error: 'Invalid settings format',
-          details: validationResult.error.issues
-        });
-      }
-      
-      const settings = validationResult.data.payload;
-
-      let session = await storage.getSession(sessionId);
-      if (!session) {
-        // Create new session if it doesn't exist with default values
-        session = await storage.createSession({
-          sessionId,
-          lyrics: "",
-          currentLine: 0,
-          songTitle: "",
-          displayLines: 2,
-          fontSize: 32,
-          fontFamily: "Arial",
-          textColor: "#ffffff",
-          textAlign: "center",
-          showBackground: false,
-          backgroundColor: "#000000",
-          backgroundOpacity: 50,
-          isPlaying: false,
-          autoScroll: false,
-          separateDisplaySettings: false,
-          lowerThirdDisplayLines: 2,
-          lowerThirdFontSize: 32,
-          lowerThirdFontFamily: "Arial",
-          lowerThirdTextColor: "#ffffff",
-          lowerThirdTextAlign: "center",
-          lowerThirdShowBackground: false,
-          lowerThirdBackgroundColor: "#000000",
-          lowerThirdBackgroundOpacity: 50,
-          fullscreenDisplayLines: 2,
-          fullscreenFontSize: 32,
-          fullscreenFontFamily: "Arial",
-          fullscreenTextColor: "#ffffff",
-          fullscreenTextAlign: "center",
-          fullscreenShowBackground: false,
-          fullscreenBackgroundColor: "#000000",
-          fullscreenBackgroundOpacity: 50,
-          bibleOutputEnabled: sessionId.includes('bible'),
-          lyricsOutputEnabled: true,
-          fullscreenOutputEnabled: true,
-          lowerThirdOutputEnabled: true,
-        });
-      }
-
-      // Update settings
-      const updatedSession = await storage.updateSession(sessionId, settings);
-      if (!updatedSession) {
-        return res.status(404).json({ error: 'Session not found' });
-      }
-
-      // Broadcast the settings update to all connected clients
-      const lyricsArray = parseLyrics(updatedSession.lyrics);
-      const stateMessage: WebSocketMessage = {
-        type: "state_update",
-        payload: {
-          session: updatedSession,
-          lyricsArray,
-          totalLines: lyricsArray.length,
-        },
-      };
-      broadcastToSession(sessionId, stateMessage);
-
-      console.log(`Settings updated for session ${sessionId}:`, Object.keys(settings));
-      res.json({ success: true, session: updatedSession });
-    } catch (error) {
-      console.error('Failed to update session settings:', error);
-      res.status(500).json({ message: 'Failed to update session settings' });
-    }
-  });
 
   app.post('/api/sessions/:sessionId', async (req, res) => {
     try {
@@ -391,37 +271,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lyrics: lyricsText || "",
           currentLine: currentLine || 0,
           songTitle: songTitle || "",
-          displayLines: 2,
-          fontSize: 32,
-          fontFamily: "Arial",
-          textColor: "#ffffff",
-          textAlign: "center",
-          showBackground: false,
-          backgroundColor: "#000000",
-          backgroundOpacity: 50,
           isPlaying: false,
           autoScroll: false,
-          separateDisplaySettings: false,
-          lowerThirdDisplayLines: 2,
-          lowerThirdFontSize: 32,
-          lowerThirdFontFamily: "Arial",
-          lowerThirdTextColor: "#ffffff",
-          lowerThirdTextAlign: "center",
-          lowerThirdShowBackground: false,
-          lowerThirdBackgroundColor: "#000000",
-          lowerThirdBackgroundOpacity: 50,
-          fullscreenDisplayLines: 2,
-          fullscreenFontSize: 32,
-          fullscreenFontFamily: "Arial",
-          fullscreenTextColor: "#ffffff",
-          fullscreenTextAlign: "center",
-          fullscreenShowBackground: false,
-          fullscreenBackgroundColor: "#000000",
-          fullscreenBackgroundOpacity: 50,
-          bibleOutputEnabled: sessionId.includes('bible'),
-          lyricsOutputEnabled: true,
-          fullscreenOutputEnabled: true,
-          lowerThirdOutputEnabled: true,
         });
       } else {
         // Update existing session
