@@ -193,7 +193,7 @@ function LayoutSettings({
 }
 
 // Individual setting components for each display type
-function LyricsLowerThirdSettings() {
+export function LyricsLowerThirdSettings() {
   const displayType = 'lyrics-lower-third';
   const { toast } = useToast();
 
@@ -296,7 +296,7 @@ function LyricsLowerThirdSettings() {
   );
 }
 
-function LyricsFullscreenSettings() {
+export function LyricsFullscreenSettings() {
   const displayType = 'lyrics-fullscreen';
   const { toast } = useToast();
 
@@ -416,7 +416,7 @@ function LyricsFullscreenSettings() {
   );
 }
 
-function BibleLowerThirdSettings() {
+export function BibleLowerThirdSettings() {
   const displayType = 'bible-lower-third';
   const { toast } = useToast();
 
@@ -519,7 +519,7 @@ function BibleLowerThirdSettings() {
   );
 }
 
-function BibleFullscreenSettings() {
+export function BibleFullscreenSettings() {
   const displayType = 'bible-fullscreen';
   const { toast } = useToast();
 
@@ -623,7 +623,7 @@ function BibleFullscreenSettings() {
   );
 }
 
-function ControlPanelSettings() {
+export function ControlPanelSettings() {
   const displayType = 'control-panel';
   const { toast } = useToast();
 
@@ -724,7 +724,7 @@ function ControlPanelSettings() {
   );
 }
 
-function OBSDockSettings() {
+export function OBSDockSettings() {
   const displayType = 'obs-dock';
   const { toast } = useToast();
 

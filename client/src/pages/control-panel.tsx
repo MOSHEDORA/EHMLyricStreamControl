@@ -38,6 +38,16 @@ import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
 import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
+// Import settings components from settings page
+import { 
+  LyricsLowerThirdSettings, 
+  LyricsFullscreenSettings, 
+  BibleLowerThirdSettings, 
+  BibleFullscreenSettings, 
+  ControlPanelSettings as SettingsControlPanelSettings, 
+  OBSDockSettings 
+} from "./settings";
+
 export default function ControlPanel() {
   // Use stored settings or defaults
   const { settings: storedSettings, isLoading: settingsLoading } = useDisplaySettings('control-panel');
@@ -322,9 +332,10 @@ export default function ControlPanel() {
           </button>
         </div>
         <Tabs value={activeTab} onValueChange={v => setActiveTab(v as any)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
             <TabsTrigger value="bible">Bible</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="help">Help</TabsTrigger>
           </TabsList>
 
@@ -787,6 +798,79 @@ export default function ControlPanel() {
               showDownloadManager={bibleShowDownloadManager}
               setShowDownloadManager={setBibleShowDownloadManager}
             />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold flex items-center">
+                  <Settings className="h-5 w-5 mr-2" />
+                  Display Settings
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Configure settings for each display type independently
+                </p>
+              </div>
+
+              <Tabs defaultValue="lyrics-lower-third" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-6">
+                  <TabsTrigger value="lyrics-lower-third">Lyrics Lower</TabsTrigger>
+                  <TabsTrigger value="lyrics-fullscreen">Lyrics Full</TabsTrigger>
+                  <TabsTrigger value="bible-lower-third">Bible Lower</TabsTrigger>
+                  <TabsTrigger value="bible-fullscreen">Bible Full</TabsTrigger>
+                  <TabsTrigger value="control-panel">Control Panel</TabsTrigger>
+                  <TabsTrigger value="obs-dock">OBS Dock</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="lyrics-lower-third">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <LyricsLowerThirdSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="lyrics-fullscreen">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <LyricsFullscreenSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="bible-lower-third">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <BibleLowerThirdSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="bible-fullscreen">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <BibleFullscreenSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="control-panel">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <SettingsControlPanelSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="obs-dock">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <OBSDockSettings />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
           </TabsContent>
 
           <TabsContent value="help">
