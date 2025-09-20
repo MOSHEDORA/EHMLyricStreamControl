@@ -1,5 +1,5 @@
 {
-  "currentId": 2,
+  "currentId": 6,
   "sessions": [
     {
       "id": 1,
@@ -38,6 +38,42 @@
       "lyricsOutputEnabled": true,
       "lowerThirdOutputEnabled": true,
       "fullscreenOutputEnabled": true
+    },
+    {
+      "id": 2,
+      "sessionId": "bible-lower-third",
+      "lyrics": "1. రూతు 4:1 (Telugu)\nబోయజు పురద్వారమునొద్దకు పోయి అక్కడ కూర్చుండగా, బోయజు చెప్పిన బంధువుడు ఆ త్రోవను పోవుచుండెను గనుక బోయజుఓయి, యీ తట్టు తిరిగి ఇక్కడ కూర్చుండుమని అతని పిలువగా అతడు వచ్చి కూర్చుండెను.\n\nRuth 4:1 (English)\nNow Boaz had gone up to the gate and sat down there. And behold, the redeemer, of whom Boaz had spoken, came by. So Boaz said, \"Turn aside, friend; sit down here.\" And he turned aside and sat down.",
+      "currentLine": 0,
+      "isPlaying": false,
+      "autoScroll": false,
+      "songTitle": "రూతు / Ruth 4:1"
+    },
+    {
+      "id": 3,
+      "sessionId": "bible-fullscreen",
+      "lyrics": "1. రూతు 4:1 (Telugu)\nబోయజు పురద్వారమునొద్దకు పోయి అక్కడ కూర్చుండగా, బోయజు చెప్పిన బంధువుడు ఆ త్రోవను పోవుచుండెను గనుక బోయజుఓయి, యీ తట్టు తిరిగి ఇక్కడ కూర్చుండుమని అతని పిలువగా అతడు వచ్చి కూర్చుండెను.\n\nRuth 4:1 (English)\nNow Boaz had gone up to the gate and sat down there. And behold, the redeemer, of whom Boaz had spoken, came by. So Boaz said, \"Turn aside, friend; sit down here.\" And he turned aside and sat down.",
+      "currentLine": 0,
+      "isPlaying": false,
+      "autoScroll": false,
+      "songTitle": "రూతు / Ruth 4:1"
+    },
+    {
+      "id": 4,
+      "sessionId": "lyrics-lower-third",
+      "lyrics": "1\nరూతు 4:1 (Telugu)",
+      "currentLine": 0,
+      "isPlaying": false,
+      "autoScroll": false,
+      "songTitle": "రూతు / Ruth 4:1"
+    },
+    {
+      "id": 5,
+      "sessionId": "lyrics-fullscreen",
+      "lyrics": "1\nరూతు 4:1 (Telugu)",
+      "currentLine": 0,
+      "isPlaying": false,
+      "autoScroll": false,
+      "songTitle": "రూతు / Ruth 4:1"
     }
   ]
 }

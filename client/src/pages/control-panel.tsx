@@ -38,6 +38,9 @@ import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
 import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
+import { defaultDisplaySettings } from "@/settings/display-settings";
+import { defaultLyricsLowerThirdSettings } from "@/settings/lyrics-lower-third-settings";
+import { defaultLyricsFullscreenSettings } from "@/settings/lyrics-fullscreen-settings";
 
 export default function ControlPanel() {
   // URL-specific settings
@@ -74,6 +77,12 @@ export default function ControlPanel() {
   const [displayMode, setDisplayMode] = useState<'lyrics' | 'bible'>('lyrics');
   const [activeTab, setActiveTab] = useState<'lyrics' | 'bible' | 'settings' | 'display'>('lyrics');
 
+  // Display settings state
+  const [displaySettings, setDisplaySettings] = useState(defaultDisplaySettings);
+  const [lyricsLowerThirdSettings, setLyricsLowerThirdSettings] = useState(defaultLyricsLowerThirdSettings);
+  const [lyricsFullscreenSettings, setLyricsFullscreenSettings] = useState(defaultLyricsFullscreenSettings);
+  const [separateDisplaySettings, setSeparateDisplaySettings] = useState(false);
+
   // Bible state - lifted up to preserve across tab switches
   const [bibleSelectedBook, setBibleSelectedBook] = useState<string>("");
   const [bibleSelectedChapter, setBibleSelectedChapter] = useState<string>("");
@@ -91,11 +100,28 @@ export default function ControlPanel() {
     }
   }, [session]);
 
+  // Helper function to update display settings
+  const updateDisplaySettings = useCallback((newSettings: Partial<typeof displaySettings>) => {
+    setDisplaySettings(prev => ({ ...prev, ...newSettings }));
+    // Here you could also persist to localStorage or send to server if needed
+    console.log('Display settings updated:', newSettings);
+  }, []);
+
+  const updateLyricsLowerThirdSettings = useCallback((newSettings: Partial<typeof lyricsLowerThirdSettings>) => {
+    setLyricsLowerThirdSettings(prev => ({ ...prev, ...newSettings }));
+    console.log('Lyrics lower third settings updated:', newSettings);
+  }, []);
+
+  const updateLyricsFullscreenSettings = useCallback((newSettings: Partial<typeof lyricsFullscreenSettings>) => {
+    setLyricsFullscreenSettings(prev => ({ ...prev, ...newSettings }));
+    console.log('Lyrics fullscreen settings updated:', newSettings);
+  }, []);
+
   // Auto-scroll to current lyrics group
   useEffect(() => {
     if (session && lyricsArray.length > 0) {
       const currentGroupIndex = Math.floor(
-        session.currentLine / session.displayLines,
+        session.currentLine / displaySettings.displayLines,
       );
       const scrollContainer = document.getElementById(
         "lyrics-scroll-container",
@@ -120,7 +146,7 @@ export default function ControlPanel() {
         }
       }
     }
-  }, [session?.currentLine, session?.displayLines, lyricsArray.length]);
+  }, [session?.currentLine, displaySettings.displayLines, lyricsArray.length]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -245,7 +271,7 @@ export default function ControlPanel() {
 
     const startLine = session.currentLine;
     const endLine = Math.min(
-      startLine + session.displayLines,
+      startLine + displaySettings.displayLines,
       lyricsArray.length,
     );
     return lyricsArray.slice(startLine, endLine);
@@ -373,9 +399,9 @@ export default function ControlPanel() {
                       <div className="flex items-center space-x-4">
                         <Label>Lines to display:</Label>
                         <Select
-                          value={session.displayLines.toString()}
+                          value={displaySettings.displayLines.toString()}
                           onValueChange={(value) =>
-                            updateSettings({ displayLines: parseInt(value) })
+                            updateDisplaySettings({ displayLines: parseInt(value) })
                           }
                         >
                           <SelectTrigger className="w-32">
@@ -758,11 +784,9 @@ export default function ControlPanel() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="separateSettings"
-                          checked={session?.separateDisplaySettings || false}
+                          checked={separateDisplaySettings}
                           onCheckedChange={(checked) =>
-                            updateSettings({
-                              separateDisplaySettings: checked as boolean,
-                            })
+                            setSeparateDisplaySettings(checked as boolean)
                           }
                         />
                         <Label htmlFor="separateSettings" className="text-sm">
@@ -772,7 +796,7 @@ export default function ControlPanel() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {session.separateDisplaySettings ? (
+                    {separateDisplaySettings ? (
                       /* Separate display settings */
                       <div className="space-y-8">
                         {/* Lower Third Settings */}
@@ -786,10 +810,10 @@ export default function ControlPanel() {
                               <div className="space-y-2">
                                 <Label>Lines to display:</Label>
                                 <Select
-                                  value={session.lowerThirdDisplayLines.toString()}
+                                  value={lyricsLowerThirdSettings.displayLines.toString()}
                                   onValueChange={(value) =>
-                                    updateSettings({
-                                      lowerThirdDisplayLines: parseInt(value),
+                                    updateLyricsLowerThirdSettings({
+                                      displayLines: parseInt(value),
                                     })
                                   }
                                 >
@@ -806,12 +830,12 @@ export default function ControlPanel() {
                               </div>
                               <div className="space-y-2">
                                 <Label>
-                                  Font Size: {session.lowerThirdFontSize}px
+                                  Font Size: {lyricsLowerThirdSettings.fontSize}px
                                 </Label>
                                 <Slider
-                                  value={[session.lowerThirdFontSize]}
+                                  value={[lyricsLowerThirdSettings.fontSize]}
                                   onValueChange={([value]) =>
-                                    updateSettings({ lowerThirdFontSize: value })
+                                    updateLyricsLowerThirdSettings({ fontSize: value })
                                   }
                                   min={16}
                                   max={300}
@@ -824,10 +848,10 @@ export default function ControlPanel() {
                                 <Label>Text Color</Label>
                                 <input
                                   type="color"
-                                  value={session.lowerThirdTextColor}
+                                  value={lyricsLowerThirdSettings.textColor}
                                   onChange={(e) =>
-                                    updateSettings({
-                                      lowerThirdTextColor: e.target.value,
+                                    updateLyricsLowerThirdSettings({
+                                      textColor: e.target.value,
                                     })
                                   }
                                   className="w-full h-8 rounded border border-border"
@@ -836,9 +860,9 @@ export default function ControlPanel() {
                               <div className="space-y-2">
                                 <Label>Text Alignment</Label>
                                 <Select
-                                  value={session.lowerThirdTextAlign}
+                                  value={lyricsLowerThirdSettings.textAlign}
                                   onValueChange={(value) =>
-                                    updateSettings({ lowerThirdTextAlign: value })
+                                    updateLyricsLowerThirdSettings({ textAlign: value })
                                   }
                                 >
                                   <SelectTrigger>
@@ -866,10 +890,10 @@ export default function ControlPanel() {
                               <div className="space-y-2">
                                 <Label>Lines to display:</Label>
                                 <Select
-                                  value={session.fullscreenDisplayLines.toString()}
+                                  value={lyricsFullscreenSettings.displayLines.toString()}
                                   onValueChange={(value) =>
-                                    updateSettings({
-                                      fullscreenDisplayLines: parseInt(value),
+                                    updateLyricsFullscreenSettings({
+                                      displayLines: parseInt(value),
                                     })
                                   }
                                 >
@@ -886,12 +910,12 @@ export default function ControlPanel() {
                               </div>
                               <div className="space-y-2">
                                 <Label>
-                                  Font Size: {session.fullscreenFontSize}px
+                                  Font Size: {lyricsFullscreenSettings.fontSize}px
                                 </Label>
                                 <Slider
-                                  value={[session.fullscreenFontSize]}
+                                  value={[lyricsFullscreenSettings.fontSize]}
                                   onValueChange={([value]) =>
-                                    updateSettings({ fullscreenFontSize: value })
+                                    updateLyricsFullscreenSettings({ fontSize: value })
                                   }
                                   min={16}
                                   max={300}
@@ -904,10 +928,10 @@ export default function ControlPanel() {
                                 <Label>Text Color</Label>
                                 <input
                                   type="color"
-                                  value={session.fullscreenTextColor}
+                                  value={lyricsFullscreenSettings.textColor}
                                   onChange={(e) =>
-                                    updateSettings({
-                                      fullscreenTextColor: e.target.value,
+                                    updateLyricsFullscreenSettings({
+                                      textColor: e.target.value,
                                     })
                                   }
                                   className="w-full h-8 rounded border border-border"
@@ -916,9 +940,9 @@ export default function ControlPanel() {
                               <div className="space-y-2">
                                 <Label>Text Alignment</Label>
                                 <Select
-                                  value={session.fullscreenTextAlign}
+                                  value={lyricsFullscreenSettings.textAlign}
                                   onValueChange={(value) =>
-                                    updateSettings({ fullscreenTextAlign: value })
+                                    updateLyricsFullscreenSettings({ textAlign: value })
                                   }
                                 >
                                   <SelectTrigger>
@@ -939,14 +963,39 @@ export default function ControlPanel() {
                       /* Unified display settings */
                       <div className="space-y-6">
                         {/* Font Family */}
+                        <div className="space-y-2">
+                          <Label>Font Family</Label>
+                          <Select
+                            value={displaySettings.fontFamily}
+                            onValueChange={(value) =>
+                              updateDisplaySettings({ fontFamily: value })
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Arial">Arial</SelectItem>
+                              <SelectItem value="Helvetica">Helvetica</SelectItem>
+                              <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                              <SelectItem value="Georgia">Georgia</SelectItem>
+                              <SelectItem value="Verdana">Verdana</SelectItem>
+                              <SelectItem value="Tahoma">Tahoma</SelectItem>
+                              <SelectItem value="Trebuchet MS">Trebuchet MS</SelectItem>
+                              <SelectItem value="Impact">Impact</SelectItem>
+                              <SelectItem value="Comic Sans MS">Comic Sans MS</SelectItem>
+                              <SelectItem value="Courier New">Courier New</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
 
                         {/* Font Size */}
                         <div className="space-y-2">
-                          <Label>Font Size: {session.fontSize}px</Label>
+                          <Label>Font Size: {displaySettings.fontSize}px</Label>
                           <Slider
-                            value={[session.fontSize]}
+                            value={[displaySettings.fontSize]}
                             onValueChange={([value]) =>
-                              updateSettings({ fontSize: value })
+                              updateDisplaySettings({ fontSize: value })
                             }
                             min={16}
                             max={300}
@@ -960,16 +1009,16 @@ export default function ControlPanel() {
                           <div className="flex space-x-2">
                             <input
                               type="color"
-                              value={session.textColor}
+                              value={displaySettings.textColor}
                               onChange={(e) =>
-                                updateSettings({ textColor: e.target.value })
+                                updateDisplaySettings({ textColor: e.target.value })
                               }
                               className="w-12 h-8 rounded border border-border"
                             />
                             <Input
-                              value={session.textColor}
+                              value={displaySettings.textColor}
                               onChange={(e) =>
-                                updateSettings({ textColor: e.target.value })
+                                updateDisplaySettings({ textColor: e.target.value })
                               }
                               className="flex-1"
                             />
@@ -980,9 +1029,9 @@ export default function ControlPanel() {
                         <div className="space-y-2">
                           <Label>Text Alignment</Label>
                           <Select
-                            value={session.textAlign}
+                            value={displaySettings.textAlign}
                             onValueChange={(value) =>
-                              updateSettings({ textAlign: value })
+                              updateDisplaySettings({ textAlign: value })
                             }
                           >
                             <SelectTrigger>
@@ -996,6 +1045,196 @@ export default function ControlPanel() {
                           </Select>
                         </div>
 
+                        {/* Line Height */}
+                        <div className="space-y-2">
+                          <Label>Line Height: {displaySettings.lineHeight}</Label>
+                          <Slider
+                            value={[displaySettings.lineHeight]}
+                            onValueChange={([value]) =>
+                              updateDisplaySettings({ lineHeight: value })
+                            }
+                            min={1.0}
+                            max={3.0}
+                            step={0.1}
+                          />
+                        </div>
+
+                        {/* Display Lines */}
+                        <div className="space-y-2">
+                          <Label>Display Lines</Label>
+                          <Select
+                            value={displaySettings.displayLines.toString()}
+                            onValueChange={(value) =>
+                              updateDisplaySettings({ displayLines: parseInt(value) })
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1">1 line</SelectItem>
+                              <SelectItem value="2">2 lines</SelectItem>
+                              <SelectItem value="3">3 lines</SelectItem>
+                              <SelectItem value="4">4 lines</SelectItem>
+                              <SelectItem value="5">5 lines</SelectItem>
+                              <SelectItem value="6">6 lines</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Layout Settings */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Padding: {displaySettings.padding}px</Label>
+                            <Slider
+                              value={[displaySettings.padding]}
+                              onValueChange={([value]) =>
+                                updateDisplaySettings({ padding: value })
+                              }
+                              min={0}
+                              max={100}
+                              step={5}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Margin: {displaySettings.margin}px</Label>
+                            <Slider
+                              value={[displaySettings.margin]}
+                              onValueChange={([value]) =>
+                                updateDisplaySettings({ margin: value })
+                              }
+                              min={0}
+                              max={100}
+                              step={5}
+                            />
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Text Effects */}
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Text Effects</h4>
+                          <div className="space-y-2">
+                            <Label>Text Shadow</Label>
+                            <Input
+                              value={displaySettings.textShadow}
+                              onChange={(e) =>
+                                updateDisplaySettings({ textShadow: e.target.value })
+                              }
+                              placeholder="2px 2px 4px rgba(0,0,0,0.8)"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Border Radius: {displaySettings.borderRadius}px</Label>
+                              <Slider
+                                value={[displaySettings.borderRadius]}
+                                onValueChange={([value]) =>
+                                  updateDisplaySettings({ borderRadius: value })
+                                }
+                                min={0}
+                                max={50}
+                                step={1}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Border</Label>
+                              <Input
+                                value={displaySettings.border}
+                                onChange={(e) =>
+                                  updateDisplaySettings({ border: e.target.value })
+                                }
+                                placeholder="1px solid #ffffff"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Responsive Settings */}
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Responsive Settings</h4>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="autoScale"
+                              checked={displaySettings.autoScale}
+                              onCheckedChange={(checked) =>
+                                updateDisplaySettings({ autoScale: !!checked })
+                              }
+                            />
+                            <Label htmlFor="autoScale">Auto Scale Font Size</Label>
+                          </div>
+                          {displaySettings.autoScale && (
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Min Font Size: {displaySettings.minFontSize}px</Label>
+                                <Slider
+                                  value={[displaySettings.minFontSize]}
+                                  onValueChange={([value]) =>
+                                    updateDisplaySettings({ minFontSize: value })
+                                  }
+                                  min={8}
+                                  max={100}
+                                  step={2}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>Max Font Size: {displaySettings.maxFontSize}px</Label>
+                                <Slider
+                                  value={[displaySettings.maxFontSize]}
+                                  onValueChange={([value]) =>
+                                    updateDisplaySettings({ maxFontSize: value })
+                                  }
+                                  min={50}
+                                  max={500}
+                                  step={10}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <Separator />
+
+                        {/* Display Mode and Performance */}
+                        <div className="space-y-4">
+                          <h4 className="font-semibold">Display Mode & Performance</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Display Mode</Label>
+                              <Select
+                                value={displaySettings.mode}
+                                onValueChange={(value: 'lyrics' | 'bible' | 'custom') =>
+                                  updateDisplaySettings({ mode: value })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lyrics">Lyrics</SelectItem>
+                                  <SelectItem value="bible">Bible</SelectItem>
+                                  <SelectItem value="custom">Custom</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Refresh Rate: {displaySettings.refreshRate}ms</Label>
+                              <Slider
+                                value={[displaySettings.refreshRate]}
+                                onValueChange={([value]) =>
+                                  updateDisplaySettings({ refreshRate: value })
+                                }
+                                min={100}
+                                max={5000}
+                                step={100}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
                         <Separator />
 
                         {/* Background Settings */}
@@ -1003,33 +1242,33 @@ export default function ControlPanel() {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id="showBackground"
-                              checked={session.showBackground}
+                              checked={displaySettings.showBackground}
                               onCheckedChange={(checked) =>
-                                updateSettings({ showBackground: !!checked })
+                                updateDisplaySettings({ showBackground: !!checked })
                               }
                             />
                             <Label htmlFor="showBackground">Show Background</Label>
                           </div>
 
-                          {session.showBackground && (
+                          {displaySettings.showBackground && (
                             <>
                               <div className="space-y-2">
                                 <Label>Background Color</Label>
                                 <div className="flex space-x-2">
                                   <input
                                     type="color"
-                                    value={session.backgroundColor}
+                                    value={displaySettings.backgroundColor}
                                     onChange={(e) =>
-                                      updateSettings({
+                                      updateDisplaySettings({
                                         backgroundColor: e.target.value,
                                       })
                                     }
                                     className="w-12 h-8 rounded border border-border"
                                   />
                                   <Input
-                                    value={session.backgroundColor}
+                                    value={displaySettings.backgroundColor}
                                     onChange={(e) =>
-                                      updateSettings({
+                                      updateDisplaySettings({
                                         backgroundColor: e.target.value,
                                       })
                                     }
@@ -1040,16 +1279,27 @@ export default function ControlPanel() {
 
                               <div className="space-y-2">
                                 <Label>
-                                  Background Opacity: {session.backgroundOpacity}%
+                                  Background Opacity: {displaySettings.backgroundOpacity}%
                                 </Label>
                                 <Slider
-                                  value={[session.backgroundOpacity]}
+                                  value={[displaySettings.backgroundOpacity]}
                                   onValueChange={([value]) =>
-                                    updateSettings({ backgroundOpacity: value })
+                                    updateDisplaySettings({ backgroundOpacity: value })
                                   }
                                   min={0}
                                   max={100}
                                   step={5}
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Background Image URL</Label>
+                                <Input
+                                  value={displaySettings.backgroundImage}
+                                  onChange={(e) =>
+                                    updateDisplaySettings({ backgroundImage: e.target.value })
+                                  }
+                                  placeholder="https://example.com/image.jpg"
                                 />
                               </div>
                             </>
