@@ -1,5 +1,9 @@
+import { type Resolution, DEFAULT_RESOLUTION } from './resolution';
+
 // Bible Fullscreen URL-specific settings
 export interface BibleFullscreenSettings {
+  // Display resolution and scaling
+  displayResolution: Resolution;
   // Text appearance
   fontSize: number;
   fontFamily: string;
@@ -49,6 +53,7 @@ export interface BibleFullscreenSettings {
 }
 
 export const defaultBibleFullscreenSettings: BibleFullscreenSettings = {
+  displayResolution: DEFAULT_RESOLUTION,
   fontSize: 42,
   fontFamily: 'Georgia',
   textColor: '#ffffff',

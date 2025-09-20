@@ -1,5 +1,9 @@
+import { type Resolution, DEFAULT_RESOLUTION } from './resolution';
+
 // Lyrics Fullscreen URL-specific settings
 export interface LyricsFullscreenSettings {
+  // Display resolution and scaling
+  displayResolution: Resolution;
   // Text appearance
   fontSize: number;
   fontFamily: string;
@@ -41,6 +45,7 @@ export interface LyricsFullscreenSettings {
 }
 
 export const defaultLyricsFullscreenSettings: LyricsFullscreenSettings = {
+  displayResolution: DEFAULT_RESOLUTION,
   fontSize: 54,
   fontFamily: 'Arial',
   textColor: '#ffffff',

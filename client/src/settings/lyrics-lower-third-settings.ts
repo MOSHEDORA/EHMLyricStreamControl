@@ -1,5 +1,9 @@
+import { type Resolution, DEFAULT_RESOLUTION } from './resolution';
+
 // Lyrics Lower Third URL-specific settings
 export interface LyricsLowerThirdSettings {
+  // Display resolution and scaling
+  displayResolution: Resolution;
   // Text appearance
   fontSize: number;
   fontFamily: string;
@@ -35,6 +39,7 @@ export interface LyricsLowerThirdSettings {
 }
 
 export const defaultLyricsLowerThirdSettings: LyricsLowerThirdSettings = {
+  displayResolution: DEFAULT_RESOLUTION,
   fontSize: 28,
   fontFamily: 'Arial',
   textColor: '#ffffff',

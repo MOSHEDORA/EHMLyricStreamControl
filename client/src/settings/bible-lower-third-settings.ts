@@ -1,5 +1,9 @@
+import { type Resolution, DEFAULT_RESOLUTION } from './resolution';
+
 // Bible Lower Third URL-specific settings
 export interface BibleLowerThirdSettings {
+  // Display resolution and scaling
+  displayResolution: Resolution;
   // Text appearance
   fontSize: number;
   fontFamily: string;
@@ -38,6 +42,7 @@ export interface BibleLowerThirdSettings {
 }
 
 export const defaultBibleLowerThirdSettings: BibleLowerThirdSettings = {
+  displayResolution: DEFAULT_RESOLUTION,
   fontSize: 26,
   fontFamily: 'Arial',
   textColor: '#ffffff',
