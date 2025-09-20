@@ -1,22 +1,15 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
 export default function BibleLowerThird() {
   const sessionId = "bible-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Hardcoded settings
-  const settings = {
-    displayLines: 2,
-    fontSize: 32,
-    fontFamily: 'Arial',
-    textColor: '#ffffff',
-    textAlign: 'center' as const,
-    lineHeight: 1.2,
-    fontWeight: 'normal' as const,
-    maxHeight: '200px',
-    padding: 20
-  };
+  
+  // Use stored settings or defaults
+  const { settings: storedSettings, isLoading: settingsLoading } = useDisplaySettings('bible-lower-third');
+  const settings = storedSettings || defaultSettings['bible-lower-third'];
 
 
 

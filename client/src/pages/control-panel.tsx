@@ -36,14 +36,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
+import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
 export default function ControlPanel() {
-  // Hardcoded settings
-  const settings = {
-    fontSize: 14,
-    fontFamily: 'Arial',
-    backgroundColor: '#ffffff'
-  };
+  // Use stored settings or defaults
+  const { settings: storedSettings, isLoading: settingsLoading } = useDisplaySettings('control-panel');
+  const settings = storedSettings || defaultSettings['control-panel'];
   const sessionId = "default";
   const {
     session,
@@ -1122,6 +1120,29 @@ export default function ControlPanel() {
                             </Link>
                           </Button>
                         </div>
+                      </div>
+
+                      {/* Display Settings */}
+                      <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Settings className="h-4 w-4 text-blue-600" />
+                          <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                            Display Settings
+                          </p>
+                        </div>
+                        <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                          Configure font, layout, and appearance for each display type
+                        </p>
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Link to="/settings" data-testid="link-settings">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Open Settings
+                          </Link>
+                        </Button>
                       </div>
 
                       {/* Additional Display URLs */}

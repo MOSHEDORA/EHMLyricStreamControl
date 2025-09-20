@@ -25,14 +25,12 @@ import {
   BookOpen
 } from "lucide-react";
 import { BibleControls } from "@/components/bible-controls";
+import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
 export default function OBSDock() {
-  // Hardcoded settings
-  const settings = {
-    fontSize: 14,
-    fontFamily: 'Arial',
-    compactMode: false
-  };
+  // Use stored settings or defaults
+  const { settings: storedSettings, isLoading: settingsLoading } = useDisplaySettings('obs-dock');
+  const settings = storedSettings || defaultSettings['obs-dock'];
   const sessionId = "default";
   const { session, lyricsArray, totalLines, isConnected, updateLyrics, updatePosition, updateSettings, togglePlay, navigate } = useWebSocket(sessionId);
   const { currentChapter, loading: bibleLoading, loadChapter } = useBible();

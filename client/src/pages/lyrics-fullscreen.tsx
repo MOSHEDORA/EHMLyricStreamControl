@@ -1,24 +1,15 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
-  // Hardcoded settings
-  const settings = {
-    displayLines: 4,
-    fontSize: 48,
-    fontFamily: 'Arial',
-    textColor: '#ffffff',
-    textAlign: 'center' as const,
-    lineHeight: 1.3,
-    fontWeight: 'normal' as const,
-    textTransform: 'none' as const,
-    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-    padding: 40,
-    margin: 40
-  };
+  
+  // Use stored settings or defaults
+  const { settings: storedSettings, isLoading: settingsLoading } = useDisplaySettings('lyrics-fullscreen');
+  const settings = storedSettings || defaultSettings['lyrics-fullscreen'];
 
   // Update display lines when session or lyrics change - following Lyrics to Display rule
   useEffect(() => {
