@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { websocketMessageSchema, type WebSocketMessage, type Session } from "@shared/schema";
+import { websocketMessageSchema, type WebSocketMessage, type Session, insertDisplaySettingsSchema, lyricsLowerThirdSettingsSchema, lyricsFullscreenSettingsSchema, bibleLowerThirdSettingsSchema, bibleFullscreenSettingsSchema, controlPanelSettingsSchema, obsDockSettingsSchema } from "@shared/schema";
 import { z } from "zod";
 import { writeFileSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
@@ -442,6 +442,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error downloading default Bibles:', error);
       res.status(500).json({ error: "Failed to download default Bible versions" });
+    }
+  });
+
+  // Display settings API routes
+  app.get('/api/display-settings/:displayType', async (req, res) => {
+    try {
+      const { displayType } = req.params;
+      const settings = await storage.getDisplaySettings(displayType);
+
+      if (!settings) {
+        // Return default settings for the display type
+        let defaultSettings;
+        switch (displayType) {
+          case 'lyrics-lower-third':
+            defaultSettings = lyricsLowerThirdSettingsSchema.parse({});
+            break;
+          case 'lyrics-fullscreen':
+            defaultSettings = lyricsFullscreenSettingsSchema.parse({});
+            break;
+          case 'bible-lower-third':
+            defaultSettings = bibleLowerThirdSettingsSchema.parse({});
+            break;
+          case 'bible-fullscreen':
+            defaultSettings = bibleFullscreenSettingsSchema.parse({});
+            break;
+          case 'control-panel':
+            defaultSettings = controlPanelSettingsSchema.parse({});
+            break;
+          case 'obs-dock':
+            defaultSettings = obsDockSettingsSchema.parse({});
+            break;
+          default:
+            return res.status(400).json({ message: 'Invalid display type' });
+        }
+        return res.json({ settings: defaultSettings });
+      }
+
+      res.json({ settings: settings.settings });
+    } catch (error) {
+      console.error('Failed to get display settings:', error);
+      res.status(500).json({ message: 'Failed to get display settings' });
+    }
+  });
+
+  app.post('/api/display-settings/:displayType', async (req, res) => {
+    try {
+      const { displayType } = req.params;
+      const { settings: settingsData } = req.body;
+
+      // Validate settings based on display type
+      let validatedSettings;
+      try {
+        switch (displayType) {
+          case 'lyrics-lower-third':
+            validatedSettings = lyricsLowerThirdSettingsSchema.parse(settingsData);
+            break;
+          case 'lyrics-fullscreen':
+            validatedSettings = lyricsFullscreenSettingsSchema.parse(settingsData);
+            break;
+          case 'bible-lower-third':
+            validatedSettings = bibleLowerThirdSettingsSchema.parse(settingsData);
+            break;
+          case 'bible-fullscreen':
+            validatedSettings = bibleFullscreenSettingsSchema.parse(settingsData);
+            break;
+          case 'control-panel':
+            validatedSettings = controlPanelSettingsSchema.parse(settingsData);
+            break;
+          case 'obs-dock':
+            validatedSettings = obsDockSettingsSchema.parse(settingsData);
+            break;
+          default:
+            return res.status(400).json({ message: 'Invalid display type' });
+        }
+      } catch (validationError) {
+        return res.status(400).json({ message: 'Invalid settings data', error: validationError });
+      }
+
+      // Check if settings already exist
+      const existingSettings = await storage.getDisplaySettings(displayType);
+      let result;
+
+      if (!existingSettings) {
+        // Create new settings
+        result = await storage.createDisplaySettings({
+          displayType,
+          settings: validatedSettings,
+        });
+      } else {
+        // Update existing settings
+        result = await storage.updateDisplaySettings(displayType, validatedSettings);
+      }
+
+      if (!result) {
+        return res.status(500).json({ message: 'Failed to save display settings' });
+      }
+
+      console.log(`Display settings updated for ${displayType}:`, validatedSettings);
+      res.json({ success: true, settings: result.settings });
+    } catch (error) {
+      console.error('Failed to save display settings:', error);
+      res.status(500).json({ message: 'Failed to save display settings' });
+    }
+  });
+
+  app.delete('/api/display-settings/:displayType', async (req, res) => {
+    try {
+      const { displayType } = req.params;
+      const success = await storage.deleteDisplaySettings(displayType);
+
+      if (!success) {
+        return res.status(404).json({ message: 'Display settings not found' });
+      }
+
+      res.json({ success: true, message: 'Display settings deleted' });
+    } catch (error) {
+      console.error('Failed to delete display settings:', error);
+      res.status(500).json({ message: 'Failed to delete display settings' });
     }
   });
 
