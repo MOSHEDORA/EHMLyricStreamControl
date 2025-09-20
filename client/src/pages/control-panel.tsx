@@ -40,6 +40,8 @@ import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
 import { DisplaySettings } from "@/components/display-settings";
+import { useScreenSettings } from "@/hooks/use-screen-settings";
+import { SCREEN_PRESETS } from "@/utils/screen-settings";
 
 export default function ControlPanel() {
   const sessionId = "default";
@@ -55,6 +57,7 @@ export default function ControlPanel() {
     navigate,
   } = useWebSocket(sessionId);
   const { toast } = useToast();
+  const { settings: screenSettings, updateSettings: updateScreenSettings } = useScreenSettings();
 
   const [lyricsText, setLyricsText] = useState("");
   const [songTitle, setSongTitle] = useState("");
@@ -1527,6 +1530,157 @@ export default function ControlPanel() {
                 </CardHeader>
                 <CardContent>
                   <FontPermissionBanner />
+                </CardContent>
+              </Card>
+
+              {/* Screen & Auto Size Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Monitor className="h-5 w-5 mr-2" />
+                    Screen & Auto Size Settings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Screen Preset Selection */}
+                    <div className="space-y-2">
+                      <Label htmlFor="screen-preset">Screen Preset</Label>
+                      <Select
+                        value={screenSettings.preset}
+                        onValueChange={(value) => updateScreenSettings({ preset: value })}
+                      >
+                        <SelectTrigger data-testid="select-screen-preset">
+                          <SelectValue placeholder="Select preset" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SCREEN_PRESETS.map((preset) => (
+                            <SelectItem key={preset.name} value={preset.name}>
+                              {preset.name} ({preset.width}×{preset.height})
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Auto Size Toggle */}
+                    <div className="space-y-2">
+                      <Label htmlFor="auto-size-enabled">Auto Size Text</Label>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="auto-size-enabled"
+                          checked={screenSettings.autoSizeEnabled}
+                          onCheckedChange={(checked) => updateScreenSettings({ autoSizeEnabled: checked })}
+                          data-testid="switch-auto-size"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          {screenSettings.autoSizeEnabled ? 'Enabled' : 'Disabled'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Custom Dimensions */}
+                  {screenSettings.preset === 'custom' && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="custom-width">Width (px)</Label>
+                        <Input
+                          id="custom-width"
+                          type="number"
+                          value={screenSettings.width}
+                          onChange={(e) => updateScreenSettings({ width: parseInt(e.target.value) || 1920 })}
+                          data-testid="input-custom-width"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="custom-height">Height (px)</Label>
+                        <Input
+                          id="custom-height"
+                          type="number"
+                          value={screenSettings.height}
+                          onChange={(e) => updateScreenSettings({ height: parseInt(e.target.value) || 1080 })}
+                          data-testid="input-custom-height"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Auto Size Configuration */}
+                  {screenSettings.autoSizeEnabled && (
+                    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                      <h4 className="text-sm font-medium">Auto Size Configuration</h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Font Size Range */}
+                        <div className="space-y-2">
+                          <Label>Font Size Range</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label htmlFor="min-font-size" className="text-xs">Min</Label>
+                              <Input
+                                id="min-font-size"
+                                type="number"
+                                value={screenSettings.minFontSize}
+                                onChange={(e) => updateScreenSettings({ minFontSize: parseInt(e.target.value) || 16 })}
+                                data-testid="input-min-font-size"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="max-font-size" className="text-xs">Max</Label>
+                              <Input
+                                id="max-font-size"
+                                type="number"
+                                value={screenSettings.maxFontSize}
+                                onChange={(e) => updateScreenSettings({ maxFontSize: parseInt(e.target.value) || 200 })}
+                                data-testid="input-max-font-size"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Margins */}
+                        <div className="space-y-2">
+                          <Label htmlFor="margins">Margins (px)</Label>
+                          <Input
+                            id="margins"
+                            type="number"
+                            value={screenSettings.margins}
+                            onChange={(e) => updateScreenSettings({ margins: parseInt(e.target.value) || 40 })}
+                            data-testid="input-margins"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Lower Third Height */}
+                      <div className="space-y-2">
+                        <Label htmlFor="lower-third-height">Lower Third Height (%)</Label>
+                        <div className="flex items-center space-x-4">
+                          <Slider
+                            value={[screenSettings.lowerThirdHeightPercent]}
+                            onValueChange={([value]) => updateScreenSettings({ lowerThirdHeightPercent: value })}
+                            max={50}
+                            min={10}
+                            step={5}
+                            className="flex-1"
+                            data-testid="slider-lower-third-height"
+                          />
+                          <span className="text-sm font-medium w-12">
+                            {screenSettings.lowerThirdHeightPercent}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Current Settings Display */}
+                  <div className="text-sm text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                    <strong>Current Settings:</strong> {screenSettings.width}×{screenSettings.height} | 
+                    Auto Size: {screenSettings.autoSizeEnabled ? 'ON' : 'OFF'} |
+                    Font Range: {screenSettings.minFontSize}-{screenSettings.maxFontSize}px |
+                    Margins: {screenSettings.margins}px
+                  </div>
                 </CardContent>
               </Card>
               

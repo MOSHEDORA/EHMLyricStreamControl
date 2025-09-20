@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useAutoFontSize } from "@/hooks/use-auto-font-size";
+import { useScreenSettings } from "@/hooks/use-screen-settings";
 import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function LyricsLowerThird() {
@@ -9,6 +11,18 @@ export default function LyricsLowerThird() {
   const [displaySettings, setDisplaySettings] = useState(() => 
     loadDisplaySettings('lyrics-lower-third')
   );
+
+  // Screen settings for auto-sizing
+  const { settings: screenSettings } = useScreenSettings();
+
+  // Auto font sizing for lower third
+  const baseStyle = getDisplayStyle(displaySettings);
+  const { containerRef, measureRef, fontSize, autoSizeEnabled } = useAutoFontSize({
+    lines: currentDisplayLines,
+    baseStyles: baseStyle,
+    isLowerThird: true,
+    enabled: true,
+  });
 
   // Load display settings on mount and when localStorage changes
   useEffect(() => {
@@ -53,7 +67,10 @@ export default function LyricsLowerThird() {
     return null; // Completely hidden - no background
   }
 
-  const textStyle = getDisplayStyle(displaySettings);
+  const textStyle = {
+    ...getDisplayStyle(displaySettings),
+    fontSize: autoSizeEnabled ? fontSize : getDisplayStyle(displaySettings).fontSize,
+  };
   const backgroundStyle = getBackgroundStyle(displaySettings);
 
   return (
@@ -66,12 +83,31 @@ export default function LyricsLowerThird() {
         />
       )}
 
+      {/* Hidden measurer for auto-sizing */}
+      <div
+        ref={measureRef}
+        className="absolute -top-full left-0 opacity-0 pointer-events-none whitespace-pre-wrap"
+        style={{
+          visibility: 'hidden',
+          position: 'absolute',
+          top: '-9999px',
+          left: '-9999px',
+        }}
+      />
+
       {/* Lower third positioned content */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-8">
+      <div 
+        className="absolute bottom-0 left-0 right-0 z-10"
+        style={{
+          height: `${screenSettings.lowerThirdHeightPercent || 25}%`,
+        }}
+      >
         <div 
-          className="w-full max-w-6xl mx-auto"
+          ref={containerRef}
+          className="w-full h-full"
           style={{ 
             textAlign: displaySettings.textAlign,
+            padding: `${screenSettings.margins || 40}px`,
           }}
         >
           {currentDisplayLines.length > 0 ? (
