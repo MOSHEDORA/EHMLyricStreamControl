@@ -3,7 +3,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { defaultDisplayFullscreenSettings } from "@/settings/display-fullscreen-settings";
 
 export default function DisplayFullscreen() {
-  const sessionId = "default";
+  const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
 

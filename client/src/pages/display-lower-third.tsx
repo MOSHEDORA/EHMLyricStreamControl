@@ -3,7 +3,7 @@ import { useWebSocket } from "@/hooks/use-websocket";
 import { defaultDisplayLowerThirdSettings } from "@/settings/display-lower-third-settings";
 
 export default function DisplayLowerThird() {
-  const sessionId = "default";
+  const sessionId = "lyrics-lower-third";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
 

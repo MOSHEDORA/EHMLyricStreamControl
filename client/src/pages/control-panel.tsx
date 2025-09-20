@@ -80,7 +80,6 @@ export default function ControlPanel() {
   // Display settings are now managed via URL-specific settings
   const [lyricsLowerThirdSettings, setLyricsLowerThirdSettings] = useState(defaultLyricsLowerThirdSettings);
   const [lyricsFullscreenSettings, setLyricsFullscreenSettings] = useState(defaultLyricsFullscreenSettings);
-  const [separateDisplaySettings, setSeparateDisplaySettings] = useState(false);
 
   // Bible state - lifted up to preserve across tab switches
   const [bibleSelectedBook, setBibleSelectedBook] = useState<string>("");
@@ -338,10 +337,9 @@ export default function ControlPanel() {
           </button>
         </div>
         <Tabs value={activeTab} onValueChange={v => setActiveTab(v as any)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
             <TabsTrigger value="bible">Bible</TabsTrigger>
-            <TabsTrigger value="display">Display</TabsTrigger>
             <TabsTrigger value="help">Help</TabsTrigger>
           </TabsList>
 
@@ -391,26 +389,7 @@ export default function ControlPanel() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <Label>Lines to display:</Label>
-                        <Select
-                          value={displaySettings.displayLines.toString()}
-                          onValueChange={(value) =>
-                            updateDisplaySettings({ displayLines: parseInt(value) })
-                          }
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">1 line</SelectItem>
-                            <SelectItem value="2">2 lines</SelectItem>
-                            <SelectItem value="3">3 lines</SelectItem>
-                            <SelectItem value="4">4 lines</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="flex justify-end">
                       <Button onClick={handleLoadLyrics}>
                         <Upload className="h-4 w-4 mr-2" />
                         Load Lyrics
@@ -954,220 +933,6 @@ export default function ControlPanel() {
                           </div>
                         </div>
                       </div>
-
-
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="1">1 line</SelectItem>
-                              <SelectItem value="2">2 lines</SelectItem>
-                              <SelectItem value="3">3 lines</SelectItem>
-                              <SelectItem value="4">4 lines</SelectItem>
-                              <SelectItem value="5">5 lines</SelectItem>
-                              <SelectItem value="6">6 lines</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Layout Settings */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Padding: {displaySettings.padding}px</Label>
-                            <Slider
-                              value={[displaySettings.padding]}
-                              onValueChange={([value]) =>
-                                updateDisplaySettings({ padding: value })
-                              }
-                              min={0}
-                              max={100}
-                              step={5}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Margin: {displaySettings.margin}px</Label>
-                            <Slider
-                              value={[displaySettings.margin]}
-                              onValueChange={([value]) =>
-                                updateDisplaySettings({ margin: value })
-                              }
-                              min={0}
-                              max={100}
-                              step={5}
-                            />
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        {/* Text Effects */}
-                        <div className="space-y-4">
-                          <h4 className="font-semibold">Text Effects</h4>
-                          <div className="space-y-2">
-                            <Label>Text Shadow</Label>
-                            <Input
-                              value={displaySettings.textShadow}
-                              onChange={(e) =>
-                                updateDisplaySettings({ textShadow: e.target.value })
-                              }
-                              placeholder="2px 2px 4px rgba(0,0,0,0.8)"
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Border Radius: {displaySettings.borderRadius}px</Label>
-                              <Slider
-                                value={[displaySettings.borderRadius]}
-                                onValueChange={([value]) =>
-                                  updateDisplaySettings({ borderRadius: value })
-                                }
-                                min={0}
-                                max={50}
-                                step={1}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Border</Label>
-                              <Input
-                                value={displaySettings.border}
-                                onChange={(e) =>
-                                  updateDisplaySettings({ border: e.target.value })
-                                }
-                                placeholder="1px solid #ffffff"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        {/* Responsive Settings */}
-                        <div className="space-y-4">
-                          <h4 className="font-semibold">Responsive Settings</h4>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="autoScale"
-                              checked={displaySettings.autoScale}
-                              onCheckedChange={(checked) =>
-                                updateDisplaySettings({ autoScale: !!checked })
-                              }
-                            />
-                            <Label htmlFor="autoScale">Auto Scale Font Size</Label>
-                          </div>
-                          {displaySettings.autoScale && (
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>Min Font Size: {displaySettings.minFontSize}px</Label>
-                                <Slider
-                                  value={[displaySettings.minFontSize]}
-                                  onValueChange={([value]) =>
-                                    updateDisplaySettings({ minFontSize: value })
-                                  }
-                                  min={8}
-                                  max={100}
-                                  step={2}
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>Max Font Size: {displaySettings.maxFontSize}px</Label>
-                                <Slider
-                                  value={[displaySettings.maxFontSize]}
-                                  onValueChange={([value]) =>
-                                    updateDisplaySettings({ maxFontSize: value })
-                                  }
-                                  min={50}
-                                  max={500}
-                                  step={10}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        <Separator />
-
-                        {/* Display Mode and Performance */}
-                        <div className="space-y-4">
-                          <h4 className="font-semibold">Display Mode & Performance</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Display Mode</Label>
-                              <Select
-                                value={displaySettings.mode}
-                                onValueChange={(value: 'lyrics' | 'bible' | 'custom') =>
-                                  updateDisplaySettings({ mode: value })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="lyrics">Lyrics</SelectItem>
-                                  <SelectItem value="bible">Bible</SelectItem>
-                                  <SelectItem value="custom">Custom</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Refresh Rate: {displaySettings.refreshRate}ms</Label>
-                              <Slider
-                                value={[displaySettings.refreshRate]}
-                                onValueChange={([value]) =>
-                                  updateDisplaySettings({ refreshRate: value })
-                                }
-                                min={100}
-                                max={5000}
-                                step={100}
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        {/* Background Settings */}
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id="showBackground"
-                              checked={displaySettings.showBackground}
-                              onCheckedChange={(checked) =>
-                                updateDisplaySettings({ showBackground: !!checked })
-                              }
-                            />
-                            <Label htmlFor="showBackground">Show Background</Label>
-                          </div>
-
-                          {displaySettings.showBackground && (
-                            <>
-                              <div className="space-y-2">
-                                <Label>Background Color</Label>
-                                <div className="flex space-x-2">
-                                  <input
-                                    type="color"
-                                    value={displaySettings.backgroundColor}
-                                    onChange={(e) =>
-                                      updateDisplaySettings({
-                                        backgroundColor: e.target.value,
-                                      })
-                                    }
-                                    className="w-12 h-8 rounded border border-border"
-                                  />
-                                  <Input
-                                    value={displaySettings.backgroundColor}
-                                    onChange={(e) =>
-                                      updateDisplaySettings({
-                                        backgroundColor: e.target.value,
-                                      })
-                                    }
-                                    className="flex-1"
-                                  />
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
                     )}
                   </CardContent>
                 </Card>
@@ -1623,48 +1388,11 @@ export default function ControlPanel() {
               </Card>
             </div>
           </TabsContent>
-
-          <TabsContent value="display">
-            <div className="space-y-6">
-              {/* New Display Settings Panel with Resolution Options */}
-              <DisplaySettingsPanel />
-              
-              {/* Legacy Display Settings */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center">
-                      <Settings className="h-5 w-5 mr-2 text-primary" />
-                      Legacy Display Settings
-                    </span>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="separateSettings"
-                        checked={separateDisplaySettings}
-                        onCheckedChange={(checked) =>
-                          setSeparateDisplaySettings(checked as boolean)
-                        }
-                      />
-                      <Label htmlFor="separateSettings" className="text-sm">
-                        Separate Settings for Each Display
-                      </Label>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {separateDisplaySettings ? (
-                    /* Separate display settings */
-                    <div className="space-y-8">
-                      {/* Lower Third Settings */}
-                      <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950/30">
-                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
-                          <FileText className="h-4 w-4 mr-2" />
-                          Lower Third (OBS) Settings
-                        </h4>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Lines to display:</Label>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
                               <Select
                                 value={lyricsLowerThirdSettings.displayLines.toString()}
                                 onValueChange={(value) =>
