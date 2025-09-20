@@ -52,10 +52,34 @@ export default function ControlPanel() {
     isConnected,
     updateLyrics,
     updatePosition,
-    updateSettings,
+    updateSettings: originalUpdateSettings,
     togglePlay,
     navigate,
   } = useWebSocket(sessionId);
+
+  // Custom updateSettings that broadcasts to all relevant sessions
+  const updateSettings = useCallback(async (settings: Parameters<typeof originalUpdateSettings>[0]) => {
+    // Update the default session first
+    originalUpdateSettings(settings);
+    
+    // Also send updates to all specific display sessions via API
+    const sessionIds = ['bible-fullscreen', 'bible-lower-third', 'lyrics-fullscreen', 'lyrics-lower-third'];
+    
+    try {
+      await Promise.all(sessionIds.map(async (sessionId) => {
+        const response = await fetch(`/api/sessions/${sessionId}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+        if (!response.ok) {
+          console.warn(`Failed to update settings for session ${sessionId}`);
+        }
+      }));
+    } catch (error) {
+      console.error('Failed to broadcast settings to all sessions:', error);
+    }
+  }, [originalUpdateSettings]);
   const { toast } = useToast();
   const { settings: screenSettings, updateSettings: updateScreenSettings } = useScreenSettings();
 
@@ -170,21 +194,21 @@ export default function ControlPanel() {
       updateLyrics(lyricsText.trim(), songTitle.trim());
       
       // Also send to lyrics-specific sessions
-      fetch('/api/sessions/lyrics-lower-third/lyrics', {
+      fetch('/api/sessions/lyrics-lower-third', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          lyrics: lyricsText.trim(), 
-          title: songTitle.trim() 
+          lyricsText: lyricsText.trim(), 
+          songTitle: songTitle.trim() 
         })
       });
       
-      fetch('/api/sessions/lyrics-fullscreen/lyrics', {
+      fetch('/api/sessions/lyrics-fullscreen', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          lyrics: lyricsText.trim(), 
-          title: songTitle.trim() 
+          lyricsText: lyricsText.trim(), 
+          songTitle: songTitle.trim() 
         })
       });
       
