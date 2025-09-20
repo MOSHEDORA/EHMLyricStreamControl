@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useBible } from "@/hooks/use-bible";
-import { defaultObsDockSettings } from "@/settings/obs-dock-settings";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -28,8 +27,12 @@ import {
 import { BibleControls } from "@/components/bible-controls";
 
 export default function OBSDock() {
-  // URL-specific settings
-  const settings = defaultObsDockSettings;
+  // Hardcoded settings
+  const settings = {
+    fontSize: 14,
+    fontFamily: 'Arial',
+    compactMode: false
+  };
   const sessionId = "default";
   const { session, lyricsArray, totalLines, isConnected, updateLyrics, updatePosition, updateSettings, togglePlay, navigate } = useWebSocket(sessionId);
   const { currentChapter, loading: bibleLoading, loadChapter } = useBible();

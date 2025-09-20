@@ -36,11 +36,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
 import { Link } from "wouter";
-import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
 
 export default function ControlPanel() {
-  // URL-specific settings
-  const settings = defaultControlPanelSettings;
+  // Hardcoded settings
+  const settings = {
+    fontSize: 14,
+    fontFamily: 'Arial',
+    backgroundColor: '#ffffff'
+  };
   const sessionId = "default";
   const {
     session,

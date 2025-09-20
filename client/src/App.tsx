@@ -4,8 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ControlPanel from "@/pages/control-panel";
-import DisplayLowerThird from "@/pages/display-lower-third";
-import DisplayFullscreen from "@/pages/display-fullscreen";
 import LyricsLowerThird from "@/pages/lyrics-lower-third";
 import LyricsFullscreen from "@/pages/lyrics-fullscreen";
 import BibleLowerThird from "@/pages/bible-lower-third";
@@ -19,8 +17,8 @@ function Router() {
     <Switch>
       <Route path="/" component={ControlPanel} />
       <Route path="/control" component={ControlPanel} />
-      <Route path="/display/lower-third" component={DisplayLowerThird} />
-      <Route path="/display/fullscreen" component={DisplayFullscreen} />
+      <Route path="/display/lower-third" component={LyricsLowerThird} />
+      <Route path="/display/fullscreen" component={LyricsFullscreen} />
       <Route path="/lyrics-lower-third" component={LyricsLowerThird} />
       <Route path="/lyrics-fullscreen" component={LyricsFullscreen} />
       <Route path="/bible-lower-third" component={BibleLowerThird} />

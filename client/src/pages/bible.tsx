@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { defaultBibleNavigatorSettings } from "@/settings/bible-navigator-settings";
 import { BibleControls } from "@/components/bible-controls";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +10,13 @@ import { BookOpen, Send, ArrowLeft, Settings } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Bible() {
-  // URL-specific settings
-  const settings = defaultBibleNavigatorSettings;
+  // Hardcoded settings
+  const settings = {
+    fontSize: 16,
+    fontFamily: 'Arial',
+    textColor: '#000000',
+    backgroundColor: '#ffffff'
+  };
   const sessionId = "default";
   const { updateLyrics } = useWebSocket(sessionId);
   const { toast } = useToast();
