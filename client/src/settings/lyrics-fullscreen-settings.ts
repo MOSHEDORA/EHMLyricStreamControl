@@ -42,6 +42,13 @@ export interface LyricsFullscreenSettings {
   fadeTransition: boolean;
   slideTransition: boolean;
   slideDirection: 'up' | 'down' | 'left' | 'right';
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultLyricsFullscreenSettings: LyricsFullscreenSettings = {
@@ -75,4 +82,9 @@ export const defaultLyricsFullscreenSettings: LyricsFullscreenSettings = {
   fadeTransition: true,
   slideTransition: false,
   slideDirection: 'up',
+  autoFontSize: true,
+  minFontSize: 20,
+  maxFontSize: 200,
+  autoFit: true,
+  autoFitMargins: 50,
 };

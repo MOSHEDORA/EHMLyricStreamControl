@@ -36,6 +36,13 @@ export interface LyricsLowerThirdSettings {
   autoScroll: boolean;
   scrollSpeed: number;
   smoothScrolling: boolean;
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultLyricsLowerThirdSettings: LyricsLowerThirdSettings = {
@@ -63,4 +70,9 @@ export const defaultLyricsLowerThirdSettings: LyricsLowerThirdSettings = {
   autoScroll: true,
   scrollSpeed: 500,
   smoothScrolling: true,
+  autoFontSize: true,
+  minFontSize: 12,
+  maxFontSize: 100,
+  autoFit: true,
+  autoFitMargins: 16,
 };

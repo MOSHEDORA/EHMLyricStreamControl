@@ -29,6 +29,13 @@ export interface DisplayFullscreenSettings {
   dropShadow: boolean;
   shadowColor: string;
   shadowBlur: number;
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultDisplayFullscreenSettings: DisplayFullscreenSettings = {
@@ -54,4 +61,9 @@ export const defaultDisplayFullscreenSettings: DisplayFullscreenSettings = {
   dropShadow: true,
   shadowColor: '#000000',
   shadowBlur: 4,
+  autoFontSize: true,
+  minFontSize: 16,
+  maxFontSize: 300,
+  autoFit: true,
+  autoFitMargins: 40,
 };

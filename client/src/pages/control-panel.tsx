@@ -39,7 +39,6 @@ import { DisplaySettingsPanel } from "@/components/display-settings-panel";
 import { Link } from "wouter";
 import { Switch } from "@/components/ui/switch";
 import { defaultControlPanelSettings } from "@/settings/control-panel-settings";
-import { defaultDisplaySettings } from "@/settings/display-settings";
 import { defaultLyricsLowerThirdSettings } from "@/settings/lyrics-lower-third-settings";
 import { defaultLyricsFullscreenSettings } from "@/settings/lyrics-fullscreen-settings";
 
@@ -78,8 +77,7 @@ export default function ControlPanel() {
   const [displayMode, setDisplayMode] = useState<'lyrics' | 'bible'>('lyrics');
   const [activeTab, setActiveTab] = useState<'lyrics' | 'bible' | 'settings' | 'display'>('lyrics');
 
-  // Display settings state
-  const [displaySettings, setDisplaySettings] = useState(defaultDisplaySettings);
+  // Display settings are now managed via URL-specific settings
   const [lyricsLowerThirdSettings, setLyricsLowerThirdSettings] = useState(defaultLyricsLowerThirdSettings);
   const [lyricsFullscreenSettings, setLyricsFullscreenSettings] = useState(defaultLyricsFullscreenSettings);
   const [separateDisplaySettings, setSeparateDisplaySettings] = useState(false);
@@ -101,12 +99,7 @@ export default function ControlPanel() {
     }
   }, [session]);
 
-  // Helper function to update display settings
-  const updateDisplaySettings = useCallback((newSettings: Partial<typeof displaySettings>) => {
-    setDisplaySettings(prev => ({ ...prev, ...newSettings }));
-    // Here you could also persist to localStorage or send to server if needed
-    console.log('Display settings updated:', newSettings);
-  }, []);
+  // Legacy display settings removed - now use URL-specific settings
 
   const updateLyricsLowerThirdSettings = useCallback((newSettings: Partial<typeof lyricsLowerThirdSettings>) => {
     setLyricsLowerThirdSettings(prev => ({ ...prev, ...newSettings }));
@@ -118,11 +111,12 @@ export default function ControlPanel() {
     console.log('Lyrics fullscreen settings updated:', newSettings);
   }, []);
 
-  // Auto-scroll to current lyrics group
+  // Auto-scroll to current lyrics group (using default display lines)
   useEffect(() => {
     if (session && lyricsArray.length > 0) {
+      const defaultDisplayLines = 3; // Default display lines
       const currentGroupIndex = Math.floor(
-        session.currentLine / displaySettings.displayLines,
+        session.currentLine / defaultDisplayLines,
       );
       const scrollContainer = document.getElementById(
         "lyrics-scroll-container",
@@ -147,7 +141,7 @@ export default function ControlPanel() {
         }
       }
     }
-  }, [session?.currentLine, displaySettings.displayLines, lyricsArray.length]);
+  }, [session?.currentLine, lyricsArray.length]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -243,7 +237,7 @@ export default function ControlPanel() {
   }, [jumpToLine, navigate]);
 
   const copyOBSUrl = useCallback(async () => {
-    const url = `${window.location.origin}/display`;
+    const url = `${window.location.origin}/display/lower-third`;
     try {
       await navigator.clipboard.writeText(url);
       toast({
@@ -270,9 +264,10 @@ export default function ControlPanel() {
   const getCurrentDisplayLines = useCallback(() => {
     if (!session || !lyricsArray.length) return [];
 
+    const defaultDisplayLines = 3; // Default display lines
     const startLine = session.currentLine;
     const endLine = Math.min(
-      startLine + displaySettings.displayLines,
+      startLine + defaultDisplayLines,
       lyricsArray.length,
     );
     return lyricsArray.slice(startLine, endLine);
@@ -797,8 +792,7 @@ export default function ControlPanel() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {separateDisplaySettings ? (
-                      /* Separate display settings */
+                    {/* URL-specific display settings */}
                       <div className="space-y-8">
                         {/* Lower Third Settings */}
                         <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950/30">
@@ -960,115 +954,8 @@ export default function ControlPanel() {
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      /* Unified display settings */
-                      <div className="space-y-6">
-                        {/* Font Family */}
-                        <div className="space-y-2">
-                          <Label>Font Family</Label>
-                          <Select
-                            value={displaySettings.fontFamily}
-                            onValueChange={(value) =>
-                              updateDisplaySettings({ fontFamily: value })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Arial">Arial</SelectItem>
-                              <SelectItem value="Helvetica">Helvetica</SelectItem>
-                              <SelectItem value="Times New Roman">Times New Roman</SelectItem>
-                              <SelectItem value="Georgia">Georgia</SelectItem>
-                              <SelectItem value="Verdana">Verdana</SelectItem>
-                              <SelectItem value="Tahoma">Tahoma</SelectItem>
-                              <SelectItem value="Trebuchet MS">Trebuchet MS</SelectItem>
-                              <SelectItem value="Impact">Impact</SelectItem>
-                              <SelectItem value="Comic Sans MS">Comic Sans MS</SelectItem>
-                              <SelectItem value="Courier New">Courier New</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
 
-                        {/* Font Size */}
-                        <div className="space-y-2">
-                          <Label>Font Size: {displaySettings.fontSize}px</Label>
-                          <Slider
-                            value={[displaySettings.fontSize]}
-                            onValueChange={([value]) =>
-                              updateDisplaySettings({ fontSize: value })
-                            }
-                            min={16}
-                            max={300}
-                            step={2}
-                          />
-                        </div>
 
-                        {/* Text Color */}
-                        <div className="space-y-2">
-                          <Label>Text Color</Label>
-                          <div className="flex space-x-2">
-                            <input
-                              type="color"
-                              value={displaySettings.textColor}
-                              onChange={(e) =>
-                                updateDisplaySettings({ textColor: e.target.value })
-                              }
-                              className="w-12 h-8 rounded border border-border"
-                            />
-                            <Input
-                              value={displaySettings.textColor}
-                              onChange={(e) =>
-                                updateDisplaySettings({ textColor: e.target.value })
-                              }
-                              className="flex-1"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Text Alignment */}
-                        <div className="space-y-2">
-                          <Label>Text Alignment</Label>
-                          <Select
-                            value={displaySettings.textAlign}
-                            onValueChange={(value) =>
-                              updateDisplaySettings({ textAlign: value })
-                            }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="left">Left</SelectItem>
-                              <SelectItem value="center">Center</SelectItem>
-                              <SelectItem value="right">Right</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {/* Line Height */}
-                        <div className="space-y-2">
-                          <Label>Line Height: {displaySettings.lineHeight}</Label>
-                          <Slider
-                            value={[displaySettings.lineHeight]}
-                            onValueChange={([value]) =>
-                              updateDisplaySettings({ lineHeight: value })
-                            }
-                            min={1.0}
-                            max={3.0}
-                            step={0.1}
-                          />
-                        </div>
-
-                        {/* Display Lines */}
-                        <div className="space-y-2">
-                          <Label>Display Lines</Label>
-                          <Select
-                            value={displaySettings.displayLines.toString()}
-                            onValueChange={(value) =>
-                              updateDisplaySettings({ displayLines: parseInt(value) })
-                            }
-                          >
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -1276,32 +1163,6 @@ export default function ControlPanel() {
                                     className="flex-1"
                                   />
                                 </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                <Label>
-                                  Background Opacity: {displaySettings.backgroundOpacity}%
-                                </Label>
-                                <Slider
-                                  value={[displaySettings.backgroundOpacity]}
-                                  onValueChange={([value]) =>
-                                    updateDisplaySettings({ backgroundOpacity: value })
-                                  }
-                                  min={0}
-                                  max={100}
-                                  step={5}
-                                />
-                              </div>
-
-                              <div className="space-y-2">
-                                <Label>Background Image URL</Label>
-                                <Input
-                                  value={displaySettings.backgroundImage}
-                                  onChange={(e) =>
-                                    updateDisplaySettings({ backgroundImage: e.target.value })
-                                  }
-                                  placeholder="https://example.com/image.jpg"
-                                />
                               </div>
                             </>
                           )}

@@ -50,6 +50,13 @@ export interface BibleFullscreenSettings {
   languageLayout: 'side-by-side' | 'stacked' | 'alternating';
   secondaryLanguageSize: number; // relative to primary
   languageSeparator: string;
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultBibleFullscreenSettings: BibleFullscreenSettings = {
@@ -89,4 +96,9 @@ export const defaultBibleFullscreenSettings: BibleFullscreenSettings = {
   languageLayout: 'side-by-side',
   secondaryLanguageSize: 0.9,
   languageSeparator: ' | ',
+  autoFontSize: true,
+  minFontSize: 18,
+  maxFontSize: 180,
+  autoFit: true,
+  autoFitMargins: 60,
 };

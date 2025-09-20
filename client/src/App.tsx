@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ControlPanel from "@/pages/control-panel";
-import Display from "@/pages/display";
 import DisplayLowerThird from "@/pages/display-lower-third";
 import DisplayFullscreen from "@/pages/display-fullscreen";
 import LyricsLowerThird from "@/pages/lyrics-lower-third";
@@ -20,7 +19,6 @@ function Router() {
     <Switch>
       <Route path="/" component={ControlPanel} />
       <Route path="/control" component={ControlPanel} />
-      <Route path="/display" component={Display} />
       <Route path="/display/lower-third" component={DisplayLowerThird} />
       <Route path="/display/fullscreen" component={DisplayFullscreen} />
       <Route path="/lyrics-lower-third" component={LyricsLowerThird} />

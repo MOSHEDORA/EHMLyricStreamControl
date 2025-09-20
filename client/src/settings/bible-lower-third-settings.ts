@@ -39,6 +39,13 @@ export interface BibleLowerThirdSettings {
   showBothLanguages: boolean;
   languageSeparator: string;
   secondaryLanguageOpacity: number;
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultBibleLowerThirdSettings: BibleLowerThirdSettings = {
@@ -69,4 +76,9 @@ export const defaultBibleLowerThirdSettings: BibleLowerThirdSettings = {
   showBothLanguages: false,
   languageSeparator: ' | ',
   secondaryLanguageOpacity: 0.8,
+  autoFontSize: true,
+  minFontSize: 12,
+  maxFontSize: 120,
+  autoFit: true,
+  autoFitMargins: 18,
 };

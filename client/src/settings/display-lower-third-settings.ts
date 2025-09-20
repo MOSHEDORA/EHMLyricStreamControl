@@ -25,6 +25,13 @@ export interface DisplayLowerThirdSettings {
   animationDuration: number;
   fadeInDelay: number;
   slideDirection: 'up' | 'down' | 'left' | 'right' | 'none';
+  
+  // Auto Font Size and Auto Fit
+  autoFontSize: boolean;
+  minFontSize: number;
+  maxFontSize: number;
+  autoFit: boolean;
+  autoFitMargins: number;
 }
 
 export const defaultDisplayLowerThirdSettings: DisplayLowerThirdSettings = {
@@ -46,4 +53,9 @@ export const defaultDisplayLowerThirdSettings: DisplayLowerThirdSettings = {
   animationDuration: 300,
   fadeInDelay: 0,
   slideDirection: 'up',
+  autoFontSize: true,
+  minFontSize: 14,
+  maxFontSize: 150,
+  autoFit: true,
+  autoFitMargins: 20,
 };
