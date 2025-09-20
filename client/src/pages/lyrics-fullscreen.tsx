@@ -5,7 +5,7 @@ import { useScreenSettings } from "@/hooks/use-screen-settings";
 import { loadDisplaySettings, getDisplayStyle, getBackgroundStyle } from "@/utils/display-settings";
 
 export default function LyricsFullscreen() {
-  const sessionId = "default";
+  const sessionId = "lyrics-fullscreen";
   const { session, lyricsArray } = useWebSocket(sessionId);
   const [currentDisplayLines, setCurrentDisplayLines] = useState<string[]>([]);
   const [displaySettings, setDisplaySettings] = useState(() => 

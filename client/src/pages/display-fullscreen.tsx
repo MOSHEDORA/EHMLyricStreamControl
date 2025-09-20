@@ -104,7 +104,7 @@ export default function DisplayFullscreen() {
             <div className="space-y-6">
               {currentDisplayLines.map((line, index) => {
                   // Check if this is a reference format "BookName Chapter:Verse (Language)"
-                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/s);
+                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/);
                   const isReferenceFormat = !!referenceMatch;
 
                   return (

@@ -114,7 +114,7 @@ export default function DisplayLowerThird() {
               <div className="space-y-2">
                 {currentDisplayLines.map((line, index) => {
                   // Check if this is a reference format "BookName Chapter:Verse (Language)"
-                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/s);
+                  const referenceMatch = line.match(/^([^(]+\s+\d+:\d+)\s*\(([^)]+)\)\s*\n(.+)/);
                   const isReferenceFormat = !!referenceMatch;
 
                   return (
