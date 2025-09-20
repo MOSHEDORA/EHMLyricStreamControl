@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { WebSocketClient } from "@/lib/websocket-client";
 import { WebSocketMessage, Session } from "@shared/schema";
+import { queryClient } from "@/lib/queryClient";
 
 interface WebSocketState {
   session: Session | null;
@@ -47,6 +48,12 @@ export function useWebSocket(sessionId: string = 'default') {
           lyricsArray: message.payload.lyricsArray,
           totalLines: message.payload.totalLines,
         }));
+      } else if (message.type === "settings_update") {
+        // Invalidate React Query cache for the updated display type
+        queryClient.invalidateQueries({ 
+          queryKey: ['display-settings', message.payload.displayType] 
+        });
+        console.log('Settings updated for display type:', message.payload.displayType);
       }
     });
 

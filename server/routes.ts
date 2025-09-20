@@ -540,6 +540,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log(`Display settings updated for ${displayType}:`, validatedSettings);
+      
+      // Broadcast settings update to all clients
+      const settingsMessage = {
+        type: "settings_update" as const,
+        payload: {
+          displayType,
+          settings: validatedSettings,
+        },
+      };
+      
+      // Broadcast to all sessions since settings are global
+      clients.forEach((sessionClients, sessionId) => {
+        sessionClients.forEach((client) => {
+          if (client.readyState === 1) { // WebSocket.OPEN
+            client.send(JSON.stringify(settingsMessage));
+          }
+        });
+      });
+      
       res.json({ success: true, settings: result.settings });
     } catch (error) {
       console.error('Failed to save display settings:', error);

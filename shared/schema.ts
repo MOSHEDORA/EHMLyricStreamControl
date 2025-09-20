@@ -147,6 +147,13 @@ export const websocketMessageSchema = z.discriminatedUnion("type", [
       totalLines: z.number(),
     }),
   }),
+  z.object({
+    type: z.literal("settings_update"),
+    payload: z.object({
+      displayType: z.string(),
+      settings: z.unknown(), // Will be validated by display-specific schemas
+    }),
+  }),
 ]);
 
 export type WebSocketMessage = z.infer<typeof websocketMessageSchema>;
