@@ -58,7 +58,7 @@ export const defaultSettings = {
   'lyrics-lower-third': {
     displayLines: 2,
     fontSize: 32,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     textColor: '#ffffff',
     textAlign: 'center' as const,
     lineHeight: 1.2,
@@ -70,7 +70,7 @@ export const defaultSettings = {
   'lyrics-fullscreen': {
     displayLines: 4,
     fontSize: 48,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     textColor: '#ffffff',
     textAlign: 'center' as const,
     lineHeight: 1.3,
@@ -84,7 +84,7 @@ export const defaultSettings = {
   'bible-lower-third': {
     displayLines: 2,
     fontSize: 32,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     textColor: '#ffffff',
     textAlign: 'center' as const,
     lineHeight: 1.2,
@@ -96,7 +96,7 @@ export const defaultSettings = {
   'bible-fullscreen': {
     versesPerScreen: 4,
     fontSize: 48,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     textColor: '#ffffff',
     textAlign: 'center' as const,
     lineHeight: 1.3,
@@ -108,13 +108,13 @@ export const defaultSettings = {
   
   'control-panel': {
     fontSize: 14,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     backgroundColor: '#ffffff',
   } as ControlPanelSettings,
   
   'obs-dock': {
     fontSize: 14,
-    fontFamily: 'Arial',
+    fontFamily: 'Rambadra Telugu',
     compactMode: false,
   } as OBSDockSettings,
 };

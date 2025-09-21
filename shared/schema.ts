@@ -36,7 +36,7 @@ export type DisplaySettings = typeof displaySettings.$inferSelect;
 export const lyricsLowerThirdSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(2),
   fontSize: z.number().min(8).max(100).default(32),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
   lineHeight: z.number().min(0.5).max(3).default(1.2),
@@ -48,7 +48,7 @@ export const lyricsLowerThirdSettingsSchema = z.object({
 export const lyricsFullscreenSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(4),
   fontSize: z.number().min(8).max(100).default(48),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
   lineHeight: z.number().min(0.5).max(3).default(1.3),
@@ -62,7 +62,7 @@ export const lyricsFullscreenSettingsSchema = z.object({
 export const bibleLowerThirdSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(2),
   fontSize: z.number().min(8).max(100).default(32),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
   lineHeight: z.number().min(0.5).max(3).default(1.2),
@@ -74,7 +74,7 @@ export const bibleLowerThirdSettingsSchema = z.object({
 export const bibleFullscreenSettingsSchema = z.object({
   versesPerScreen: z.number().min(1).max(10).default(4),
   fontSize: z.number().min(8).max(100).default(48),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
   lineHeight: z.number().min(0.5).max(3).default(1.3),
@@ -86,13 +86,13 @@ export const bibleFullscreenSettingsSchema = z.object({
 
 export const controlPanelSettingsSchema = z.object({
   fontSize: z.number().min(8).max(30).default(14),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   backgroundColor: z.string().default('#ffffff'),
 });
 
 export const obsDockSettingsSchema = z.object({
   fontSize: z.number().min(8).max(30).default(14),
-  fontFamily: z.string().default('Arial'),
+  fontFamily: z.string().default('Rambadra Telugu'),
   compactMode: z.boolean().default(false),
 });
 
