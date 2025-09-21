@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Settings, Save, RotateCcw, Monitor, Tv, Smartphone, Dock } from "lucide-react";
+import { Settings, Save, RotateCcw, Monitor, Tv, Smartphone, Dock, Upload, X } from "lucide-react";
 import type { 
   LyricsLowerThirdSettings, 
   LyricsFullscreenSettings, 
@@ -46,10 +46,152 @@ function FontSettings({
   settings: any; 
   updateSettings: (updates: any) => void; 
 }) {
+  const [uploadedFonts, setUploadedFonts] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
   const commonFonts = [
     'Ramabhadra', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS',
     'Tahoma', 'Impact', 'Comic Sans MS', 'Courier New', 'Palatino'
   ];
+
+  // Load uploaded fonts from localStorage on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem('uploadedFonts');
+    if (saved) {
+      setUploadedFonts(JSON.parse(saved));
+    }
+  }, []);
+
+  // Handle font file upload
+  const handleFontUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['font/ttf', 'font/otf', 'font/woff', 'font/woff2', 'application/font-woff', 'application/font-woff2'];
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    const validExtensions = ['ttf', 'otf', 'woff', 'woff2'];
+
+    if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension || '')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a valid font file (TTF, OTF, WOFF, WOFF2)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Font file must be smaller than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Read file as data URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        const fontName = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+        
+        // Create font-face CSS
+        const fontFormat = fileExtension === 'ttf' ? 'truetype' : 
+                          fileExtension === 'otf' ? 'opentype' :
+                          fileExtension === 'woff' ? 'woff' :
+                          fileExtension === 'woff2' ? 'woff2' : 'truetype';
+        
+        const fontFaceCSS = `
+          @font-face {
+            font-family: '${fontName}';
+            src: url('${dataUrl}') format('${fontFormat}');
+            font-display: swap;
+          }
+        `;
+        
+        // Add CSS to document
+        const styleElement = document.createElement('style');
+        styleElement.textContent = fontFaceCSS;
+        styleElement.id = `font-${fontName}`;
+        document.head.appendChild(styleElement);
+        
+        // Save font info
+        const newUploadedFonts = [...uploadedFonts, fontName];
+        setUploadedFonts(newUploadedFonts);
+        localStorage.setItem('uploadedFonts', JSON.stringify(newUploadedFonts));
+        localStorage.setItem(`fontData-${fontName}`, dataUrl);
+        localStorage.setItem(`fontFormat-${fontName}`, fontFormat);
+        
+        toast({
+          title: "Font uploaded successfully",
+          description: `${fontName} is now available in the font list`
+        });
+        
+        // Clear file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload font file",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Remove uploaded font
+  const removeUploadedFont = (fontName: string) => {
+    const newUploadedFonts = uploadedFonts.filter(f => f !== fontName);
+    setUploadedFonts(newUploadedFonts);
+    localStorage.setItem('uploadedFonts', JSON.stringify(newUploadedFonts));
+    localStorage.removeItem(`fontData-${fontName}`);
+    localStorage.removeItem(`fontFormat-${fontName}`);
+    
+    // Remove CSS
+    const styleElement = document.getElementById(`font-${fontName}`);
+    if (styleElement) {
+      styleElement.remove();
+    }
+    
+    toast({
+      title: "Font removed",
+      description: `${fontName} has been removed`
+    });
+  };
+
+  // Load uploaded fonts on component mount
+  useEffect(() => {
+    uploadedFonts.forEach(fontName => {
+      const dataUrl = localStorage.getItem(`fontData-${fontName}`);
+      const fontFormat = localStorage.getItem(`fontFormat-${fontName}`);
+      
+      if (dataUrl && fontFormat && !document.getElementById(`font-${fontName}`)) {
+        const fontFaceCSS = `
+          @font-face {
+            font-family: '${fontName}';
+            src: url('${dataUrl}') format('${fontFormat}');
+            font-display: swap;
+          }
+        `;
+        
+        const styleElement = document.createElement('style');
+        styleElement.textContent = fontFaceCSS;
+        styleElement.id = `font-${fontName}`;
+        document.head.appendChild(styleElement);
+      }
+    });
+  }, [uploadedFonts]);
+
+  // Combine common fonts with uploaded fonts
+  const allFonts = [...commonFonts, ...uploadedFonts];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -63,11 +205,64 @@ function FontSettings({
             <SelectValue placeholder="Select font" />
           </SelectTrigger>
           <SelectContent>
-            {commonFonts.map((font) => (
-              <SelectItem key={font} value={font}>{font}</SelectItem>
+            {allFonts.map((font) => (
+              <SelectItem key={font} value={font}>
+                <div className="flex items-center justify-between w-full">
+                  <span>{font}</span>
+                  {uploadedFonts.includes(font) && (
+                    <span className="text-xs text-muted-foreground ml-2">(Custom)</span>
+                  )}
+                </div>
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        
+        {/* Font Upload Section */}
+        <div className="mt-2 space-y-2">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              data-testid="button-upload-font"
+            >
+              <Upload className="h-4 w-4 mr-1" />
+              Upload Font
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".ttf,.otf,.woff,.woff2"
+              onChange={handleFontUpload}
+              className="hidden"
+              data-testid="input-font-file"
+            />
+          </div>
+          
+          {/* Display uploaded fonts with remove option */}
+          {uploadedFonts.length > 0 && (
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Custom Fonts:</Label>
+              {uploadedFonts.map((font) => (
+                <div key={font} className="flex items-center justify-between bg-muted p-2 rounded text-sm">
+                  <span>{font}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeUploadedFont(font)}
+                    className="h-6 w-6 p-0"
+                    data-testid={`button-remove-font-${font}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div>
