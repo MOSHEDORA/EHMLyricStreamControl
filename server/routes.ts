@@ -128,15 +128,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const lyricsArray = parseLyrics(session.lyrics);
             const totalLines = lyricsArray.length;
             let newLine = session.currentLine;
-            const displayLines = 2; // Default display lines for navigation
+            
+            // Get appropriate display lines based on session type
+            let displayLines = 2; // Default for lower-third displays
+            if (sessionId === 'lyrics-fullscreen') {
+              displayLines = 4; // Fullscreen displays more lines
+            } else if (sessionId === 'default') {
+              displayLines = 3; // Control panel default
+            }
+            
+            // Try to get display settings for more accurate navigation
+            try {
+              let settingsDisplayType = 'lyrics-lower-third';
+              if (sessionId === 'lyrics-fullscreen') {
+                settingsDisplayType = 'lyrics-fullscreen';
+              }
+              
+              const displaySettings = await storage.getDisplaySettings(settingsDisplayType);
+              if (displaySettings && displaySettings.settings && typeof displaySettings.settings === 'object' && 'displayLines' in displaySettings.settings) {
+                displayLines = (displaySettings.settings as any).displayLines;
+              }
+            } catch (error) {
+              console.log('Using default display lines for navigation');
+            }
 
             switch (message.payload.action) {
               case "next":
-                // Jump by displayLines instead of just 1
+                // Jump by displayLines for group-based navigation
                 newLine = Math.min(session.currentLine + displayLines, totalLines - 1);
                 break;
               case "previous":
-                // Jump back by displayLines instead of just 1
+                // Jump back by displayLines for group-based navigation
                 newLine = Math.max(session.currentLine - displayLines, 0);
                 break;
               case "first":

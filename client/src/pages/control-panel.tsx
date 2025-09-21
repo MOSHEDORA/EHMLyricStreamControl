@@ -156,11 +156,11 @@ export default function ControlPanel() {
           break;
         case "ArrowUp":
           e.preventDefault();
-          navigate("previous");
+          updateAllLyricsSessions('navigation', { action: 'previous' });
           break;
         case "ArrowDown":
           e.preventDefault();
-          navigate("next");
+          updateAllLyricsSessions('navigation', { action: 'next' });
           break;
         case "ArrowLeft":
           e.preventDefault();
@@ -176,11 +176,11 @@ export default function ControlPanel() {
           break;
         case "Home":
           e.preventDefault();
-          navigate("first");
+          updateAllLyricsSessions('navigation', { action: 'first' });
           break;
         case "End":
           e.preventDefault();
-          navigate("last");
+          updateAllLyricsSessions('navigation', { action: 'last' });
           break;
       }
     };
@@ -189,27 +189,88 @@ export default function ControlPanel() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [session, togglePlay, navigate]);
 
+  // Helper function to send updates to all lyrics sessions
+  const updateAllLyricsSessions = useCallback(async (updateType: string, payload: any) => {
+    const sessions = ['default', 'lyrics-lower-third', 'lyrics-fullscreen'];
+    
+    if (updateType === 'lyrics') {
+      // Send to default session via WebSocket
+      updateLyrics(payload.lyrics, payload.songTitle);
+      
+      // Also send to lyrics-specific sessions via API
+      for (const sessionId of ['lyrics-lower-third', 'lyrics-fullscreen']) {
+        try {
+          await fetch(`/api/sessions/${sessionId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              lyricsText: payload.lyrics, 
+              songTitle: payload.songTitle 
+            })
+          });
+        } catch (error) {
+          console.error(`Failed to update session ${sessionId}:`, error);
+        }
+      }
+    } else if (updateType === 'navigation') {
+      // Send navigation to default session via WebSocket
+      navigate(payload.action, payload.line);
+      
+      // Also send to lyrics-specific sessions via API
+      for (const sessionId of ['lyrics-lower-third', 'lyrics-fullscreen']) {
+        try {
+          // First get the current session to calculate new position
+          const response = await fetch(`/api/session/${sessionId}`);
+          if (response.ok) {
+            const data = await response.json();
+            const { session: currentSession, lyricsArray } = data;
+            
+            let newLine = currentSession.currentLine;
+            const totalLines = lyricsArray.length;
+            const displayLines = sessionId === 'lyrics-fullscreen' ? 4 : 2; // Use appropriate display lines
+            
+            switch (payload.action) {
+              case "next":
+                newLine = Math.min(currentSession.currentLine + displayLines, totalLines - 1);
+                break;
+              case "previous":
+                newLine = Math.max(currentSession.currentLine - displayLines, 0);
+                break;
+              case "first":
+                newLine = 0;
+                break;
+              case "last":
+                newLine = totalLines - 1;
+                break;
+              case "jump":
+                if (payload.line !== undefined) {
+                  newLine = Math.max(0, Math.min(payload.line, totalLines - 1));
+                }
+                break;
+            }
+            
+            await fetch(`/api/sessions/${sessionId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                lyricsText: currentSession.lyrics,
+                songTitle: currentSession.songTitle,
+                currentLine: newLine
+              })
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to navigate session ${sessionId}:`, error);
+        }
+      }
+    }
+  }, [updateLyrics, navigate]);
+
   const handleLoadLyrics = useCallback(() => {
     if (lyricsText.trim()) {
-      updateLyrics(lyricsText.trim(), songTitle.trim());
-      
-      // Also send to lyrics-specific sessions
-      fetch('/api/sessions/lyrics-lower-third', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          lyricsText: lyricsText.trim(), 
-          songTitle: songTitle.trim() 
-        })
-      });
-      
-      fetch('/api/sessions/lyrics-fullscreen', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          lyricsText: lyricsText.trim(), 
-          songTitle: songTitle.trim() 
-        })
+      updateAllLyricsSessions('lyrics', {
+        lyrics: lyricsText.trim(),
+        songTitle: songTitle.trim()
       });
       
       toast({
@@ -217,7 +278,7 @@ export default function ControlPanel() {
         description: `${lyricsArray.length} lines ready for display in all lyrics sessions`,
       });
     }
-  }, [lyricsText, songTitle, updateLyrics, toast, lyricsArray.length]);
+  }, [lyricsText, songTitle, updateAllLyricsSessions, toast, lyricsArray.length]);
 
   const handleClearLyrics = useCallback(() => {
     setLyricsText("");
@@ -410,7 +471,7 @@ export default function ControlPanel() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => navigate("first")}
+                        onClick={() => updateAllLyricsSessions('navigation', { action: 'first' })}
                         title="Go to first line"
                       >
                         <SkipBack className="h-4 w-4" />
@@ -418,7 +479,7 @@ export default function ControlPanel() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => navigate("previous")}
+                        onClick={() => updateAllLyricsSessions('navigation', { action: 'previous' })}
                         title="Previous line"
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -440,7 +501,7 @@ export default function ControlPanel() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => navigate("next")}
+                        onClick={() => updateAllLyricsSessions('navigation', { action: 'next' })}
                         title="Next line"
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -448,7 +509,7 @@ export default function ControlPanel() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => navigate("last")}
+                        onClick={() => updateAllLyricsSessions('navigation', { action: 'last' })}
                         title="Go to last line"
                       >
                         <SkipForward className="h-4 w-4" />
