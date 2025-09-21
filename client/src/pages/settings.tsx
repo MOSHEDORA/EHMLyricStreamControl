@@ -47,7 +47,7 @@ function FontSettings({
   updateSettings: (updates: any) => void; 
 }) {
   const commonFonts = [
-    'Rambadra Telugu', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS',
+    'Ramabhadra', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS',
     'Tahoma', 'Impact', 'Comic Sans MS', 'Courier New', 'Palatino'
   ];
 
@@ -220,7 +220,7 @@ export function LyricsLowerThirdSettings() {
   const [settings, setSettings] = useState<LyricsLowerThirdSettings>({
     displayLines: 2,
     fontSize: 32,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     textColor: '#ffffff',
     textAlign: 'center',
     lineHeight: 1.2,
@@ -323,7 +323,7 @@ export function LyricsFullscreenSettings() {
   const [settings, setSettings] = useState<LyricsFullscreenSettings>({
     displayLines: 4,
     fontSize: 48,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     textColor: '#ffffff',
     textAlign: 'center',
     lineHeight: 1.3,
@@ -443,7 +443,7 @@ export function BibleLowerThirdSettings() {
   const [settings, setSettings] = useState<BibleLowerThirdSettings>({
     displayLines: 2,
     fontSize: 32,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     textColor: '#ffffff',
     textAlign: 'center',
     lineHeight: 1.2,
@@ -546,7 +546,7 @@ export function BibleFullscreenSettings() {
   const [settings, setSettings] = useState<BibleFullscreenSettings>({
     versesPerScreen: 4,
     fontSize: 48,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     textColor: '#ffffff',
     textAlign: 'center',
     lineHeight: 1.3,
@@ -649,7 +649,7 @@ export function ControlPanelSettings() {
 
   const [settings, setSettings] = useState<ControlPanelSettings>({
     fontSize: 14,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     backgroundColor: '#ffffff',
   });
 
@@ -690,7 +690,7 @@ export function ControlPanelSettings() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['Rambadra Telugu', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS'].map((font) => (
+              {['Ramabhadra', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS'].map((font) => (
                 <SelectItem key={font} value={font}>{font}</SelectItem>
               ))}
             </SelectContent>
@@ -750,7 +750,7 @@ export function OBSDockSettings() {
 
   const [settings, setSettings] = useState<OBSDockSettings>({
     fontSize: 14,
-    fontFamily: 'Rambadra Telugu',
+    fontFamily: 'Ramabhadra',
     compactMode: false,
   });
 
@@ -791,7 +791,7 @@ export function OBSDockSettings() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {['Rambadra Telugu', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS'].map((font) => (
+              {['Ramabhadra', 'Arial', 'Times New Roman', 'Verdana', 'Georgia', 'Trebuchet MS'].map((font) => (
                 <SelectItem key={font} value={font}>{font}</SelectItem>
               ))}
             </SelectContent>
