@@ -157,3 +157,18 @@ export const websocketMessageSchema = z.discriminatedUnion("type", [
 ]);
 
 export type WebSocketMessage = z.infer<typeof websocketMessageSchema>;
+
+// Saved songs schema for JSON file storage
+export const savedSongSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, "Title is required"),
+  lyrics: z.string().min(1, "Lyrics are required"),
+  artist: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const savedSongsArraySchema = z.array(savedSongSchema);
+
+export type SavedSong = z.infer<typeof savedSongSchema>;

@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
-import { websocketMessageSchema, type WebSocketMessage, type Session, insertDisplaySettingsSchema, lyricsLowerThirdSettingsSchema, lyricsFullscreenSettingsSchema, bibleLowerThirdSettingsSchema, bibleFullscreenSettingsSchema, controlPanelSettingsSchema, obsDockSettingsSchema } from "@shared/schema";
+import { websocketMessageSchema, type WebSocketMessage, type Session, insertDisplaySettingsSchema, lyricsLowerThirdSettingsSchema, lyricsFullscreenSettingsSchema, bibleLowerThirdSettingsSchema, bibleFullscreenSettingsSchema, controlPanelSettingsSchema, obsDockSettingsSchema, savedSongSchema, savedSongsArraySchema, type SavedSong } from "@shared/schema";
 import { z } from "zod";
 import { writeFileSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
@@ -605,6 +605,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Failed to delete display settings:', error);
       res.status(500).json({ message: 'Failed to delete display settings' });
+    }
+  });
+
+  // Helper functions for managing saved songs JSON file
+  const songsFilePath = join(process.cwd(), 'Songs.json');
+
+  function readSongsFile(): SavedSong[] {
+    try {
+      if (!existsSync(songsFilePath)) {
+        writeFileSync(songsFilePath, JSON.stringify([], null, 2));
+        return [];
+      }
+      const fileContent = readFileSync(songsFilePath, 'utf-8');
+      const songs = JSON.parse(fileContent);
+      return savedSongsArraySchema.parse(songs);
+    } catch (error) {
+      console.error('Error reading songs file:', error);
+      return [];
+    }
+  }
+
+  function writeSongsFile(songs: SavedSong[]): boolean {
+    try {
+      const validatedSongs = savedSongsArraySchema.parse(songs);
+      writeFileSync(songsFilePath, JSON.stringify(validatedSongs, null, 2));
+      return true;
+    } catch (error) {
+      console.error('Error writing songs file:', error);
+      return false;
+    }
+  }
+
+  // Saved songs API routes
+  app.get('/api/songs', (req, res) => {
+    try {
+      let songs = readSongsFile();
+      const { search } = req.query;
+
+      // Filter songs if search query is provided
+      if (search && typeof search === 'string') {
+        const searchLower = search.toLowerCase();
+        songs = songs.filter(song =>
+          song.title.toLowerCase().includes(searchLower) ||
+          song.lyrics.toLowerCase().includes(searchLower) ||
+          song.artist?.toLowerCase().includes(searchLower) ||
+          song.tags.some(tag => tag.toLowerCase().includes(searchLower))
+        );
+      }
+
+      res.json({ songs });
+    } catch (error) {
+      console.error('Error fetching songs:', error);
+      res.status(500).json({ message: 'Failed to fetch songs' });
+    }
+  });
+
+  app.post('/api/songs', (req, res) => {
+    try {
+      const songs = readSongsFile();
+      const { title, lyrics, artist, tags } = req.body;
+
+      if (!title || !lyrics) {
+        return res.status(400).json({ message: 'Title and lyrics are required' });
+      }
+
+      const newSong: SavedSong = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        title: title.trim(),
+        lyrics: lyrics.trim(),
+        artist: artist?.trim() || undefined,
+        tags: Array.isArray(tags) ? tags.filter(tag => typeof tag === 'string' && tag.trim()) : [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const validatedSong = savedSongSchema.parse(newSong);
+      songs.push(validatedSong);
+
+      if (writeSongsFile(songs)) {
+        res.status(201).json({ song: validatedSong });
+      } else {
+        res.status(500).json({ message: 'Failed to save song' });
+      }
+    } catch (error) {
+      console.error('Error creating song:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: 'Invalid song data', errors: error.errors });
+      }
+      res.status(500).json({ message: 'Failed to create song' });
+    }
+  });
+
+  app.put('/api/songs/:id', (req, res) => {
+    try {
+      const songs = readSongsFile();
+      const { id } = req.params;
+      const { title, lyrics, artist, tags } = req.body;
+
+      const songIndex = songs.findIndex(song => song.id === id);
+      if (songIndex === -1) {
+        return res.status(404).json({ message: 'Song not found' });
+      }
+
+      if (!title || !lyrics) {
+        return res.status(400).json({ message: 'Title and lyrics are required' });
+      }
+
+      const updatedSong: SavedSong = {
+        ...songs[songIndex],
+        title: title.trim(),
+        lyrics: lyrics.trim(),
+        artist: artist?.trim() || undefined,
+        tags: Array.isArray(tags) ? tags.filter(tag => typeof tag === 'string' && tag.trim()) : [],
+        updatedAt: new Date().toISOString(),
+      };
+
+      const validatedSong = savedSongSchema.parse(updatedSong);
+      songs[songIndex] = validatedSong;
+
+      if (writeSongsFile(songs)) {
+        res.json({ song: validatedSong });
+      } else {
+        res.status(500).json({ message: 'Failed to update song' });
+      }
+    } catch (error) {
+      console.error('Error updating song:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: 'Invalid song data', errors: error.errors });
+      }
+      res.status(500).json({ message: 'Failed to update song' });
+    }
+  });
+
+  app.delete('/api/songs/:id', (req, res) => {
+    try {
+      const songs = readSongsFile();
+      const { id } = req.params;
+
+      const songIndex = songs.findIndex(song => song.id === id);
+      if (songIndex === -1) {
+        return res.status(404).json({ message: 'Song not found' });
+      }
+
+      songs.splice(songIndex, 1);
+
+      if (writeSongsFile(songs)) {
+        res.json({ success: true, message: 'Song deleted successfully' });
+      } else {
+        res.status(500).json({ message: 'Failed to delete song' });
+      }
+    } catch (error) {
+      console.error('Error deleting song:', error);
+      res.status(500).json({ message: 'Failed to delete song' });
     }
   });
 
