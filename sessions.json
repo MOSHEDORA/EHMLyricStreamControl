@@ -1,95 +1,14 @@
 {
-  "currentId": 6,
+  "currentId": 2,
   "sessions": [
     {
       "id": 1,
       "sessionId": "default",
-      "lyrics": "ఎల్ రోయి వై నను చూడగా\nనీ దర్శనమే నా బలమాయెను\nఎల్ రోయి వై నీవు నను చేరగా\nనీ స్వరమే నాకు ధైర్యమిచ్చెను\n\nనీ ముఖ కాంతియే నా ధైర్యము\nనీ ముఖ కాంతియే నా బలము\n\nమరణమే నన్నావరించగా\nనీ వాక్యమే నాతో నిలిచెను\nఎల్ రోయి వై నను చూడగా\nశత్రువే సిగ్గు నొందెను\n\nవిశ్వాసమే శోధింపబడగా\nనీ కృపయే నాతో నిలిచెను\nఎల్ రోయి వై నను చూడగా\nశత్రు ప్రణాళిక ఆగిపోయెను\n\nఒంటరినై నేను నిను చేరగా\nనా పక్షమై నీవు నిలచితివే\nఎల్ రోయి వె నను చూడగా\nశత్రువే పారిపోయెను",
-      "currentLine": 9,
-      "displayLines": 2,
-      "fontSize": 32,
-      "fontFamily": "Arial",
-      "textColor": "#ffffff",
-      "textAlign": "center",
-      "showBackground": false,
-      "backgroundColor": "#000000",
-      "backgroundOpacity": 50,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "",
-      "separateDisplaySettings": false,
-      "lowerThirdDisplayLines": 2,
-      "lowerThirdFontSize": 32,
-      "lowerThirdFontFamily": "Arial",
-      "lowerThirdTextColor": "#ffffff",
-      "lowerThirdTextAlign": "center",
-      "lowerThirdShowBackground": false,
-      "lowerThirdBackgroundColor": "#000000",
-      "lowerThirdBackgroundOpacity": 50,
-      "fullscreenDisplayLines": 2,
-      "fullscreenFontSize": 32,
-      "fullscreenFontFamily": "Arial",
-      "fullscreenTextColor": "#ffffff",
-      "fullscreenTextAlign": "center",
-      "fullscreenShowBackground": false,
-      "fullscreenBackgroundColor": "#000000",
-      "fullscreenBackgroundOpacity": 50,
-      "bibleOutputEnabled": false,
-      "lyricsOutputEnabled": true,
-      "lowerThirdOutputEnabled": true,
-      "fullscreenOutputEnabled": true
-    },
-    {
-      "id": 2,
-      "sessionId": "bible-lower-third",
-      "lyrics": "1. ఆదికాండము 22:1 (Telugu)\nఆఆ సంగతులు జరిగినతరువాత దేవుడు అబ్రా హామును పరిశోధించెను. ఎట్లనగా ఆయన అబ్రా హామా, అని పిలువగా అతడుచిత్తము ప్రభువా అనెను.\n\nGenesis 22:1 (English)\nAfter these things God tested Abraham and said to him, \"Abraham!\" And he said, \"Here am I.\"",
+      "lyrics": "",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
-    },
-    {
-      "id": 3,
-      "sessionId": "bible-fullscreen",
-      "lyrics": "1. ఆదికాండము 22:1 (Telugu)\nఆఆ సంగతులు జరిగినతరువాత దేవుడు అబ్రా హామును పరిశోధించెను. ఎట్లనగా ఆయన అబ్రా హామా, అని పిలువగా అతడుచిత్తము ప్రభువా అనెను.\n\nGenesis 22:1 (English)\nAfter these things God tested Abraham and said to him, \"Abraham!\" And he said, \"Here am I.\"",
-      "currentLine": 0,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
-    },
-    {
-      "id": 4,
-      "sessionId": "lyrics-lower-third",
-      "lyrics": "1\nఆదికాండము 22:1 (Telugu)",
-      "currentLine": 0,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
-    },
-    {
-      "id": 5,
-      "sessionId": "lyrics-fullscreen",
-      "lyrics": "1\nఆదికాండము 22:1 (Telugu)",
-      "currentLine": 0,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
-    }
-  ]
-}్యమే నాతో నిలిచెను\nఎల్ రోయి వై నను చూడగా\nశత్రువే సిగ్గు నొందెను\n\nవిశ్వాసమే శోధింపబడగా\nనీ కృపయే నాతో నిలిచెను\nఎల్ రోయి వై నను చూడగా\nశత్రు ప్రణాళిక ఆగిపోయెను\n\nఒంటరినై నేను నిను చేరగా\nనా పక్షమై నీవు నిలచితివే\nఎల్ రోయి వె నను చూడగా\nశత్రువే పారిపోయెను",
-      "currentLine": 6,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
-    },
-    {
-      "id": 5,
-      "sessionId": "lyrics-fullscreen",
-      "lyrics": "1\nఆదికాండము 22:1 (Telugu)",
-      "currentLine": 0,
-      "isPlaying": false,
-      "autoScroll": false,
-      "songTitle": "ఆదికాండము / Genesis 22:1"
+      "songTitle": ""
     }
   ]
 }
