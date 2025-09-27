@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
+import { DynamicText } from "@/components/dynamic-text";
 
 export default function LyricsFullscreen() {
   const sessionId = "lyrics-fullscreen";
@@ -44,46 +45,47 @@ export default function LyricsFullscreen() {
     return null; // Completely hidden - no background
   }
 
-  const textStyle = {
-    fontSize: `${settings.fontSize}px`,
-    fontFamily: settings.fontFamily,
-    color: settings.textColor,
-    textAlign: settings.textAlign,
-    lineHeight: settings.lineHeight,
-    fontWeight: settings.fontWeight,
-    textTransform: settings.textTransform,
-    textShadow: settings.textShadow,
-  };
+  // Dynamic text will handle all styling
 
   return (
     <div className="min-h-screen bg-black">
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div 
-          className="w-full h-full"
           style={{ 
-            padding: `${settings.padding}px`,
+            width: `calc(100% - ${settings.margin * 2}px)`,
+            height: `calc(100% - ${settings.margin * 2}px)`,
             margin: `${settings.margin}px`,
           }}
         >
-          {currentDisplayLines.length > 0 ? (
-            <div className="space-y-4">
-              {currentDisplayLines.map((line, index) => (
-                <div 
-                  key={index}
-                  className="transition-all duration-500"
-                  style={{
-                    ...textStyle,
-                    opacity: index === 0 ? 1 : 0.8,
-                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                  }}
-                  data-testid={`text-lyrics-line-${index}`}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          ) : null}
+          <DynamicText
+            lines={currentDisplayLines}
+            baseFontSize={settings.fontSize}
+            minFontSize={24}
+            maxFontSize={settings.fontSize * 2}
+            lineHeight={settings.lineHeight}
+            fontFamily={settings.fontFamily}
+            textColor={settings.textColor}
+            textAlign={settings.textAlign}
+            fontWeight={settings.fontWeight}
+            textTransform={settings.textTransform}
+            textShadow={settings.textShadow}
+            padding={settings.padding}
+            spacing={16}
+            testId="text-lyrics-line"
+            renderLine={(line, index) => (
+              <span 
+                style={{
+                  opacity: index === 0 ? 1 : 0.8,
+                  transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                  transition: 'all 0.5s ease-in-out',
+                  display: 'inline-block'
+                }}
+              >
+                {line}
+              </span>
+            )}
+          />
         </div>
       </div>
     </div>

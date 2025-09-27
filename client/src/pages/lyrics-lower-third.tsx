@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
+import { DynamicText } from "@/components/dynamic-text";
 
 export default function LyricsLowerThird() {
   const sessionId = "lyrics-lower-third";
@@ -44,14 +45,8 @@ export default function LyricsLowerThird() {
     return null; // Completely hidden - no background
   }
 
-  const textStyle = {
-    fontSize: `${settings.fontSize}px`,
-    fontFamily: settings.fontFamily,
-    color: settings.textColor,
-    textAlign: settings.textAlign,
-    lineHeight: settings.lineHeight,
-    fontWeight: settings.fontWeight,
-  };
+  // Calculate available height for lower third
+  const availableHeight = parseInt(settings.maxHeight) - (settings.padding * 2);
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -63,31 +58,32 @@ export default function LyricsLowerThird() {
           padding: `${settings.padding}px`,
         }}
       >
-        <div 
-          className="w-full h-full"
-          style={{ 
-            padding: `${settings.padding}px`,
-          }}
-        >
-            {currentDisplayLines.length > 0 ? (
-              <div className="space-y-2">
-                {currentDisplayLines.map((line, index) => (
-                  <div 
-                    key={index}
-                    className="transition-all duration-500"
-                    style={{
-                      ...textStyle,
-                      opacity: index === 0 ? 1 : 0.8,
-                      transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                    }}
-                    data-testid={`text-lyrics-line-${index}`}
-                  >
-                    {line}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-        </div>
+        <DynamicText
+          lines={currentDisplayLines}
+          baseFontSize={settings.fontSize}
+          minFontSize={16}
+          maxFontSize={settings.fontSize * 1.5}
+          lineHeight={settings.lineHeight}
+          fontFamily={settings.fontFamily}
+          textColor={settings.textColor}
+          textAlign={settings.textAlign}
+          fontWeight={settings.fontWeight}
+          padding={settings.padding}
+          spacing={8}
+          testId="text-lyrics-line"
+          renderLine={(line, index) => (
+            <span 
+              style={{
+                opacity: index === 0 ? 1 : 0.8,
+                transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                transition: 'all 0.5s ease-in-out',
+                display: 'inline-block'
+              }}
+            >
+              {line}
+            </span>
+          )}
+        />
       </div>
     </div>
   );
