@@ -4,7 +4,7 @@
     {
       "id": 1,
       "sessionId": "default",
-      "lyrics": "",
+      "lyrics": "hi",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
@@ -31,7 +31,7 @@
     {
       "id": 4,
       "sessionId": "lyrics-fullscreen",
-      "lyrics": "5\nలేవీయకాండము 13:5 (Telugu)",
+      "lyrics": "hi",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
@@ -40,7 +40,7 @@
     {
       "id": 5,
       "sessionId": "lyrics-lower-third",
-      "lyrics": "5\nలేవీయకాండము 13:5 (Telugu)",
+      "lyrics": "hi",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
