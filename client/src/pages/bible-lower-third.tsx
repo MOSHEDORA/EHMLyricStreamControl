@@ -90,7 +90,7 @@ export default function BibleLowerThird() {
         <DynamicText
           lines={currentDisplayLines}
           baseFontSize={settings.fontSize}
-          minFontSize={16}
+          minFontSize={Math.max(16, settings.fontSize * 0.5)}
           maxFontSize={settings.fontSize * 1.5}
           lineHeight={settings.lineHeight}
           fontFamily={settings.fontFamily}

@@ -40,12 +40,11 @@ export function DynamicText({
   testId = 'dynamic-text'
 }: DynamicTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const measureRef = useRef<HTMLDivElement>(null);
   const [calculatedFontSize, setCalculatedFontSize] = useState(baseFontSize);
   const [isVisible, setIsVisible] = useState(false);
 
   const calculateOptimalFontSize = useCallback(() => {
-    if (!containerRef.current || !measureRef.current || lines.length === 0) {
+    if (!containerRef.current || lines.length === 0) {
       return baseFontSize;
     }
 
@@ -57,47 +56,90 @@ export function DynamicText({
       return baseFontSize;
     }
 
-    // Binary search for optimal font size
-    let low = minFontSize;
-    let high = maxFontSize;
+    // Create temporary measurement element
+    const measureEl = document.createElement('div');
+    measureEl.style.position = 'fixed';
+    measureEl.style.top = '-9999px';
+    measureEl.style.left = '-9999px';
+    measureEl.style.visibility = 'hidden';
+    measureEl.style.whiteSpace = 'normal';
+    measureEl.style.width = `${containerWidth}px`;
+    measureEl.style.fontFamily = fontFamily;
+    measureEl.style.fontWeight = fontWeight;
+    measureEl.style.color = 'transparent';
+    document.body.appendChild(measureEl);
+
     let optimalSize = baseFontSize;
 
-    while (low <= high) {
-      const testSize = Math.floor((low + high) / 2);
-      
-      // Apply test font size to measure element
-      measureRef.current.style.fontSize = `${testSize}px`;
-      measureRef.current.style.lineHeight = `${lineHeight}`;
-      measureRef.current.style.fontFamily = fontFamily;
-      measureRef.current.style.fontWeight = fontWeight;
-      
-      // Calculate required dimensions
-      const lineElements = measureRef.current.children;
-      let maxWidth = 0;
-      let totalHeight = 0;
+    try {
+      // Binary search for optimal font size
+      let low = minFontSize;
+      let high = maxFontSize;
 
-      for (let i = 0; i < lineElements.length; i++) {
-        const element = lineElements[i] as HTMLElement;
-        const rect = element.getBoundingClientRect();
-        maxWidth = Math.max(maxWidth, rect.width);
-        totalHeight += rect.height;
+      while (low <= high) {
+        const testSize = Math.floor((low + high) / 2);
         
-        // Add spacing between lines (except for last line)
-        if (i < lineElements.length - 1) {
-          totalHeight += spacing;
+        // Apply test font size
+        measureEl.style.fontSize = `${testSize}px`;
+        measureEl.style.lineHeight = `${lineHeight}`;
+        
+        // Clear and populate with plain text lines
+        measureEl.innerHTML = '';
+        let totalHeight = 0;
+        let maxWidth = 0;
+
+        lines.forEach((line, index) => {
+          const lineEl = document.createElement('div');
+          lineEl.style.display = 'block';
+          lineEl.style.margin = '0';
+          lineEl.style.padding = '0';
+          
+          // Check if this line has a verse number and render accordingly
+          const verseMatch = line.match(/^(\d+)\.\s*(.+)/);
+          if (verseMatch) {
+            // Create verse number span (bold with margin)
+            const verseNumSpan = document.createElement('span');
+            verseNumSpan.textContent = verseMatch[1] + '.';
+            verseNumSpan.style.fontWeight = 'bold';
+            verseNumSpan.style.marginRight = '0.5rem'; // equivalent to mr-2
+            
+            // Create verse text span
+            const verseTextSpan = document.createElement('span');
+            verseTextSpan.textContent = verseMatch[2];
+            
+            lineEl.appendChild(verseNumSpan);
+            lineEl.appendChild(verseTextSpan);
+          } else {
+            // Regular line without verse number
+            lineEl.textContent = line;
+          }
+          
+          measureEl.appendChild(lineEl);
+          
+          // Force layout and measure
+          const rect = lineEl.getBoundingClientRect();
+          maxWidth = Math.max(maxWidth, rect.width);
+          totalHeight += rect.height;
+          
+          // Add spacing between lines (except for last line)
+          if (index < lines.length - 1) {
+            totalHeight += spacing;
+          }
+        });
+
+        // Check if text fits within container
+        const fitsWidth = maxWidth <= containerWidth;
+        const fitsHeight = totalHeight <= containerHeight;
+
+        if (fitsWidth && fitsHeight) {
+          optimalSize = testSize;
+          low = testSize + 1; // Try larger size
+        } else {
+          high = testSize - 1; // Try smaller size
         }
       }
-
-      // Check if text fits within container
-      const fitsWidth = maxWidth <= containerWidth;
-      const fitsHeight = totalHeight <= containerHeight;
-
-      if (fitsWidth && fitsHeight) {
-        optimalSize = testSize;
-        low = testSize + 1; // Try larger size
-      } else {
-        high = testSize - 1; // Try smaller size
-      }
+    } finally {
+      document.body.removeChild(measureEl);
     }
 
     return Math.max(minFontSize, Math.min(maxFontSize, optimalSize));
@@ -109,20 +151,32 @@ export function DynamicText({
     setIsVisible(true);
   }, [calculateOptimalFontSize]);
 
-  // Use ResizeObserver to respond to container size changes
+  // Debounced update function to avoid excessive calculations
+  const debouncedUpdateRef = useRef<ReturnType<typeof setTimeout>>();
+  const debouncedUpdate = useCallback(() => {
+    if (debouncedUpdateRef.current) {
+      clearTimeout(debouncedUpdateRef.current);
+    }
+    debouncedUpdateRef.current = setTimeout(updateFontSize, 100);
+  }, [updateFontSize]);
+
+  // Use ResizeObserver to respond to container size changes with debouncing
   useEffect(() => {
     if (!containerRef.current) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      updateFontSize();
+      debouncedUpdate();
     });
 
     resizeObserver.observe(containerRef.current);
 
     return () => {
       resizeObserver.disconnect();
+      if (debouncedUpdateRef.current) {
+        clearTimeout(debouncedUpdateRef.current);
+      }
     };
-  }, [updateFontSize]);
+  }, [debouncedUpdate]);
 
   // Update font size when lines change
   useEffect(() => {
@@ -177,25 +231,7 @@ export function DynamicText({
         ))}
       </div>
 
-      {/* Hidden measurement element */}
-      <div
-        ref={measureRef}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          visibility: 'hidden',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-        }}
-        aria-hidden="true"
-      >
-        {lines.map((line, index) => (
-          <div key={index}>
-            {renderLine ? renderLine(line, index, calculatedFontSize) : line}
-          </div>
-        ))}
-      </div>
+      {/* Measurement is now handled dynamically in calculateOptimalFontSize */}
     </div>
   );
 }

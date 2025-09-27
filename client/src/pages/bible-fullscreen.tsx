@@ -91,7 +91,7 @@ export default function BibleFullscreen() {
           <DynamicText
             lines={currentDisplayLines}
             baseFontSize={settings.fontSize}
-            minFontSize={24}
+            minFontSize={Math.max(24, settings.fontSize * 0.5)}
             maxFontSize={settings.fontSize * 2}
             lineHeight={settings.lineHeight}
             fontFamily={settings.fontFamily}
