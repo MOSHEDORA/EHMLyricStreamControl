@@ -52,7 +52,15 @@ export function DynamicText({
     const containerWidth = container.clientWidth - (padding * 2);
     const containerHeight = container.clientHeight - (padding * 2);
     
+    console.log('Dynamic Text Debug:', {
+      containerWidth,
+      containerHeight,
+      lines: lines.length,
+      linesContent: lines
+    });
+    
     if (containerWidth <= 0 || containerHeight <= 0) {
+      console.log('Container dimensions invalid:', { containerWidth, containerHeight });
       return baseFontSize;
     }
 
@@ -131,6 +139,8 @@ export function DynamicText({
         const fitsWidth = maxWidth <= containerWidth;
         const fitsHeight = totalHeight <= containerHeight;
 
+        console.log(`Font size ${testSize}: maxWidth=${maxWidth}, totalHeight=${totalHeight}, fitsWidth=${fitsWidth}, fitsHeight=${fitsHeight}`);
+
         if (fitsWidth && fitsHeight) {
           optimalSize = testSize;
           low = testSize + 1; // Try larger size
@@ -142,7 +152,9 @@ export function DynamicText({
       document.body.removeChild(measureEl);
     }
 
-    return Math.max(minFontSize, Math.min(maxFontSize, optimalSize));
+    const finalSize = Math.max(minFontSize, Math.min(maxFontSize, optimalSize));
+    console.log('Final font size calculated:', finalSize, 'from optimalSize:', optimalSize);
+    return finalSize;
   }, [lines, baseFontSize, minFontSize, maxFontSize, lineHeight, fontFamily, fontWeight, padding, spacing]);
 
   const updateFontSize = useCallback(() => {
