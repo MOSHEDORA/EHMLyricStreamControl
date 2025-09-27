@@ -4,7 +4,7 @@
     {
       "id": 1,
       "sessionId": "default",
-      "lyrics": "hi",
+      "lyrics": "",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
@@ -13,38 +13,38 @@
     {
       "id": 2,
       "sessionId": "bible-fullscreen",
-      "lyrics": "1. నిర్గమకాండము 22:1 (Telugu)\nఒకడు ఎద్దునైనను గొఱ్ఱనైనను దొంగిలించి దాని అమి్మనను చంపినను ఆ యెద్దుకు ప్రతిగా అయిదు ఎద్దులను ఆ గొఱ్ఱకు ప్రతిగా నాలుగు గొఱ్ఱలను ఇయ్య వలెను.\n\nExodus 22:1 (English)\n\"If a man steals an ox or a sheep, and kills it or sells it, he shall repay five oxen for an ox, and four sheep for a sheep.",
+      "lyrics": "12. నిర్గమకాండము 23:12 (Telugu)\nఆరు దినములు నీ పనులు చేసి, నీ యెద్దును నీ గాడిదయు నీ దాసి కుమారుడును పరదేశియు విశ్రమించునట్లు ఏడవ దినమున ఊరక యుండవలెను.\n\nExodus 23:12 (English)\n\"Six days you shall do your work, but on the seventh day you shall rest; that your ox and your donkey may have rest, and the son of your servant woman, and the alien, may be refreshed.",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "నిర్గమకాండము / Exodus 22:1"
+      "songTitle": "నిర్గమకాండము / Exodus 23:12"
     },
     {
       "id": 3,
       "sessionId": "bible-lower-third",
-      "lyrics": "1. నిర్గమకాండము 22:1 (Telugu)\nఒకడు ఎద్దునైనను గొఱ్ఱనైనను దొంగిలించి దాని అమి్మనను చంపినను ఆ యెద్దుకు ప్రతిగా అయిదు ఎద్దులను ఆ గొఱ్ఱకు ప్రతిగా నాలుగు గొఱ్ఱలను ఇయ్య వలెను.\n\nExodus 22:1 (English)\n\"If a man steals an ox or a sheep, and kills it or sells it, he shall repay five oxen for an ox, and four sheep for a sheep.",
+      "lyrics": "12\nనిర్గమకాండము 23:12 (Telugu)",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "నిర్గమకాండము / Exodus 22:1"
+      "songTitle": "నిర్గమకాండము / Exodus 23:12"
     },
     {
       "id": 4,
       "sessionId": "lyrics-fullscreen",
-      "lyrics": "1\nనిర్గమకాండము 22:1 (Telugu)",
+      "lyrics": "12\nనిర్గమకాండము 23:12 (Telugu)",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "నిర్గమకాండము / Exodus 22:1"
+      "songTitle": "నిర్గమకాండము / Exodus 23:12"
     },
     {
       "id": 5,
       "sessionId": "lyrics-lower-third",
-      "lyrics": "1\nనిర్గమకాండము 22:1 (Telugu)",
+      "lyrics": "12\nనిర్గమకాండము 23:12 (Telugu)",
       "currentLine": 0,
       "isPlaying": false,
       "autoScroll": false,
-      "songTitle": "నిర్గమకాండము / Exodus 22:1"
+      "songTitle": "నిర్గమకాండము / Exodus 23:12"
     }
   ]
 }
