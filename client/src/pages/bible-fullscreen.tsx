@@ -82,28 +82,59 @@ export default function BibleFullscreen() {
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-8">
         <div 
+          className="w-full h-full flex flex-col justify-center items-center overflow-hidden"
           style={{ 
-            width: `calc(100% - ${settings.margin * 2}px)`,
-            height: `calc(100% - ${settings.margin * 2}px)`,
+            padding: `${settings.padding}px`,
             margin: `${settings.margin}px`,
           }}
         >
-          <DynamicText
-            lines={currentDisplayLines}
-            baseFontSize={settings.fontSize}
-            minFontSize={Math.max(24, settings.fontSize * 0.5)}
-            maxFontSize={settings.fontSize * 2}
-            lineHeight={settings.lineHeight}
-            fontFamily={settings.fontFamily}
-            textColor={settings.textColor}
-            textAlign={settings.textAlign}
-            fontWeight={settings.fontWeight}
-            textShadow={settings.textShadow}
-            padding={settings.padding}
-            spacing={16}
-            testId="text-bible-verse"
-            renderLine={renderBibleLine}
-          />
+          <div 
+            className="w-full text-center space-y-4"
+            style={{
+              fontSize: `clamp(1rem, ${Math.min(4, 100 / currentDisplayLines.length)}vw, ${settings.fontSize}px)`,
+              fontFamily: settings.fontFamily,
+              color: settings.textColor,
+              fontWeight: settings.fontWeight,
+              textShadow: settings.textShadow,
+              lineHeight: settings.lineHeight,
+              maxHeight: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}
+          >
+            {currentDisplayLines.map((line, index) => {
+              // Check if this looks like a Bible verse (starts with number)
+              const verseMatch = line.match(/^(\d+)\.\s*(.+)/);
+              const isBibleVerse = !!verseMatch;
+
+              return (
+                <div 
+                  key={index}
+                  className="transition-all duration-500 leading-tight"
+                  style={{
+                    opacity: index === 0 ? 1 : 0.8,
+                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    hyphens: 'auto',
+                    maxWidth: '100%'
+                  }}
+                  data-testid={`text-bible-verse-${index}`}
+                >
+                  {isBibleVerse ? (
+                    <>
+                      <span className="text-yellow-300 font-bold mr-2">{verseMatch![1]}.</span>
+                      <span>{verseMatch![2]}</span>
+                    </>
+                  ) : (
+                    line
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

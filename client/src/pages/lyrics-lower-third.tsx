@@ -58,32 +58,47 @@ export default function LyricsLowerThird() {
           padding: `${settings.padding}px`,
         }}
       >
-        <DynamicText
-          lines={currentDisplayLines}
-          baseFontSize={settings.fontSize}
-          minFontSize={Math.max(16, settings.fontSize * 0.5)}
-          maxFontSize={settings.fontSize * 1.5}
-          lineHeight={settings.lineHeight}
-          fontFamily={settings.fontFamily}
-          textColor={settings.textColor}
-          textAlign={settings.textAlign}
-          fontWeight={settings.fontWeight}
-          padding={settings.padding}
-          spacing={8}
-          testId="text-lyrics-line"
-          renderLine={(line, index) => (
-            <span 
-              style={{
-                opacity: index === 0 ? 1 : 0.8,
-                transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                transition: 'all 0.5s ease-in-out',
-                display: 'inline-block'
-              }}
-            >
-              {line}
-            </span>
-          )}
-        />
+        <div 
+          className="w-full h-full flex flex-col justify-center items-center overflow-hidden"
+          style={{ 
+            padding: `${settings.padding}px`,
+          }}
+        >
+          <div 
+            className="w-full text-center space-y-2"
+            style={{
+              fontSize: `clamp(1rem, ${Math.min(3, 50 / currentDisplayLines.length)}vw, ${settings.fontSize}px)`,
+              fontFamily: settings.fontFamily,
+              color: settings.textColor,
+              fontWeight: settings.fontWeight,
+              lineHeight: settings.lineHeight,
+              textAlign: settings.textAlign,
+              maxHeight: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}
+          >
+            {currentDisplayLines.map((line, index) => (
+              <div 
+                key={index}
+                className="transition-all duration-500 leading-tight"
+                style={{
+                  opacity: index === 0 ? 1 : 0.8,
+                  transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  hyphens: 'auto',
+                  maxWidth: '100%'
+                }}
+                data-testid={`text-lyrics-line-${index}`}
+              >
+                {line}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

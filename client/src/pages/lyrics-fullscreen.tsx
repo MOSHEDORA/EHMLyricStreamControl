@@ -58,34 +58,49 @@ export default function LyricsFullscreen() {
             margin: `${settings.margin}px`,
           }}
         >
-          <DynamicText
-            lines={currentDisplayLines}
-            baseFontSize={settings.fontSize}
-            minFontSize={Math.max(24, settings.fontSize * 0.5)}
-            maxFontSize={settings.fontSize * 2}
-            lineHeight={settings.lineHeight}
-            fontFamily={settings.fontFamily}
-            textColor={settings.textColor}
-            textAlign={settings.textAlign}
-            fontWeight={settings.fontWeight}
-            textTransform={settings.textTransform}
-            textShadow={settings.textShadow}
-            padding={settings.padding}
-            spacing={16}
-            testId="text-lyrics-line"
-            renderLine={(line, index) => (
-              <span 
-                style={{
-                  opacity: index === 0 ? 1 : 0.8,
-                  transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
-                  transition: 'all 0.5s ease-in-out',
-                  display: 'inline-block'
-                }}
-              >
-                {line}
-              </span>
-            )}
-          />
+          <div 
+            className="w-full h-full flex flex-col justify-center items-center overflow-hidden"
+            style={{ 
+              padding: `${settings.padding}px`,
+            }}
+          >
+            <div 
+              className="w-full text-center space-y-4"
+              style={{
+                fontSize: `clamp(1rem, ${Math.min(4, 100 / currentDisplayLines.length)}vw, ${settings.fontSize}px)`,
+                fontFamily: settings.fontFamily,
+                color: settings.textColor,
+                fontWeight: settings.fontWeight,
+                textShadow: settings.textShadow,
+                lineHeight: settings.lineHeight,
+                textAlign: settings.textAlign,
+                textTransform: settings.textTransform,
+                maxHeight: '100%',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center'
+              }}
+            >
+              {currentDisplayLines.map((line, index) => (
+                <div 
+                  key={index}
+                  className="transition-all duration-500 leading-tight"
+                  style={{
+                    opacity: index === 0 ? 1 : 0.8,
+                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    hyphens: 'auto',
+                    maxWidth: '100%'
+                  }}
+                  data-testid={`text-lyrics-line-${index}`}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

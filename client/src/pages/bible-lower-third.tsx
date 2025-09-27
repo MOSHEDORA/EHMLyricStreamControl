@@ -87,21 +87,60 @@ export default function BibleLowerThird() {
           padding: `${settings.padding}px`,
         }}
       >
-        <DynamicText
-          lines={currentDisplayLines}
-          baseFontSize={settings.fontSize}
-          minFontSize={Math.max(16, settings.fontSize * 0.5)}
-          maxFontSize={settings.fontSize * 1.5}
-          lineHeight={settings.lineHeight}
-          fontFamily={settings.fontFamily}
-          textColor={settings.textColor}
-          textAlign={settings.textAlign}
-          fontWeight={settings.fontWeight}
-          padding={settings.padding}
-          spacing={8}
-          testId="text-bible-verse"
-          renderLine={renderBibleLine}
-        />
+        <div 
+          className="w-full h-full flex flex-col justify-center items-center overflow-hidden"
+          style={{ 
+            padding: `${settings.padding}px`,
+          }}
+        >
+          <div 
+            className="w-full text-center space-y-2"
+            style={{
+              fontSize: `clamp(1rem, ${Math.min(3, 50 / currentDisplayLines.length)}vw, ${settings.fontSize}px)`,
+              fontFamily: settings.fontFamily,
+              color: settings.textColor,
+              fontWeight: settings.fontWeight,
+              lineHeight: settings.lineHeight,
+              textAlign: settings.textAlign,
+              maxHeight: '100%',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}
+          >
+            {currentDisplayLines.map((line, index) => {
+              // Check if this looks like a Bible verse (starts with number)
+              const verseMatch = line.match(/^(\d+)\.\s*(.+)/);
+              const isBibleVerse = !!verseMatch;
+
+              return (
+                <div 
+                  key={index}
+                  className="transition-all duration-500 leading-tight"
+                  style={{
+                    opacity: index === 0 ? 1 : 0.8,
+                    transform: index === 0 ? 'scale(1.02)' : 'scale(1)',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    hyphens: 'auto',
+                    maxWidth: '100%'
+                  }}
+                  data-testid={`text-bible-verse-${index}`}
+                >
+                  {isBibleVerse ? (
+                    <>
+                      <span className="text-yellow-300 font-bold mr-2">{verseMatch![1]}.</span>
+                      <span>{verseMatch![2]}</span>
+                    </>
+                  ) : (
+                    line
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
         </div>
     </div>
   );
