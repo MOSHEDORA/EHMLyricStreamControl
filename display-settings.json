@@ -22,7 +22,7 @@
       "id": 2,
       "displayType": "bible-fullscreen",
       "settings": {
-        "versesPerScreen": 4,
+        "versesPerScreen": 2,
         "fontSize": 73,
         "fontFamily": "Ramabhadra",
         "textColor": "#ffffff",

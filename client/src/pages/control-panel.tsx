@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BibleControls } from "@/components/bible-controls";
+import { SavedSongs } from "@/components/saved-songs";
 import { Link } from "wouter";
 import { useDisplaySettings, defaultSettings } from "@/hooks/use-display-settings";
 
@@ -290,6 +291,21 @@ export default function ControlPanel() {
     const lineIndex = jumpToLine - 1; // Convert to 0-based index
     navigate("jump", lineIndex);
   }, [jumpToLine, navigate]);
+
+  const handleSongSelect = useCallback((title: string, lyrics: string) => {
+    setLyricsText(lyrics);
+    setSongTitle(title);
+    // Auto-load the selected song
+    updateAllLyricsSessions('lyrics', {
+      lyrics: lyrics.trim(),
+      songTitle: title.trim()
+    });
+    
+    toast({
+      title: "Song loaded",
+      description: `"${title}" is ready for display`,
+    });
+  }, [updateAllLyricsSessions, toast]);
 
   const copyOBSUrl = useCallback(async () => {
     const url = `${window.location.origin}/display/lower-third`;
@@ -554,6 +570,13 @@ export default function ControlPanel() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Saved Songs */}
+                <SavedSongs
+                  currentTitle={songTitle}
+                  currentLyrics={lyricsText}
+                  onSongSelect={handleSongSelect}
+                />
               </div>
 
               {/* Right Panel - Preview & Settings */}
