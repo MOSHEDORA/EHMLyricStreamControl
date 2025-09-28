@@ -867,7 +867,7 @@ export function ControlPanelSettings() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center">
+        <h3 className="font-semibold flex items-center">
           <Smartphone className="h-5 w-5 mr-2" />
           Control Panel
         </h3>
@@ -898,7 +898,7 @@ export function ControlPanelSettings() {
             value={[settings.fontSize]}
             onValueChange={(value) => updateSettings({ fontSize: value[0] })}
             min={8}
-            max={30}
+            max={1000}
             step={1}
             className="mt-2"
             data-testid="slider-font-size"
@@ -999,7 +999,7 @@ export function OBSDockSettings() {
             value={[settings.fontSize]}
             onValueChange={(value) => updateSettings({ fontSize: value[0] })}
             min={8}
-            max={30}
+            max={1000}
             step={1}
             className="mt-2"
             data-testid="slider-font-size"

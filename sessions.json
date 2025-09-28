@@ -5,8 +5,8 @@
       "id": 1,
       "sessionId": "default",
       "lyrics": "",
-      "currentLine": 0,
-      "isPlaying": false,
+      "currentLine": -1,
+      "isPlaying": true,
       "autoScroll": false,
       "songTitle": ""
     },
@@ -32,7 +32,7 @@
       "id": 4,
       "sessionId": "lyrics-fullscreen",
       "lyrics": "12\nనిర్గమకాండము 23:12 (Telugu)",
-      "currentLine": 0,
+      "currentLine": 1,
       "isPlaying": false,
       "autoScroll": false,
       "songTitle": "నిర్గమకాండము / Exodus 23:12"
@@ -41,7 +41,7 @@
       "id": 5,
       "sessionId": "lyrics-lower-third",
       "lyrics": "12\nనిర్గమకాండము 23:12 (Telugu)",
-      "currentLine": 0,
+      "currentLine": 1,
       "isPlaying": false,
       "autoScroll": false,
       "songTitle": "నిర్గమకాండము / Exodus 23:12"

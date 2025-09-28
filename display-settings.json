@@ -1,5 +1,5 @@
 {
-  "currentDisplayId": 4,
+  "currentDisplayId": 5,
   "displaySettings": [
     {
       "id": 1,
@@ -47,6 +47,15 @@
         "fontWeight": "normal",
         "maxHeight": "200px",
         "padding": 20
+      }
+    },
+    {
+      "id": 4,
+      "displayType": "control-panel",
+      "settings": {
+        "fontSize": 14,
+        "fontFamily": "Ramabhadra",
+        "backgroundColor": "#ffffff"
       }
     }
   ]

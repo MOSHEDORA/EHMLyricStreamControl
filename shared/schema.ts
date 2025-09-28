@@ -85,13 +85,13 @@ export const bibleFullscreenSettingsSchema = z.object({
 });
 
 export const controlPanelSettingsSchema = z.object({
-  fontSize: z.number().min(8).max(30).default(14),
+  fontSize: z.number().min(8).max(1000).default(14),
   fontFamily: z.string().default('Ramabhadra'),
   backgroundColor: z.string().default('#ffffff'),
 });
 
 export const obsDockSettingsSchema = z.object({
-  fontSize: z.number().min(8).max(30).default(14),
+  fontSize: z.number().min(8).max(1000).default(14),
   fontFamily: z.string().default('Ramabhadra'),
   compactMode: z.boolean().default(false),
 });
