@@ -35,7 +35,7 @@ export type DisplaySettings = typeof displaySettings.$inferSelect;
 // Define settings schemas for each display type
 export const lyricsLowerThirdSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(2),
-  fontSize: z.number().min(8).max(100).default(32),
+  fontSize: z.number().min(8).max(1000).default(32),
   fontFamily: z.string().default('Ramabhadra'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
@@ -47,7 +47,7 @@ export const lyricsLowerThirdSettingsSchema = z.object({
 
 export const lyricsFullscreenSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(4),
-  fontSize: z.number().min(8).max(100).default(48),
+  fontSize: z.number().min(8).max(1000).default(48),
   fontFamily: z.string().default('Ramabhadra'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
@@ -61,7 +61,7 @@ export const lyricsFullscreenSettingsSchema = z.object({
 
 export const bibleLowerThirdSettingsSchema = z.object({
   displayLines: z.number().min(1).max(10).default(2),
-  fontSize: z.number().min(8).max(100).default(32),
+  fontSize: z.number().min(8).max(1000).default(32),
   fontFamily: z.string().default('Ramabhadra'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),
@@ -73,7 +73,7 @@ export const bibleLowerThirdSettingsSchema = z.object({
 
 export const bibleFullscreenSettingsSchema = z.object({
   versesPerScreen: z.number().min(1).max(10).default(4),
-  fontSize: z.number().min(8).max(100).default(48),
+  fontSize: z.number().min(8).max(1000).default(48),
   fontFamily: z.string().default('Ramabhadra'),
   textColor: z.string().default('#ffffff'),
   textAlign: z.enum(['left', 'center', 'right']).default('center'),

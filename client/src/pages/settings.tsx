@@ -271,7 +271,7 @@ function FontSettings({
           value={[settings.fontSize]}
           onValueChange={(value) => updateSettings({ fontSize: value[0] })}
           min={8}
-          max={100}
+          max={1000}
           step={1}
           className="mt-2"
           data-testid="slider-font-size"

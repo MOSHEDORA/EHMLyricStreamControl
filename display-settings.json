@@ -1,5 +1,5 @@
 {
-  "currentDisplayId": 5,
+  "currentDisplayId": 7,
   "displaySettings": [
     {
       "id": 1,
@@ -56,6 +56,30 @@
         "fontSize": 14,
         "fontFamily": "Ramabhadra",
         "backgroundColor": "#ffffff"
+      }
+    },
+    {
+      "id": 5,
+      "displayType": "bible-lower-third",
+      "settings": {
+        "displayLines": 2,
+        "fontSize": 32,
+        "fontFamily": "Ramabhadra",
+        "textColor": "#ffffff",
+        "textAlign": "center",
+        "lineHeight": 1.2,
+        "fontWeight": "normal",
+        "maxHeight": "200px",
+        "padding": 20
+      }
+    },
+    {
+      "id": 6,
+      "displayType": "obs-dock",
+      "settings": {
+        "fontSize": 14,
+        "fontFamily": "Ramabhadra",
+        "compactMode": false
       }
     }
   ]
